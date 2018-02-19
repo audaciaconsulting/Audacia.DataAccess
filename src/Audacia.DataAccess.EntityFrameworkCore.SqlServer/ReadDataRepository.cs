@@ -26,6 +26,28 @@ namespace Audacia.Core.DataAcess.EntityFrameworkCore.SqlServer
             _context = context;
             _storedProcedureBuilder = storedProcedureBuilder;
         }
+                
+        public async Task<bool> AllAsync<T>(IQuerySpecification<T> specification,
+            CancellationToken cancellationToken = new CancellationToken()) where T : class
+        { 
+            if (specification.Filter == null)
+            {
+                // no filter has been provided
+                return false;
+            }
+
+            var query = ApplyIncludes(specification);
+            
+            return await query.AllAsync(specification.Filter.Expression, cancellationToken);
+        }
+        
+        public async Task<bool> AnyAsync<T>(IQuerySpecification<T> specification,
+            CancellationToken cancellationToken = new CancellationToken()) where T : class
+        {
+            var query = ApplyIncludesAndFilter(specification);
+            
+            return await query.AnyAsync(cancellationToken);
+        }
 
         public async Task<T> GetAsync<T>(IOrderableQuerySpecification<T> specification,
             CancellationToken cancellationToken = new CancellationToken()) where T : class
@@ -218,6 +240,17 @@ namespace Audacia.Core.DataAcess.EntityFrameworkCore.SqlServer
                 .FromSql(commandText)
                 .Select(specification.Projection.Expression)
                 .ToArrayAsync(cancellationToken);
+        }
+        protected IQueryable<T> ApplyIncludes<T>(IQuerySpecification<T> specification) where T : class
+        {
+            var query = _context.Set<T>().AsQueryable();
+
+            if (specification.Include != null)
+            {
+                query = ApplyIncludes(specification.Include, query);
+            }
+            
+            return query;
         }
 
         protected IQueryable<T> ApplyIncludesAndFilter<T>(IQuerySpecification<T> specification) where T : class
