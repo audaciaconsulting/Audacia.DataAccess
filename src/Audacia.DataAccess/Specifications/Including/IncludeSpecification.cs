@@ -23,14 +23,25 @@ namespace Audacia.DataAccess.Specifications.Including
         {
             var path = new IncludeStepPath
             {
-                new IncludeStep(typeof(TKey), keySelector)
+                new IncludeStep(keySelector)
             };
 
             _includeStepPaths.Add(path);
             
             return new ThenInclude<TKey>(path);
         }
-        
+        public IThenInclude<TKey> With<TKey>(Expression<Func<T, ICollection<TKey>>> keySelector)
+        {
+            var path = new IncludeStepPath
+            {
+                new IncludeStep(keySelector)
+            };
+
+            _includeStepPaths.Add(path);
+            
+            return new ThenInclude<TKey>(path);
+        }
+
         private class ThenInclude<TThen> : IThenInclude<TThen>
         {
             private readonly IncludeStepPath _includeStepPath;
@@ -42,7 +53,13 @@ namespace Audacia.DataAccess.Specifications.Including
 
             public IThenInclude<TKey> Then<TKey>(Expression<Func<TThen, TKey>> keySelector)
             {
-                _includeStepPath.Add(new IncludeStep(typeof(TKey), keySelector));
+                _includeStepPath.Add(new IncludeStep(keySelector));
+
+                return new ThenInclude<TKey>(_includeStepPath);
+            }
+            public IThenInclude<TKey> Then<TKey>(Expression<Func<TThen, ICollection<TKey>>> keySelector)
+            {
+                _includeStepPath.Add(new IncludeStep(keySelector));
 
                 return new ThenInclude<TKey>(_includeStepPath);
             }
