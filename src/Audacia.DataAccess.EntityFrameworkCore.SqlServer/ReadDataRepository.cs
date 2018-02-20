@@ -154,7 +154,7 @@ namespace Audacia.Core.DataAcess.EntityFrameworkCore.SqlServer
         public Task<IPage<T>> GetPageAsync<T>(IPageableQuerySpecification<T> specification,
             CancellationToken cancellationToken = new CancellationToken()) where T : class
         {
-            if (specification.Order != null)
+            if (specification.Order == null)
             {
                 throw new ArgumentNullException(nameof(specification.Order),
                     "Cannot page query with no order specification");
@@ -176,7 +176,7 @@ namespace Audacia.Core.DataAcess.EntityFrameworkCore.SqlServer
                     "Cannot project with no projection specification");
             }
             
-            if (specification.Order != null)
+            if (specification.Order == null)
             {
                 throw new ArgumentNullException(nameof(specification.Order),
                     "Cannot page query with no order specification");
