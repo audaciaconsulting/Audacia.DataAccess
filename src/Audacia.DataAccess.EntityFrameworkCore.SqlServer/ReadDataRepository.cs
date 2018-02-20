@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Audacia.Core.Extensions;
 using Audacia.DataAccess;
 using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Specifications.DataStoreImplementations;
@@ -270,49 +271,25 @@ namespace Audacia.Core.DataAcess.EntityFrameworkCore.SqlServer
             return query;
         }
 
-        private IQueryable<T> ApplyIncludes<T>(IIncludeSpecification<T> includeSpecification, IQueryable<T> query)
+        private static IQueryable<T> ApplyIncludes<T>(IIncludeSpecification<T> includeSpecification, IQueryable<T> query)
+            where T : class
         {
             foreach (var path in includeSpecification.IncludeStepPaths)
-            {
-                var steps = new Queue<IncludeStep>(path);
+            {                
+                var parts = new List<string>();
 
-                var step = steps.Dequeue();
-
-                var unTypedQuery = PerformFirstIncludeStep(step, query);
-                
-                while (steps.Any())
+                foreach (var step in path)
                 {
-                    var previousStepPropertyType = step.Type;
+                    parts.Add(ExpressionExtensions.GetPropertyInfo(step.Expression).Name);
 
-                    step = steps.Dequeue();
+                    var strPath = string.Join(".", parts);
 
-                    unTypedQuery = PerformAdditionalIncludeSteps<T>(step, unTypedQuery, previousStepPropertyType);
+                    query = query.Include(strPath);
                 }
-
-                query = unTypedQuery as IQueryable<T>;
             }
 
+
             return query;
-        }
-
-        private object PerformFirstIncludeStep<T>(IncludeStep step, IQueryable<T> query)
-        {
-            var method = typeof(EntityFrameworkQueryableExtensions).GetMethods().First(m =>
-                m.Name == nameof(EntityFrameworkQueryableExtensions.Include) && m.GetGenericArguments().Length == 2);
-
-            var genericMethod = method.MakeGenericMethod(typeof(T), step.Type);
-
-            return genericMethod.Invoke(null, new object[] { query, step.Expression });
-        }
-
-        private object PerformAdditionalIncludeSteps<T>(IncludeStep step, object unTypedQuery, Type previousStepPropertyType)
-        {
-            var method = typeof(EntityFrameworkQueryableExtensions).GetMethods().First(m =>
-                m.Name == nameof(EntityFrameworkQueryableExtensions.ThenInclude) && m.GetGenericArguments().Length == 3);
-
-            var genericMethod = method.MakeGenericMethod(typeof(T), previousStepPropertyType, step.Type);
-
-            return genericMethod.Invoke(null, new[] { unTypedQuery, step.Expression });
         }
 
         protected IOrderedQueryable<T> PerformOrdering<T>(IOrderSpecification<T> orderSpecification, IQueryable<T> query)
