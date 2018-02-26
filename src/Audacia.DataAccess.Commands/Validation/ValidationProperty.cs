@@ -1,4 +1,7 @@
-﻿using Audacia.Core.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using Audacia.Core.Extensions;
 
 namespace Audacia.DataAccess.Commands.Validation
 {
@@ -6,7 +9,7 @@ namespace Audacia.DataAccess.Commands.Validation
     /// Validates a single property
     /// </summary>
     /// <typeparam name="TProperty">Type of the member being validated</typeparam>
-    public class ValidationProperty<TProperty>
+    public class ValidationProperty<TProperty> : ValidationBase
     {
         private readonly IValidationModel _validationModel;
 
@@ -44,5 +47,20 @@ namespace Audacia.DataAccess.Commands.Validation
         /// Property value
         /// </summary>
         public TProperty Value { get; }
+        
+        /// <summary>
+        /// Creates a child validation property on a property object
+        /// </summary>
+        /// <typeparam name="TChild">Type of the member being validated</typeparam>
+        /// <param name="property">Expresssion referencing the member being validated</param>
+        /// <param name="displayName">User friendly member name</param>
+        /// <returns>A validation property</returns>
+        public ValidationProperty<TChild> Property<TChild>(Expression<Func<TProperty, TChild>> property, string displayName = null)
+        { 
+            var propertyName = GetNameForProperty(property);
+            var value = property.Compile()(Value);
+            var childPropertyName = $"{PropertyName}.{propertyName}";
+            return new ValidationProperty<TChild>(_validationModel, childPropertyName, displayName, value);
+        }
     }
 }

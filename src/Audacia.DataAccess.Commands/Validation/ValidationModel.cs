@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using Audacia.Commands;
 using Audacia.Core.Extensions;
@@ -13,7 +12,7 @@ namespace Audacia.DataAccess.Commands.Validation
     /// Validates a command or DTO
     /// </summary>
     /// <typeparam name="TModel">Type of the model being validated</typeparam>
-    public class ValidationModel<TModel> : IValidationModel<TModel> where TModel : class
+    public class ValidationModel<TModel> : ValidationBase, IValidationModel<TModel> where TModel : class
     {
         private readonly string _modelName;
         private readonly TModel _model;
@@ -81,36 +80,6 @@ namespace Audacia.DataAccess.Commands.Validation
         public Task<CommandResult> ToCommandResultAsync()
         {
             return Task.FromResult(new CommandResult(IsValid, AllErrors));
-        }
-        
-        private static string GetNameForProperty(Expression expression)
-        {
-            if (expression is LambdaExpression)
-            {
-                return ExpressionExtensions.GetPropertyInfo(expression).Name;
-            }
-
-            if (expression is UnaryExpression unaryExpression)
-            {
-                return string.Join(".", GetProperties(unaryExpression.Operand).Select(p => p.Name));
-            }
-
-            return string.Empty;
-        }
-        
-        private static IEnumerable<PropertyInfo> GetProperties(Expression expression)
-        {
-            if (!(expression is MemberExpression memberExpression))
-            {
-                yield break;
-            }
-
-            var property = memberExpression.Member as PropertyInfo;
-            foreach (var propertyInfo in GetProperties(memberExpression.Expression))
-            {
-                yield return propertyInfo;
-            }
-            yield return property;
         }
     }
 }
