@@ -9,6 +9,10 @@ using Audacia.Core.Extensions;
 
 namespace Audacia.DataAccess.Commands.Validation
 {
+    /// <summary>
+    /// Validates a command or DTO
+    /// </summary>
+    /// <typeparam name="TModel">Type of the model being validated</typeparam>
     public class ValidationModel<TModel> : IValidationModel<TModel> where TModel : class
     {
         private readonly string _modelName;
@@ -28,9 +32,9 @@ namespace Audacia.DataAccess.Commands.Validation
 
         public bool IsValid => !_errors.Any();
 
-        public IDictionary<string, IEnumerable<string>> ErrorDictionary => _errors as IDictionary<string, IEnumerable<string>>;
+        public IDictionary<string, IEnumerable<string>> ModelErrors => _errors as IDictionary<string, IEnumerable<string>>;
 
-        public IEnumerable<string> Errors => _errors.SelectMany(kvp => kvp.Value).ToArray();
+        public IEnumerable<string> AllErrors => _errors.SelectMany(kvp => kvp.Value).ToArray();
         
         public void AddModelError(string propertyName, string errorMessage)
         {
@@ -76,7 +80,7 @@ namespace Audacia.DataAccess.Commands.Validation
 
         public Task<CommandResult> ToCommandResultAsync()
         {
-            return Task.FromResult(new CommandResult(IsValid, Errors));
+            return Task.FromResult(new CommandResult(IsValid, AllErrors));
         }
         
         private static string GetNameForProperty(Expression expression)
