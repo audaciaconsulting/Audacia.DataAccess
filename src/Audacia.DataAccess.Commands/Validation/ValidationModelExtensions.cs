@@ -46,6 +46,15 @@ namespace Audacia.DataAccess.Commands.Validation
         }
 
         public static ValidationModel<TModel> MustBeGreaterThan<TModel, TProperty>(this ValidationModel<TModel> model,
+            Expression<Func<TModel, TProperty>> property, TProperty number, string displayName = null)
+            where TModel : class
+            where TProperty : struct, IComparable
+        {
+            model.Property(property, displayName).MustBeGreaterThan(number);
+            return model;
+        }
+
+        public static ValidationModel<TModel> MustBeGreaterThan<TModel, TProperty>(this ValidationModel<TModel> model,
             Expression<Func<TModel, TProperty?>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable
@@ -54,6 +63,15 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
+        public static ValidationModel<TModel> MustBeGreaterThanOrEqualTo<TModel, TProperty>(this ValidationModel<TModel> model,
+            Expression<Func<TModel, TProperty>> property, TProperty number, string displayName = null)
+            where TModel : class
+            where TProperty : struct, IComparable
+        {
+            model.Property(property, displayName).MustBeGreaterThanOrEqualTo(number);
+            return model;
+        }
+
         public static ValidationModel<TModel> MustBeGreaterThanOrEqualTo<TModel, TProperty>(this ValidationModel<TModel> model,
             Expression<Func<TModel, TProperty?>> property, TProperty number, string displayName = null)
             where TModel : class
@@ -64,11 +82,29 @@ namespace Audacia.DataAccess.Commands.Validation
         }
         
         public static ValidationModel<TModel> MustBeLessThan<TModel, TProperty>(this ValidationModel<TModel> model,
+            Expression<Func<TModel, TProperty>> property, TProperty number, string displayName = null)
+            where TModel : class
+            where TProperty : struct, IComparable
+        {
+            model.Property(property, displayName).MustBeLessThan(number);
+            return model;
+        }
+
+        public static ValidationModel<TModel> MustBeLessThan<TModel, TProperty>(this ValidationModel<TModel> model,
             Expression<Func<TModel, TProperty?>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable
         {
             model.Property(property, displayName).MustBeLessThan(number);
+            return model;
+        }
+
+        public static ValidationModel<TModel> MustBeLessThanOrEqualTo<TModel, TProperty>(this ValidationModel<TModel> model,
+            Expression<Func<TModel, TProperty>> property, TProperty number, string displayName = null)
+            where TModel : class
+            where TProperty : struct, IComparable
+        {
+            model.Property(property, displayName).MustBeLessThanOrEqualTo(number);
             return model;
         }
 

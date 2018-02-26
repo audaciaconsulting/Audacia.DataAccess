@@ -80,6 +80,17 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
 
+        public static ValidationProperty<TProperty> MustBeGreaterThan<TProperty>(this ValidationProperty<TProperty> model, TProperty number)
+            where TProperty : struct, IComparable
+        {
+            if (model.Value.CompareTo(number) < 1)
+            {
+                model.AppendError($"The value of {model.DisplayName} must greater than {number}");
+                
+            }
+            return model;
+        }
+        
         public static ValidationProperty<TProperty?> MustBeGreaterThan<TProperty>(this ValidationProperty<TProperty?> model, TProperty number)
             where TProperty : struct, IComparable
         {
@@ -91,6 +102,16 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
+        public static ValidationProperty<TProperty> MustBeGreaterThanOrEqualTo<TProperty>(this ValidationProperty<TProperty> model, TProperty number)
+            where TProperty : struct, IComparable
+        {
+            if (model.Value.CompareTo(number) == -1)
+            {
+                model.AppendError($"The value of {model.DisplayName} must greater than or equal to {number}");
+            }
+            return model;
+        }
+
         public static ValidationProperty<TProperty?> MustBeGreaterThanOrEqualTo<TProperty>(this ValidationProperty<TProperty?> model, TProperty number)
             where TProperty : struct, IComparable
         {
@@ -101,6 +122,16 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
+        public static ValidationProperty<TProperty> MustBeLessThan<TProperty>(this ValidationProperty<TProperty> model, TProperty number)
+            where TProperty : struct, IComparable
+        {
+            if (model.Value.CompareTo(number) > -1)
+            {
+                model.AppendError($"The value of {model.DisplayName} must less than {number}");
+            }
+            return model;
+        } 
+
         public static ValidationProperty<TProperty?> MustBeLessThan<TProperty>(this ValidationProperty<TProperty?> model, TProperty number)
             where TProperty : struct, IComparable
         {
@@ -111,6 +142,16 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         } 
         
+        public static ValidationProperty<TProperty> MustBeLessThanOrEqualTo<TProperty>(this ValidationProperty<TProperty> model, TProperty number)
+            where TProperty : struct, IComparable
+        {
+            if (model.Value.CompareTo(number) == 1)
+            {
+                model.AppendError($"The value of {model.DisplayName} must less than or equal to {number}");
+            }
+            return model;
+        }
+
         public static ValidationProperty<TProperty?> MustBeLessThanOrEqualTo<TProperty>(this ValidationProperty<TProperty?> model, TProperty number)
             where TProperty : struct, IComparable
         {
