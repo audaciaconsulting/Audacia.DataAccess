@@ -33,6 +33,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 var diagnosticListener = dbContext.GetService<DiagnosticSource>() as DiagnosticListener;
 
                 diagnosticListener.SubscribeWithAdapter(auditDbCommandListener);
+
+                AuditDbCommandListenerLookup.Add(dbContext, auditDbCommandListener);
             }
 
             return auditDbCommandListener;
