@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Audacia.DataAccess.Commands.Validation
@@ -28,9 +29,25 @@ namespace Audacia.DataAccess.Commands.Validation
             model.Property(property, displayName).HasMaxLength(length);
             return model;
         }
+
+        public static IValidationModel<TModel> HasMaxLength<TModel, TProperty>(this IValidationModel<TModel> model,
+            Expression<Func<TModel, IEnumerable<TProperty>>> property, int length, string displayName = null)
+            where TModel : class
+        {
+            model.Property(property, displayName).HasMaxLength(length);
+            return model;
+        }
         
         public static IValidationModel<TModel> HasMinLength<TModel>(this IValidationModel<TModel> model,
             Expression<Func<TModel, string>> property, int length, string displayName = null)
+            where TModel : class
+        {
+            model.Property(property, displayName).HasMinLength(length);
+            return model;
+        }
+
+        public static IValidationModel<TModel> HasMinLength<TModel, TProperty>(this IValidationModel<TModel> model,
+            Expression<Func<TModel, IEnumerable<TProperty>>> property, int length, string displayName = null)
             where TModel : class
         {
             model.Property(property, displayName).HasMinLength(length);
