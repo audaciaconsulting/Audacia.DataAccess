@@ -5,7 +5,7 @@ namespace Audacia.DataAccess.Commands.Validation
 {
     public static class ValidationModelExtensions
     {
-        public static ValidationModel<TModel> AlreadyExists<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> AlreadyExists<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty>> property, bool exists = true, string displayName = null)
             where TModel : class
         {
@@ -13,7 +13,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
-        public static ValidationModel<TModel> IsRequired<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> IsRequired<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty>> property, string displayName = null)
             where TModel : class
         {
@@ -21,7 +21,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
-        public static ValidationModel<TModel> HasMaxLength<TModel>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> HasMaxLength<TModel>(this IValidationModel<TModel> model,
             Expression<Func<TModel, string>> property, int length, string displayName = null)
             where TModel : class
         {
@@ -29,7 +29,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
-        public static ValidationModel<TModel> HasMinLength<TModel>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> HasMinLength<TModel>(this IValidationModel<TModel> model,
             Expression<Func<TModel, string>> property, int length, string displayName = null)
             where TModel : class
         {
@@ -37,7 +37,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
-        public static ValidationModel<TModel> MustBeAValidId<TModel>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> MustBeAValidId<TModel>(this IValidationModel<TModel> model,
             Expression<Func<TModel, int?>> property, string displayName = null)
             where TModel : class
         {
@@ -45,7 +45,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
 
-        public static ValidationModel<TModel> MustBeGreaterThan<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> MustBeGreaterThan<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable
@@ -54,7 +54,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
 
-        public static ValidationModel<TModel> MustBeGreaterThan<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> MustBeGreaterThan<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty?>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable
@@ -63,7 +63,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
-        public static ValidationModel<TModel> MustBeGreaterThanOrEqualTo<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> MustBeGreaterThanOrEqualTo<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable
@@ -72,7 +72,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
 
-        public static ValidationModel<TModel> MustBeGreaterThanOrEqualTo<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> MustBeGreaterThanOrEqualTo<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty?>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable
@@ -81,7 +81,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
-        public static ValidationModel<TModel> MustBeLessThan<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> MustBeLessThan<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable
@@ -90,7 +90,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
 
-        public static ValidationModel<TModel> MustBeLessThan<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> MustBeLessThan<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty?>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable
@@ -99,7 +99,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
 
-        public static ValidationModel<TModel> MustBeLessThanOrEqualTo<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> MustBeLessThanOrEqualTo<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable
@@ -108,7 +108,7 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
 
-        public static ValidationModel<TModel> MustBeLessThanOrEqualTo<TModel, TProperty>(this ValidationModel<TModel> model,
+        public static IValidationModel<TModel> MustBeLessThanOrEqualTo<TModel, TProperty>(this IValidationModel<TModel> model,
             Expression<Func<TModel, TProperty?>> property, TProperty number, string displayName = null)
             where TModel : class
             where TProperty : struct, IComparable

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Audacia.Commands;
 
@@ -19,5 +21,10 @@ namespace Audacia.DataAccess.Commands.Validation
         bool IsModelNull();
         
         Task<CommandResult> ToCommandResultAsync();
+    }
+
+    public interface IValidationModel<TModel> : IValidationModel where TModel : class
+    {
+        ValidationProperty<TProperty> Property<TProperty>(Expression<Func<TModel, TProperty>> property, string displayName = null);
     }
 }

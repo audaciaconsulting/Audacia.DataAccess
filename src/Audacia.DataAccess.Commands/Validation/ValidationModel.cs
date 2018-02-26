@@ -9,7 +9,7 @@ using Audacia.Core.Extensions;
 
 namespace Audacia.DataAccess.Commands.Validation
 {
-    public class ValidationModel<TModel> : IValidationModel where TModel : class
+    public class ValidationModel<TModel> : IValidationModel<TModel> where TModel : class
     {
         private readonly string _modelName;
         private readonly TModel _model;
