@@ -1,43 +1,44 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System;
+using Audacia.Core;
+using Audacia.DataAccess.EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
     public static class DbContextExtensions
     {
-        private static readonly ConditionalWeakTable<DbContext, AuditDbCommandListener> AuditDbCommandListenerLookup =
-            new ConditionalWeakTable<DbContext, AuditDbCommandListener>();
-
-        public static void AddAuditor(this DbContext dbContext, BlockingDbCommandAuditor auditor)
+        public static void AddSoftDeleteAuditing<TDbContext, TUserId>(this TDbContext dbContext,
+            Func<TUserId> userIdFactory)
+            where TDbContext : DbContext
         {
-            auditor.RegisterContext(dbContext);
-
-            dbContext.InitOrGetAuditDbCommandListener().AddAuditor(auditor);
-        }
-
-        public static void AddAuditor(this DbContext dbContext, FireAndForgetDbCommandAuditor auditor)
-        {
-            auditor.RegisterContext(dbContext);
-
-            dbContext.InitOrGetAuditDbCommandListener().AddAuditor(auditor);
-        }
-
-        private static AuditDbCommandListener InitOrGetAuditDbCommandListener(this DbContext dbContext)
-        {
-            if (!AuditDbCommandListenerLookup.TryGetValue(dbContext, out var auditDbCommandListener))
+            Trigger<TDbContext, ISoftDeletable<TUserId>>.Deleting += (deletable, context) =>
             {
-                auditDbCommandListener = new AuditDbCommandListener();
+                context.EntityEntry.State = EntityState.Modified;
+                deletable.Deleted = DateTimeOffsetProvider.Instance.Now;
+                deletable.DeletedBy = userIdFactory();
+            };
+        }
 
-                var diagnosticListener = dbContext.GetService<DiagnosticSource>() as DiagnosticListener;
+        public static void AddCreateAuditing<TDbContext, TUserId>(this TDbContext dbContext,
+            Func<TUserId> userIdFactory)
+            where TDbContext : DbContext
+        {
+            Trigger<TDbContext, ICreatable<TUserId>>.Inserting += (creatable, context) =>
+            {
+                creatable.Created = DateTimeOffsetProvider.Instance.Now;
+                creatable.CreatedBy = userIdFactory();
+            };
+        }
 
-                diagnosticListener.SubscribeWithAdapter(auditDbCommandListener);
-
-                AuditDbCommandListenerLookup.Add(dbContext, auditDbCommandListener);
-            }
-
-            return auditDbCommandListener;
+        public static void AddModifyAuditing<TDbContext, TUserId>(this TDbContext dbContext,
+            Func<TUserId> userIdFactory)
+            where TDbContext : DbContext
+        {
+            Trigger<TDbContext, IModifiable<TUserId>>.Updating += (modifiable, context) =>
+            {
+                modifiable.Modified = DateTimeOffsetProvider.Instance.Now;
+                modifiable.ModifiedBy = userIdFactory();
+            };
         }
     }
 }
