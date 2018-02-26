@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Audacia.DataAccess.EntityFr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Audacia.DataAccess.Commands", "src\Audacia.DataAccess.Commands\Audacia.DataAccess.Commands.csproj", "{E3642719-6B19-4E7E-B742-88F8D130CF06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audacia.DataAccess.EntityFrameworkCore", "src\Audacia.DataAccess.EntityFrameworkCore\Audacia.DataAccess.EntityFrameworkCore.csproj", "{7C7C60C7-A2B8-4CFC-B778-B56A2949CF86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Audacia.DataAccess.EntityFrameworkCore", "src\Audacia.DataAccess.EntityFrameworkCore\Audacia.DataAccess.EntityFrameworkCore.csproj", "{7C7C60C7-A2B8-4CFC-B778-B56A2949CF86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audacia.DataAccess.EntityFrameworkCore.Auditing", "src\Audacia.DataAccess.EntityFrameworkCore.Auditing\Audacia.DataAccess.EntityFrameworkCore.Auditing.csproj", "{4424A2A2-588E-4CF6-ACE1-66F8CD81E418}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{7C7C60C7-A2B8-4CFC-B778-B56A2949CF86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C7C60C7-A2B8-4CFC-B778-B56A2949CF86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C7C60C7-A2B8-4CFC-B778-B56A2949CF86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4424A2A2-588E-4CF6-ACE1-66F8CD81E418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4424A2A2-588E-4CF6-ACE1-66F8CD81E418}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4424A2A2-588E-4CF6-ACE1-66F8CD81E418}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4424A2A2-588E-4CF6-ACE1-66F8CD81E418}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +50,7 @@ Global
 		{0A03BE62-3B3B-4F6D-90F2-976325734885} = {EDD28F6C-87BD-436B-92A5-F5A3D3FA6FEB}
 		{E3642719-6B19-4E7E-B742-88F8D130CF06} = {EDD28F6C-87BD-436B-92A5-F5A3D3FA6FEB}
 		{7C7C60C7-A2B8-4CFC-B778-B56A2949CF86} = {EDD28F6C-87BD-436B-92A5-F5A3D3FA6FEB}
+		{4424A2A2-588E-4CF6-ACE1-66F8CD81E418} = {EDD28F6C-87BD-436B-92A5-F5A3D3FA6FEB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E9D3B5AA-8774-4F79-9A03-6FBE0DEF2D11}
