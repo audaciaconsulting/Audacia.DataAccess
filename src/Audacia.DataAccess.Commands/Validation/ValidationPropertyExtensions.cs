@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Audacia.DataAccess.Commands.Validation
 {
@@ -117,6 +118,30 @@ namespace Audacia.DataAccess.Commands.Validation
             return model;
         }
         
+        /// <summary>
+        /// Validates that the property matches a given regex pattern
+        /// </summary>
+        /// <param name="model">validation property</param>
+        /// <param name="pattern">regex pattern</param>
+        /// <param name="conditions">user friendly requirements that must be met</param>
+        /// <returns>the validation property</returns>
+        public static ValidationProperty<string> MatchesPattern(this ValidationProperty<string> model, string pattern, params string[] conditions)
+        {
+            if (!Regex.IsMatch(model.Value, pattern))
+            {
+                if (conditions?.Any() ?? false)
+                {
+                    model.AddError($"The value of {model.DisplayName} must meet the following requirements; {string.Join(",", conditions)}");
+                }
+                else
+                {
+                    model.AddError($"The value of {model.DisplayName} must match the following pattern; {pattern}");
+                }
+            }
+
+            return model;
+        }
+
         /// <summary>
         /// Validates that the Id is not null or less than zero
         /// </summary>

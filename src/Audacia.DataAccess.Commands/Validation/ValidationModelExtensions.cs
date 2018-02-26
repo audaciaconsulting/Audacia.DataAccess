@@ -114,6 +114,25 @@ namespace Audacia.DataAccess.Commands.Validation
         }
         
         /// <summary>
+        /// Validates that the property matches a given regex pattern
+        /// </summary>
+        /// <typeparam name="TModel">Type of the model being validated</typeparam>
+        /// <typeparam name="TProperty">Type of the member being validated</typeparam>
+        /// <param name="model">validation property</param>
+        /// <param name="property">Expresssion referencing the member being validated</param>
+        /// <param name="pattern">regex pattern</param>
+        /// <param name="displayName">User friendly property name</param>
+        /// <param name="conditions">user friendly requirements that must be met</param>
+        /// <returns>the validation property</returns>
+        public static IValidationModel<TModel> MatchesPattern<TModel, TProperty>(this IValidationModel<TModel> model,
+            Expression<Func<TModel, string>> property, string pattern, string displayName = null, params string[] conditions)
+            where TModel : class
+        {
+            model.Property(property, displayName).MatchesPattern(pattern);
+            return model;
+        }
+
+        /// <summary>
         /// Validates that the Id is not null or less than zero
         /// </summary>
         /// <typeparam name="TModel">Type of the model being validated</typeparam>
