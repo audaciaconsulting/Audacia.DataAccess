@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
+namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
     public interface IModifiable<TUserId>
     {

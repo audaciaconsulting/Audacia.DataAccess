@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Audacia.DataAccess;
+using Audacia.Core;
 using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Specifications.DataStoreImplementations;
 using Audacia.DataAccess.Specifications.Including;
@@ -13,7 +13,7 @@ using Audacia.DataAccess.Specifications.Paging.Sorting;
 using Audacia.DataAccess.Specifications.Projection;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audacia.Core.DataAcess.EntityFrameworkCore.SqlServer
+namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
 {
     public class ReadDataRepository<TContext> : IReadableDataRepository
         where TContext : DbContext
