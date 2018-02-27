@@ -24,7 +24,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         {
             TypeOfEntity = typeOfEntity;
         }
-        
+
         public Type TypeOfEntity { get; }
     }
 
@@ -57,8 +57,9 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return this;
         }
 
-        public PropertyAuditConfigurationBuilder<TEntity, TProperty> Property<TProperty>(Expression<Func<TEntity, TProperty>>
-            propertySelector)
+        public PropertyAuditConfigurationBuilder<TEntity, TProperty> Property<TProperty>(
+            Expression<Func<TEntity, TProperty>>
+                propertySelector)
         {
             var propertyInfo = ExpressionExtensions.GetPropertyInfo(propertySelector);
 
@@ -71,11 +72,14 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return propertyBuilder as PropertyAuditConfigurationBuilder<TEntity, TProperty>;
         }
 
-        public PropertyAuditConfigurationBuilder<TEntity, TProperty> Property<TProperty>(PropertyAuditConfigurationBuilder<TEntity, TProperty> propertyBuilder)
+        public EntityAuditConfigurationBuilder<TEntity> Property<TProperty>(Expression<Func<TEntity, TProperty>>
+            propertySelector, Action<PropertyAuditConfigurationBuilder<TEntity, TProperty>> propertyBuilderAction)
         {
-            Properties[propertyBuilder.PropertyInfo.Name] = propertyBuilder;
+            var builder = Property(propertySelector);
 
-            return propertyBuilder;
+            propertyBuilderAction(builder);
+
+            return this;
         }
     }
 }

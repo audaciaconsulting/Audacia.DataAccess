@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    public class EntityAuditConfiguration
+    public class EntityAuditConfiguration : IEntityAuditConfiguration
     {
         internal EntityAuditConfiguration(IEntityType entityType,
             ICollection<EntityAuditConfigurationBuilder> configurations,
@@ -19,15 +19,16 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                      false;
 
             Strategy = configurations
-                .FirstOrDefault(configuration => configuration.InternalAuditStrategy != null)
-                ?.InternalAuditStrategy ?? globalStrategy;
+                           .FirstOrDefault(configuration => configuration.InternalAuditStrategy != null)
+                           ?.InternalAuditStrategy ?? globalStrategy;
 
             DescriptionFactory = configurations
                 .FirstOrDefault(configuration => configuration.InternalDescriptionFactory != null)
                 ?.InternalDescriptionFactory;
 
             var propertyConfigurationLookup = configurations.SelectMany(configuration => configuration.Properties)
-                .GroupBy(propertyConfiguration => propertyConfiguration.Key, propertyConfiguration => propertyConfiguration.Value)
+                .GroupBy(propertyConfiguration => propertyConfiguration.Key,
+                    propertyConfiguration => propertyConfiguration.Value)
                 .ToDictionary();
 
             //Loop through DB entities and find matching audit configurations
@@ -35,7 +36,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                 let matchingConfigurations = propertyConfigurationLookup[property.Name]
                 select new PropertyAuditConfiguration(property, matchingConfigurations);
 
-            Properties = properties.ToDictionary(propertyConfiguration => propertyConfiguration.Property);
+            Properties = properties.ToDictionary(propertyConfiguration => propertyConfiguration.Property,
+                propertyConfiguration => propertyConfiguration as IPropertyAuditConfiguration);
         }
 
         public IEntityType EntityType { get; }
@@ -43,6 +45,6 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         public AuditStrategy Strategy { get; }
         public Func<object, string> DescriptionFactory { get; }
 
-        public IDictionary<IProperty, PropertyAuditConfiguration> Properties { get; }
+        public IDictionary<IProperty, IPropertyAuditConfiguration> Properties { get; }
     }
 }

@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    internal static class TriggerRegistrar<TDbContext>
-        where TDbContext : DbContext
+    public class TriggerRegistrar
     {
-        private static readonly IDictionary<object, Action<object, TriggerContext<TDbContext>>> DelegateCache =
-            new Dictionary<object, Action<object, TriggerContext<TDbContext>>>();
+        private readonly IDictionary<object, Action<object, TriggerContext>> _delegateCache =
+            new Dictionary<object, Action<object, TriggerContext>>();
 
-        private static readonly IDictionary<TriggerTypeHash, Action<object, TriggerContext<TDbContext>>> Triggers =
-            new Dictionary<TriggerTypeHash, Action<object, TriggerContext<TDbContext>>>();
+        private readonly IDictionary<TriggerTypeHash, Action<object, TriggerContext>> _triggers =
+            new Dictionary<TriggerTypeHash, Action<object, TriggerContext>>();
 
-        internal static void Register<TEntity>(TriggerType type, Action<TEntity, TriggerContext<TDbContext>> action)
+        public void Register<TEntity>(TriggerType type, Action<TEntity, TriggerContext> action)
             where TEntity : class
         {
             var key = new TriggerTypeHash
@@ -23,17 +21,17 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
                 TriggerType = type
             };
 
-            void GenericisedAction(object obj, TriggerContext<TDbContext> context) => action(obj as TEntity, context);
+            void GenericisedAction(object obj, TriggerContext context) => action(obj as TEntity, context);
 
-            Triggers[key] += GenericisedAction;
-            DelegateCache[action] = GenericisedAction;
+            _triggers[key] += GenericisedAction;
+            _delegateCache[action] = GenericisedAction;
         }
 
-        internal static void Revoke<TEntity>(TriggerType type, Action<TEntity, TriggerContext<TDbContext>> action)
+        public void Revoke<TEntity>(TriggerType type, Action<TEntity, TriggerContext> action)
         {
-            if (DelegateCache.TryGetValue(action, out var genericisedAction))
+            if (_delegateCache.TryGetValue(action, out var genericisedAction))
             {
-                DelegateCache.Remove(genericisedAction);
+                _delegateCache.Remove(genericisedAction);
 
                 var key = new TriggerTypeHash
                 {
@@ -41,18 +39,18 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
                     TriggerType = type
                 };
 
-                if (Triggers.ContainsKey(key))
+                if (_triggers.ContainsKey(key))
                 {
                     // ReSharper disable once DelegateSubtraction
-                    Triggers[key] -= genericisedAction;
+                    _triggers[key] -= genericisedAction;
                 }
             }
         }
 
-        internal static IEnumerable<Action<object, TriggerContext<TDbContext>>> Resolve(Type entityType, TriggerType triggerType)
+        public IEnumerable<Action<object, TriggerContext>> Resolve(Type entityType, TriggerType triggerType)
         {
             //NOTE: We want to match base types and interfaces too
-            return from entry in Triggers
+            return from entry in _triggers
                 where entry.Key.EntityType.IsAssignableFrom(entityType)
                       && entry.Key.TriggerType == triggerType
                 orderby GetSortOrder(entry.Key, entityType)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Audacia.Core;
@@ -8,11 +10,42 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
     public static class DbContextExtensions
     {
-        public static void AddSoftDeleteTrigger<TDbContext, TUserId>(this TDbContext dbContext,
-            Func<TUserId> userIdFactory)
+        private static readonly ConditionalWeakTable<DbContext, TriggerRegistrar> TriggerRegistrarConditionalWeakTable = new ConditionalWeakTable<DbContext, TriggerRegistrar>();
+
+        public static TDbContext EnableTriggers<TDbContext>(this TDbContext dbContext, TriggerRegistrar registrar)
             where TDbContext : DbContext
         {
-            Trigger<TDbContext, ISoftDeletable<TUserId>>.Deleting += (deletable, context) =>
+            TriggerRegistrarConditionalWeakTable.Add(dbContext, registrar);
+
+            return dbContext;
+        }
+
+        public static bool TriggersEnabled(this DbContext dbContext)
+        {
+            return GetTriggerRegistrar(dbContext) != null;
+        }
+
+        private static TriggerRegistrar GetTriggerRegistrar(DbContext dbContext)
+        {
+            if (!TriggerRegistrarConditionalWeakTable.TryGetValue(dbContext, out var registrar))
+            {
+                throw new KeyNotFoundException(
+                    $"You must call {nameof(EnableTriggers)} on the context before you can use triggers.");
+            }
+
+            return registrar;
+        }
+
+        public static Trigger<TEntity> Trigger<TEntity>(this DbContext dbContext)
+            where TEntity : class
+        {
+            return new Trigger<TEntity>(GetTriggerRegistrar(dbContext));
+        }
+
+        public static void AddSoftDeleteTrigger<TUserId>(this DbContext dbContext,
+            Func<TUserId> userIdFactory)
+        {
+            dbContext.Trigger<ISoftDeletable<TUserId>>().Deleting += (deletable, context) =>
             {
                 context.EntityEntry.State = EntityState.Modified;
                 deletable.Deleted = DateTimeOffsetProvider.Instance.Now;
@@ -20,22 +53,20 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             };
         }
 
-        public static void AddCreateTrigger<TDbContext, TUserId>(this TDbContext dbContext,
+        public static void AddCreateTrigger<TUserId>(this DbContext dbContext,
             Func<TUserId> userIdFactory)
-            where TDbContext : DbContext
         {
-            Trigger<TDbContext, ICreatable<TUserId>>.Inserting += (creatable, context) =>
+            dbContext.Trigger<ICreatable<TUserId>>().Inserting += (creatable, context) =>
             {
                 creatable.Created = DateTimeOffsetProvider.Instance.Now;
                 creatable.CreatedBy = userIdFactory();
             };
         }
 
-        public static void AddModifyTrigger<TDbContext, TUserId>(this TDbContext dbContext,
+        public static void AddModifyTrigger<TUserId>(this DbContext dbContext,
             Func<TUserId> userIdFactory)
-            where TDbContext : DbContext
         {
-            Trigger<TDbContext, IModifiable<TUserId>>.Updating += (modifiable, context) =>
+            dbContext.Trigger<IModifiable<TUserId>>().Updating += (modifiable, context) =>
             {
                 modifiable.Modified = DateTimeOffsetProvider.Instance.Now;
                 modifiable.ModifiedBy = userIdFactory();
@@ -49,7 +80,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         public static int SaveChangesWithTriggers<TDbContext>(this TDbContext dbContext, bool acceptAllChangesOnSuccess)
             where TDbContext : DbContext
         {
-            var invoker = new TriggerInvoker<TDbContext>(dbContext);
+            var invoker = new TriggerInvoker(dbContext, GetTriggerRegistrar(dbContext));
 
             invoker.Before();
             var result = dbContext.SaveChanges(acceptAllChangesOnSuccess);
@@ -67,7 +98,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             CancellationToken cancellationToken = default)
             where TDbContext : DbContext
         {
-            var invoker = new TriggerInvoker<TDbContext>(dbContext);
+            var invoker = new TriggerInvoker(dbContext, GetTriggerRegistrar(dbContext));
 
             invoker.Before();
             var result = dbContext.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);

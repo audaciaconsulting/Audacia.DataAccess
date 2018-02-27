@@ -7,9 +7,10 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    public class PropertyAuditConfiguration
+    public class PropertyAuditConfiguration : IPropertyAuditConfiguration
     {
-        public PropertyAuditConfiguration(IProperty property, ICollection<PropertyAuditConfigurationBuilder> configurations)
+        public PropertyAuditConfiguration(IProperty property,
+            ICollection<PropertyAuditConfigurationBuilder> configurations)
         {
             Property = property;
 
@@ -17,7 +18,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                          ?.InternalIgnore ?? false;
 
             FriendlyName = configurations.FirstOrDefault(configuration => configuration.InternalFriendlyName != null)
-                         ?.InternalFriendlyName ?? property.Name.SplitCamelCase();
+                               ?.InternalFriendlyName ?? property.Name.SplitCamelCase();
 
             //Later we do a check when we have value and this is null, will do ToEnumDescriptionString() for enum or just ToString() for others
             FriendlyValueFactory = configurations

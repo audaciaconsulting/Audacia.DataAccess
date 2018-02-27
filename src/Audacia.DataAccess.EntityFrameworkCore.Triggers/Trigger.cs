@@ -3,44 +3,50 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    public static class Trigger<TDbContext, TEntity>
-        where TDbContext : DbContext
+    public class Trigger<TEntity>
         where TEntity : class
     {
-        public static event Action<TEntity, TriggerContext<TDbContext>> Inserting
+        private readonly TriggerRegistrar _triggerRegistrar;
+
+        internal Trigger(TriggerRegistrar triggerRegistrar)
         {
-            add => TriggerRegistrar<TDbContext>.Register(TriggerType.Inserting, value);
-            remove => TriggerRegistrar<TDbContext>.Revoke(TriggerType.Inserting, value);
+            _triggerRegistrar = triggerRegistrar;
         }
 
-        public static event Action<TEntity, TriggerContext<TDbContext>> Inserted
+        public event Action<TEntity, TriggerContext> Inserting
         {
-            add => TriggerRegistrar<TDbContext>.Register(TriggerType.Inserted, value);
-            remove => TriggerRegistrar<TDbContext>.Revoke(TriggerType.Inserted, value);
+            add => _triggerRegistrar.Register(TriggerType.Inserting, value);
+            remove => _triggerRegistrar.Revoke(TriggerType.Inserting, value);
         }
 
-        public static event Action<TEntity, TriggerContext<TDbContext>> Updating
+        public event Action<TEntity, TriggerContext> Inserted
         {
-            add => TriggerRegistrar<TDbContext>.Register(TriggerType.Updating, value);
-            remove => TriggerRegistrar<TDbContext>.Revoke(TriggerType.Updating, value);
+            add => _triggerRegistrar.Register(TriggerType.Inserted, value);
+            remove => _triggerRegistrar.Revoke(TriggerType.Inserted, value);
         }
 
-        public static event Action<TEntity, TriggerContext<TDbContext>> Updated
+        public event Action<TEntity, TriggerContext> Updating
         {
-            add => TriggerRegistrar<TDbContext>.Register(TriggerType.Updated, value);
-            remove => TriggerRegistrar<TDbContext>.Revoke(TriggerType.Updated, value);
+            add => _triggerRegistrar.Register(TriggerType.Updating, value);
+            remove => _triggerRegistrar.Revoke(TriggerType.Updating, value);
         }
 
-        public static event Action<TEntity, TriggerContext<TDbContext>> Deleting
+        public event Action<TEntity, TriggerContext> Updated
         {
-            add => TriggerRegistrar<TDbContext>.Register(TriggerType.Deleting, value);
-            remove => TriggerRegistrar<TDbContext>.Revoke(TriggerType.Deleting, value);
+            add => _triggerRegistrar.Register(TriggerType.Updated, value);
+            remove => _triggerRegistrar.Revoke(TriggerType.Updated, value);
         }
 
-        public static event Action<TEntity, TriggerContext<TDbContext>> Deleted
+        public event Action<TEntity, TriggerContext> Deleting
         {
-            add => TriggerRegistrar<TDbContext>.Register(TriggerType.Deleted, value);
-            remove => TriggerRegistrar<TDbContext>.Revoke(TriggerType.Deleted, value);
+            add => _triggerRegistrar.Register(TriggerType.Deleting, value);
+            remove => _triggerRegistrar.Revoke(TriggerType.Deleting, value);
+        }
+
+        public event Action<TEntity, TriggerContext> Deleted
+        {
+            add => _triggerRegistrar.Register(TriggerType.Deleted, value);
+            remove => _triggerRegistrar.Revoke(TriggerType.Deleted, value);
         }
     }
 }

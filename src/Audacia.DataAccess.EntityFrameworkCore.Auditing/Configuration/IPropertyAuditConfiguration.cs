@@ -1,0 +1,14 @@
+﻿using System;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Metadata;
+
+namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
+{
+    public interface IPropertyAuditConfiguration
+    {
+        string FriendlyName { get; }
+        Expression<Func<object, string>> FriendlyValueFactory { get; }
+        bool Ignore { get; }
+        IProperty Property { get; }
+    }
+}

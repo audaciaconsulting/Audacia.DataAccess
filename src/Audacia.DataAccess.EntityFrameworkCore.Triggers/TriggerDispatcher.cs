@@ -3,27 +3,28 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    internal class TriggerDispatcher<TDbContext>
-        where TDbContext : DbContext
+    internal class TriggerDispatcher
     {
-        private readonly TDbContext _dbContext;
+        private readonly DbContext _dbContext;
+        private readonly TriggerRegistrar _triggerRegistrar;
 
-        public TriggerDispatcher(TDbContext dbContext)
+        public TriggerDispatcher(DbContext dbContext, TriggerRegistrar triggerRegistrar)
         {
             _dbContext = dbContext;
+            _triggerRegistrar = triggerRegistrar;
         }
 
         internal void Dispatch(TriggerType triggerType, EntityEntry entityEntry)
         {
             var entityType = entityEntry.Entity.GetType();
 
-            var triggerContext = new TriggerContext<TDbContext>
+            var triggerContext = new TriggerContext
             {
                 DbContext = _dbContext,
                 EntityEntry = entityEntry
             };
 
-            var delegates = TriggerRegistrar<TDbContext>.Resolve(entityType, triggerType);
+            var delegates = _triggerRegistrar.Resolve(entityType, triggerType);
 
             foreach (var @delegate in delegates)
             {

@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    // ReSharper disable once UnusedTypeParameter
-    public class AuditConfiguration<TDbContext>
-        where TDbContext : DbContext
+    public class AuditConfiguration<TDbContext> : IAuditConfiguration<TDbContext> where TDbContext : DbContext
     {
         internal AuditConfiguration()
         {
@@ -15,6 +13,6 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         public bool DoNotAuditIfNoChangesInTrackedProperties { get; internal set; }
         public AuditStrategy Strategy { get; internal set; }
 
-        public IDictionary<IEntityType, EntityAuditConfiguration> Entities { get; internal set; }
+        public IDictionary<IEntityType, IEntityAuditConfiguration> Entities { get; internal set; }
     }
 }

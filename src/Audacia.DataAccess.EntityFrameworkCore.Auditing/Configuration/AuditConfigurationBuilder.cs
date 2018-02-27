@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
     public class AuditConfigurationBuilder<TDbContext>
-        where TDbContext : DbContext
+        where TDbContext : DbContext, new()
     {
         private bool _doNotAuditIfNoChangesInTrackedProperties;
         private AuditStrategy _strategy = AuditStrategy.ChangesOnly;
@@ -41,30 +41,38 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return entityBuilder as EntityAuditConfigurationBuilder<TEntity>;
         }
 
-        public EntityAuditConfigurationBuilder<TEntity> For<TEntity>(EntityAuditConfigurationBuilder<TEntity> entityBuilder)
+        public AuditConfigurationBuilder<TDbContext> For<TEntity>(
+            Action<EntityAuditConfigurationBuilder<TEntity>> entityBuilderAction)
             where TEntity : class, new()
         {
-            _entites[typeof(TEntity)] = entityBuilder;
+            var entityBuilder = For<TEntity>();
 
-            return entityBuilder;
+            entityBuilderAction(entityBuilder);
+
+            return this;
         }
 
-        public AuditConfiguration<TDbContext> Build(TDbContext dbContext)
+        public IAuditConfiguration<TDbContext> Build()
         {
-            //Loop through DB entities and find matching audit configurations
-            var entities = from entityType in dbContext.Model.GetEntityTypes()
-                let matchingConfigurations = (from pair in _entites
-                    where pair.Key.IsAssignableFrom(entityType.ClrType)
-                    orderby GetTypeSortOrder(pair.Value, entityType.ClrType)
-                                              select pair.Value).ToList()
-                select new EntityAuditConfiguration(entityType, matchingConfigurations, _strategy);
-
-            return new AuditConfiguration<TDbContext>
+            //Create context just to access model and fully populate configuration
+            using (var context = new TDbContext())
             {
-                DoNotAuditIfNoChangesInTrackedProperties = _doNotAuditIfNoChangesInTrackedProperties,
-                Entities = entities.ToDictionary(item => item.EntityType),
-                Strategy = _strategy
-            };
+                //Loop through DB entities and find matching audit configurations
+                var entities = from entityType in context.Model.GetEntityTypes()
+                    let matchingConfigurations = (from pair in _entites
+                        where pair.Key.IsAssignableFrom(entityType.ClrType)
+                        orderby GetTypeSortOrder(pair.Value, entityType.ClrType)
+                        select pair.Value).ToList()
+                    select new EntityAuditConfiguration(entityType, matchingConfigurations, _strategy);
+
+                return new AuditConfiguration<TDbContext>
+                {
+                    DoNotAuditIfNoChangesInTrackedProperties = _doNotAuditIfNoChangesInTrackedProperties,
+                    Entities =
+                        entities.ToDictionary(item => item.EntityType, item => item as IEntityAuditConfiguration),
+                    Strategy = _strategy
+                };
+            }
         }
 
         private static int GetTypeSortOrder(EntityAuditConfigurationBuilder configuration, Type type)

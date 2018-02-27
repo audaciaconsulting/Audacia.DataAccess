@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    internal class TriggerInvoker<TDbContext>
-        where TDbContext : DbContext
+    internal class TriggerInvoker
     {
-        private readonly TriggerDispatcher<TDbContext> _dispatcher;
+        private readonly TriggerDispatcher _dispatcher;
         private readonly ICollection<EntityEntry> _entityEntries;
 
-        internal TriggerInvoker(TDbContext dbContext)
+        internal TriggerInvoker(DbContext dbContext, TriggerRegistrar registrar)
         {
-            _dispatcher = new TriggerDispatcher<TDbContext>(dbContext);
+            _dispatcher = new TriggerDispatcher(dbContext, registrar);
             _entityEntries = dbContext.ChangeTracker.Entries().ToList();
         }
         
