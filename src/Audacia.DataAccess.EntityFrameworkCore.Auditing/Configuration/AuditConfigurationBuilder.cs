@@ -9,7 +9,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         where TDbContext : DbContext, new()
     {
         private bool _doNotAuditIfNoChangesInTrackedProperties;
-        private AuditStrategy _strategy = AuditStrategy.ChangesOnly;
+        private AuditStrategy _strategy = AuditStrategy.Partial;
         private readonly IDictionary<Type, EntityAuditConfigurationBuilder> _entites =
             new Dictionary<Type, EntityAuditConfigurationBuilder>();
         
@@ -69,7 +69,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                 {
                     DoNotAuditIfNoChangesInTrackedProperties = _doNotAuditIfNoChangesInTrackedProperties,
                     Entities =
-                        entities.ToDictionary(item => item.EntityType, item => item as IEntityAuditConfiguration),
+                        entities.ToDictionary(item => item.EntityType.ClrType, item => item as IEntityAuditConfiguration),
                     Strategy = _strategy
                 };
             }

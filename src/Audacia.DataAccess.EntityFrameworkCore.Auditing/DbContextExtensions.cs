@@ -9,12 +9,12 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
     public static class DbContextExtensions
     {
-        private static readonly ConditionalWeakTable<DbContext, AuditConfigurationRegistrar>
+        private static readonly ConditionalWeakTable<DbContext, AuditRegistrar>
             AuditConfigurationRegistrarConditionalWeakTable =
-                new ConditionalWeakTable<DbContext, AuditConfigurationRegistrar>();
+                new ConditionalWeakTable<DbContext, AuditRegistrar>();
 
         public static TDbContext EnableAuditing<TDbContext>(this TDbContext dbContext,
-            AuditConfigurationRegistrar registrar)
+            AuditRegistrar registrar)
             where TDbContext : DbContext
         {
             if (!dbContext.TriggersEnabled())
@@ -32,7 +32,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
             return GetAuditConfigurationRegistrar(dbContext) != null;
         }
 
-        private static AuditConfigurationRegistrar GetAuditConfigurationRegistrar(DbContext dbContext)
+        private static AuditRegistrar GetAuditConfigurationRegistrar(DbContext dbContext)
         {
             if (!AuditConfigurationRegistrarConditionalWeakTable.TryGetValue(dbContext, out var registrar))
             {

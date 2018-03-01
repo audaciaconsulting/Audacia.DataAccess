@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +13,6 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         public bool DoNotAuditIfNoChangesInTrackedProperties { get; internal set; }
         public AuditStrategy Strategy { get; internal set; }
 
-        public IDictionary<IEntityType, IEntityAuditConfiguration> Entities { get; internal set; }
+        public IDictionary<Type, IEntityAuditConfiguration> Entities { get; internal set; }
     }
 }

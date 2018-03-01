@@ -9,9 +9,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         internal PropertyInfo PropertyInfo;
         internal bool? InternalIgnore;
         internal string InternalFriendlyName;
-
-        //Note: If object is TEntity then it's local to type, if not it's a lookup
-        internal Expression<Func<object, string>> InternalFriendlyValueFactory;
+        internal Type InternalFriendlyValueLookupType;
+        internal Func<object, string> InternalFriendlyValueFactory;
 
         // ReSharper disable once SuggestBaseTypeForParameter
         protected PropertyAuditConfigurationBuilder(PropertyInfo propertyInfo)
@@ -43,9 +42,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return this;
         }
 
-        public PropertyAuditConfigurationBuilder<TEntity, TProperty> FriendlyValue<TValueLookup>(Func<TValueLookup, string> valueFactory)
+        public PropertyAuditConfigurationBuilder<TEntity, TProperty> FriendlyValue<TValueLookup>(
+            Func<TValueLookup, string> valueFactory)
             where TValueLookup : class
         {
+            InternalFriendlyValueLookupType = typeof(TValueLookup);
             InternalFriendlyValueFactory = o => valueFactory(o as TValueLookup);
 
             return this;

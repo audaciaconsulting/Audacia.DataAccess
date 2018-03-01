@@ -6,9 +6,10 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
     public interface IPropertyAuditConfiguration
     {
-        string FriendlyName { get; }
-        Expression<Func<object, string>> FriendlyValueFactory { get; }
+        Type FriendlyValueLookupType { get; }
+        Func<object, string> FriendlyValueFactory { get; }
         bool Ignore { get; }
+        string FriendlyName { get; }
         IProperty Property { get; }
     }
 }

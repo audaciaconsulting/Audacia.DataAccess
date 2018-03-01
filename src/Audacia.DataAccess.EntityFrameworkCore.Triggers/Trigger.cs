@@ -12,7 +12,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         {
             _triggerRegistrar = triggerRegistrar;
         }
-
+        
         public event Action<TEntity, TriggerContext> Inserting
         {
             add => _triggerRegistrar.Register(TriggerType.Inserting, value);

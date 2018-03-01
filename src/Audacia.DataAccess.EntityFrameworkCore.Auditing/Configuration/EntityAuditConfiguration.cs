@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Audacia.Core.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
@@ -22,6 +23,10 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                            .FirstOrDefault(configuration => configuration.InternalAuditStrategy != null)
                            ?.InternalAuditStrategy ?? globalStrategy;
 
+            FriendlyName = configurations
+                                   .FirstOrDefault(configuration => configuration.InternalFriendlyName != null)
+                                   ?.InternalFriendlyName ?? entityType.ClrType.Name;
+
             DescriptionFactory = configurations
                 .FirstOrDefault(configuration => configuration.InternalDescriptionFactory != null)
                 ?.InternalDescriptionFactory;
@@ -33,18 +38,20 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 
             //Loop through DB entities and find matching audit configurations
             var properties = from property in entityType.GetProperties()
+                where !property.IsPrimaryKey()
                 let matchingConfigurations = propertyConfigurationLookup[property.Name]
                 select new PropertyAuditConfiguration(property, matchingConfigurations);
 
-            Properties = properties.ToDictionary(propertyConfiguration => propertyConfiguration.Property,
+            Properties = properties.ToDictionary(propertyConfiguration => propertyConfiguration.Property.Name,
                 propertyConfiguration => propertyConfiguration as IPropertyAuditConfiguration);
         }
 
         public IEntityType EntityType { get; }
         public bool Ignore { get; }
         public AuditStrategy Strategy { get; }
+        public string FriendlyName { get; }
         public Func<object, string> DescriptionFactory { get; }
 
-        public IDictionary<IProperty, IPropertyAuditConfiguration> Properties { get; }
+        public IDictionary<string, IPropertyAuditConfiguration> Properties { get; }
     }
 }

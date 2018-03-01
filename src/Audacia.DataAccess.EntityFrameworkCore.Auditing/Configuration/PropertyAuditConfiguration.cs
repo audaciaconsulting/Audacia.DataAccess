@@ -20,15 +20,24 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             FriendlyName = configurations.FirstOrDefault(configuration => configuration.InternalFriendlyName != null)
                                ?.InternalFriendlyName ?? property.Name.SplitCamelCase();
 
-            //Later we do a check when we have value and this is null, will do ToEnumDescriptionString() for enum or just ToString() for others
-            FriendlyValueFactory = configurations
-                .FirstOrDefault(configuration => configuration.InternalFriendlyValueFactory != null)
-                ?.InternalFriendlyValueFactory;
+            var friendlyValueConfiguration = configurations
+                .FirstOrDefault(configuration => configuration.InternalFriendlyValueFactory != null);
+
+            if (friendlyValueConfiguration != null)
+            {
+                FriendlyValueFactory = friendlyValueConfiguration.InternalFriendlyValueFactory;
+
+                if (friendlyValueConfiguration.InternalFriendlyValueLookupType != null)
+                {
+                    FriendlyValueLookupType = friendlyValueConfiguration.InternalFriendlyValueLookupType;
+                }
+            }
         }
 
-        public IProperty Property { get; internal set; }
-        public bool Ignore { get; internal set; }
-        public string FriendlyName { get; internal set; }
-        public Expression<Func<object, string>> FriendlyValueFactory { get; internal set; }
+        public IProperty Property { get; }
+        public bool Ignore { get; }
+        public string FriendlyName { get; }
+        public Type FriendlyValueLookupType { get; }
+        public Func<object, string> FriendlyValueFactory { get; }
     }
 }

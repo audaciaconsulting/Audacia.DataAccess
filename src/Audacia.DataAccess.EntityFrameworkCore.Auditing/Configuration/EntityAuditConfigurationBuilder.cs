@@ -5,17 +5,12 @@ using Audacia.Core.Extensions;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    public enum AuditStrategy
-    {
-        Full,
-        ChangesOnly
-    }
-
     public abstract class EntityAuditConfigurationBuilder
     {
         internal bool? InternalIgnore;
         internal Func<object, string> InternalDescriptionFactory;
         internal AuditStrategy? InternalAuditStrategy;
+        internal string InternalFriendlyName;
 
         internal readonly IDictionary<string, PropertyAuditConfigurationBuilder> Properties =
             new Dictionary<string, PropertyAuditConfigurationBuilder>();
@@ -46,6 +41,13 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         public EntityAuditConfigurationBuilder<TEntity> Strategy(AuditStrategy strategy)
         {
             InternalAuditStrategy = strategy;
+
+            return this;
+        }
+
+        public EntityAuditConfigurationBuilder<TEntity> FriendlyName(string friendlyTypeName)
+        {
+            InternalFriendlyName = friendlyTypeName;
 
             return this;
         }
