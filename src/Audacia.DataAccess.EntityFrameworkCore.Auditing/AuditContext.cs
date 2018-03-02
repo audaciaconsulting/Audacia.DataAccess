@@ -7,7 +7,13 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
     public class AuditContext<TDbContext>
         where TDbContext : DbContext
     {
-        public IEntityAuditConfiguration Configuration { get; set; }
-        public TriggerContext<TDbContext> TriggerContext { get; set; }
+        public AuditContext(IEntityAuditConfiguration configuration, TriggerContext<TDbContext> triggerContext)
+        {
+            Configuration = configuration;
+            TriggerContext = triggerContext;
+        }
+
+        public IEntityAuditConfiguration Configuration { get; }
+        public TriggerContext<TDbContext> TriggerContext { get; }
     }
 }

@@ -6,8 +6,15 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
     public class TriggerContext<TDbContext>
         where TDbContext : DbContext
     {
-        public EntityEntry EntityEntry { get; set; }
-        public TDbContext DbContext { get; set; }
-        public EntityState InitialEntityState { get; set; }
+        public TriggerContext(EntityEntry entityEntry, TDbContext dbContext, EntityState initialEntityState)
+        {
+            EntityEntry = entityEntry;
+            DbContext = dbContext;
+            InitialEntityState = initialEntityState;
+        }
+
+        public EntityEntry EntityEntry { get; }
+        public TDbContext DbContext { get; }
+        public EntityState InitialEntityState { get; }
     }
 }

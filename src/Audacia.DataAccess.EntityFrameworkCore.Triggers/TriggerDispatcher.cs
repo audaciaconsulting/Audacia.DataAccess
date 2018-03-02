@@ -23,12 +23,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         {
             var entityType = entityEntry.Entity.GetType();
 
-            var triggerContext = new TriggerContext<TDbContext>
-            {
-                DbContext = _dbContext,
-                EntityEntry = entityEntry,
-                InitialEntityState = initialEntityState
-            };
+            var triggerContext = new TriggerContext<TDbContext>(entityEntry, _dbContext, initialEntityState);
 
             var delegates = _triggerRegistrar.Resolve(entityType, triggerType);
 

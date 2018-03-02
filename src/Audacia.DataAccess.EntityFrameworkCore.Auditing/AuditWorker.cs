@@ -82,11 +82,9 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 
         private Func<object, TriggerContext<TDbContext>, CancellationToken, Task> TransformToTrigger(
             Func<object, AuditContext<TDbContext>, CancellationToken, Task> auditAction)
-            => (obj, triggerContext, cancellationToken) => auditAction(obj, new AuditContext<TDbContext>
-            {
-                Configuration = _configuration.Entities[obj.GetType()],
-                TriggerContext = triggerContext
-            }, cancellationToken);
+            => (obj, triggerContext, cancellationToken) => auditAction(obj,
+                new AuditContext<TDbContext>(_configuration.Entities[obj.GetType()], triggerContext),
+                cancellationToken);
 
         private AuditEntryWrapper PopulateEntryWrapper(object entity, AuditContext<TDbContext> context,
             AuditState state)
