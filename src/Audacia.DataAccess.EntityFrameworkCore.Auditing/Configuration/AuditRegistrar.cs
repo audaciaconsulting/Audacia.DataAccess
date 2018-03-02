@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Audacia.DataAccess.EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
 
 namespace
@@ -7,17 +9,37 @@ namespace
     public sealed class AuditRegistrar<TDbContext>
         where TDbContext : DbContext
     {
-        internal IList<IAuditConfiguration<TDbContext>> Configurations = new List<IAuditConfiguration<TDbContext>>();
-        internal IList<IAuditSink> Sinks = new List<IAuditSink>();
+        private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
 
-        public void AddConfiguration(IAuditConfiguration<TDbContext> configuration)
+        private readonly ICollection<IAuditSink> _sinks = new List<IAuditSink>();
+
+        private readonly ICollection<IAuditConfiguration<TDbContext>> _configurations =
+            new List<IAuditConfiguration<TDbContext>>();
+
+        public AuditRegistrar(TriggerRegistrar<TDbContext> triggerRegistrar)
         {
-            Configurations.Add(configuration);
+            _triggerRegistrar = triggerRegistrar;
         }
 
-        public void AddSink(IAuditSink sink)
+        public AuditRegistrar<TDbContext> AddSink(IAuditSink sink)
         {
-            Sinks.Add(sink);
+            _sinks.Add(sink);
+
+            return this;
+        }
+
+        public AuditRegistrar<TDbContext> AddConfiguration(IAuditConfiguration<TDbContext> configuration)
+        {
+            _configurations.Add(configuration);
+
+            return this;
+        }
+
+        public void Enable()
+        {
+            var auditor = new Auditor<TDbContext>(_configurations, _sinks, _triggerRegistrar);
+
+            auditor.Init();
         }
     }
 }

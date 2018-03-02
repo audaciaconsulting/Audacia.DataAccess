@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Audacia.Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
     public static class DbContextExtensions
     {
-        private static readonly ConditionalWeakTable<DbContext, TriggerRegistrar> TriggerRegistrarConditionalWeakTable = new ConditionalWeakTable<DbContext, TriggerRegistrar>();
+        private static readonly ConditionalWeakTable<DbContext, object> TriggerRegistrarConditionalWeakTable =
+            new ConditionalWeakTable<DbContext, object>();
 
-        public static TDbContext EnableTriggers<TDbContext>(this TDbContext dbContext, TriggerRegistrar registrar)
+        public static TDbContext EnableTriggers<TDbContext>(this TDbContext dbContext,
+            TriggerRegistrar<TDbContext> registrar)
             where TDbContext : DbContext
         {
             TriggerRegistrarConditionalWeakTable.Add(dbContext, registrar);
@@ -25,7 +25,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             return GetTriggerRegistrar(dbContext) != null;
         }
 
-        private static TriggerRegistrar GetTriggerRegistrar(DbContext dbContext)
+        private static TriggerRegistrar<TDbContext> GetTriggerRegistrar<TDbContext>(TDbContext dbContext)
+            where TDbContext : DbContext
         {
             if (!TriggerRegistrarConditionalWeakTable.TryGetValue(dbContext, out var registrar))
             {
@@ -33,76 +34,24 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
                     $"You must call {nameof(EnableTriggers)} on the context before you can use triggers.");
             }
 
-            return registrar;
+            return registrar as TriggerRegistrar<TDbContext>;
         }
-
-        public static Trigger<TEntity> Trigger<TEntity>(this DbContext dbContext)
-            where TEntity : class
-        {
-            return new Trigger<TEntity>(GetTriggerRegistrar(dbContext));
-        }
-
-        public static void AddSoftDeleteTrigger<TUserId>(this DbContext dbContext,
-            Func<TUserId> userIdFactory)
-        {
-            dbContext.Trigger<ISoftDeletable<TUserId>>().Deleting += (deletable, context) =>
-            {
-                context.EntityEntry.State = EntityState.Modified;
-                deletable.Deleted = DateTimeOffsetProvider.Instance.Now;
-                deletable.DeletedBy = userIdFactory();
-            };
-        }
-
-        public static void AddCreateTrigger<TUserId>(this DbContext dbContext,
-            Func<TUserId> userIdFactory)
-        {
-            dbContext.Trigger<ICreatable<TUserId>>().Inserting += (creatable, context) =>
-            {
-                creatable.Created = DateTimeOffsetProvider.Instance.Now;
-                creatable.CreatedBy = userIdFactory();
-            };
-        }
-
-        public static void AddModifyTrigger<TUserId>(this DbContext dbContext,
-            Func<TUserId> userIdFactory)
-        {
-            dbContext.Trigger<IModifiable<TUserId>>().Updating += (modifiable, context) =>
-            {
-                modifiable.Modified = DateTimeOffsetProvider.Instance.Now;
-                modifiable.ModifiedBy = userIdFactory();
-            };
-        }
-
-        public static int SaveChangesWithTriggers<TDbContext>(this TDbContext dbContext) 
-            where TDbContext : DbContext =>
-            dbContext.SaveChangesWithTriggers(true);
-
-        public static int SaveChangesWithTriggers<TDbContext>(this TDbContext dbContext, bool acceptAllChangesOnSuccess)
-            where TDbContext : DbContext
-        {
-            var invoker = new TriggerInvoker(dbContext, GetTriggerRegistrar(dbContext));
-
-            invoker.Before();
-            var result = dbContext.SaveChanges(acceptAllChangesOnSuccess);
-            invoker.After();
-
-            return result;
-        }
-
+        
         public static Task<int> SaveChangesWithTriggersAsync<TDbContext>(this TDbContext dbContext,
             CancellationToken cancellationToken = default)
-            where TDbContext : DbContext => 
+            where TDbContext : DbContext =>
             dbContext.SaveChangesWithTriggersAsync(true, cancellationToken);
 
-        public static Task<int> SaveChangesWithTriggersAsync<TDbContext>(this TDbContext dbContext, bool acceptAllChangesOnSuccess,
+        public static async Task<int> SaveChangesWithTriggersAsync<TDbContext>(this TDbContext dbContext,
+            bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default)
             where TDbContext : DbContext
         {
-            var invoker = new TriggerInvoker(dbContext, GetTriggerRegistrar(dbContext));
+            var invoker = new TriggerInvoker<TDbContext>(dbContext, GetTriggerRegistrar(dbContext));
 
-            invoker.Before();
-            var result = dbContext.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-            invoker.After();
+            await invoker.BeforeAsync(cancellationToken);
+            var result = await dbContext.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            await invoker.AfterAsync(cancellationToken);
 
             return result;
         }

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Audacia.Core.Extensions;
 using Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
+using Audacia.DataAccess.EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
-    internal class AuditConfigurationWorker<TDbContext>
+    internal class AuditWorker<TDbContext>
         where TDbContext : DbContext
     {
-        #region helpers
-
         private class AuditEntryWrapper
         {
             public AuditEntry AuditEntry { get; set; }
@@ -28,17 +29,67 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
             public bool IsModified { get; set; }
         }
 
+        private readonly IAuditConfiguration<TDbContext> _configuration;
+        private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
+        private readonly IEnumerable<IAuditSink> _sinks;
+        private IDictionary<TriggerType, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>> _triggers;
+
         private readonly IDictionary<object, AuditEntryWrapper> _entityEntryWrappers =
             new Dictionary<object, AuditEntryWrapper>();
 
-        private readonly AuditConfiguration<TDbContext> _configuration;
-
-        public AuditConfigurationWorker(AuditConfiguration<TDbContext> configuration)
+        public AuditWorker(IAuditConfiguration<TDbContext> configuration, TriggerRegistrar<TDbContext> triggerRegistrar,
+            IEnumerable<IAuditSink> sinks)
         {
             _configuration = configuration;
+            _triggerRegistrar = triggerRegistrar;
+            _sinks = sinks;
         }
 
-        private AuditEntryWrapper PopulateEntryWrapper(object entity, AuditContext context, AuditState state)
+        public void Init()
+        {
+            //Register trigger
+            _triggers = new Dictionary<TriggerType, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>>
+            {
+                {TriggerType.Inserting, TransformToTrigger(InstertingAsync)},
+                {TriggerType.Inserted, TransformToTrigger(InsertedAsync)},
+                {TriggerType.Updating, TransformToTrigger(UpdatingAsync)},
+                {TriggerType.Updated, TransformToTrigger(UpdatedAsync)},
+                {TriggerType.Deleting, TransformToTrigger(DeletingAsync)}
+            };
+
+            foreach (var trigger in _triggers)
+            {
+                _triggerRegistrar.Register(trigger.Key, trigger.Value);
+            }
+
+            _triggerRegistrar.After += async (_, cancellationToken) =>
+            {
+                var auditEntries = _entityEntryWrappers.Values.Select(wrapper => wrapper.AuditEntry).ToList();
+
+                if (_configuration.DoNotAuditIfNoChangesInTrackedProperties)
+                {
+                    auditEntries = auditEntries.Where(auditEntry => auditEntry.Properties.Any()).ToList();
+                }
+
+                foreach (var item in _sinks)
+                {
+                    await item.HandleAsync(auditEntries, cancellationToken);
+                }
+            };
+        }
+
+        #region helpers
+
+        private Func<object, TriggerContext<TDbContext>, CancellationToken, Task> TransformToTrigger(
+            Func<object, AuditContext<TDbContext>, CancellationToken, Task> auditAction)
+            => (obj, triggerContext, cancellationToken) => auditAction(obj, new AuditContext<TDbContext>
+            {
+                Configuration = _configuration.Entities[obj.GetType()],
+                TriggerContext = triggerContext
+            }, cancellationToken);
+
+        private AuditEntryWrapper PopulateEntryWrapper(object entity, AuditContext<TDbContext> context,
+            AuditState state)
         {
             var type = entity.GetType();
 
@@ -85,7 +136,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
             };
         }
 
-        private static string ResolveFriendlyValue(object entity, object value,
+        private static async Task<string> ResolveFriendlyValueAsync(object entity, object value,
             IPropertyAuditConfiguration propertyConfiguration, DbContext context)
         {
             if (value == null)
@@ -95,7 +146,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 
             if (propertyConfiguration.FriendlyValueLookupType != null)
             {
-                var lookupObject = context.Find(propertyConfiguration.FriendlyValueLookupType, value);
+                var lookupObject = await context.FindAsync(propertyConfiguration.FriendlyValueLookupType, value);
 
                 return propertyConfiguration.FriendlyValueFactory(lookupObject);
             }
@@ -120,27 +171,29 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
             return value.ToString();
         }
 
-        private static void PopulateNewValue(AuditEntryProperty auditEntryProperty, PropertyEntryWrapper wrapper,
-            object entity, AuditContext context)
+        private static async Task PopulateNewValueAsync(AuditEntryProperty auditEntryProperty,
+            PropertyEntryWrapper wrapper,
+            object entity, AuditContext<TDbContext> context)
         {
             var newValue = wrapper.NewValue;
             auditEntryProperty.NewValue = newValue;
-            auditEntryProperty.FriendlyNewValue = ResolveFriendlyValue(entity, newValue,
+            auditEntryProperty.FriendlyNewValue = await ResolveFriendlyValueAsync(entity, newValue,
                 wrapper.Configuration,
                 context.TriggerContext.DbContext);
         }
 
-        private static void PopulateOldValue(AuditEntryProperty auditEntryProperty, PropertyEntryWrapper wrapper,
-            object entity, AuditContext context)
+        private static async Task PopulateOldValueAsync(AuditEntryProperty auditEntryProperty,
+            PropertyEntryWrapper wrapper,
+            object entity, AuditContext<TDbContext> context)
         {
             var oldValue = wrapper.OldValue;
             auditEntryProperty.OldValue = oldValue;
-            auditEntryProperty.FriendlyOldValue = ResolveFriendlyValue(entity, oldValue,
+            auditEntryProperty.FriendlyOldValue = await ResolveFriendlyValueAsync(entity, oldValue,
                 wrapper.Configuration,
                 context.TriggerContext.DbContext);
         }
 
-        private static void PopulatePrimaryKeys(AuditEntry auditEntry, AuditContext context)
+        private static void PopulatePrimaryKeys(AuditEntry auditEntry, AuditContext<TDbContext> context)
         {
             //Populate primary key values as these may have been DB generated so not present before
             var primaryKeyValues = from property in context.TriggerContext.EntityEntry.Properties
@@ -154,11 +207,12 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 
         #region inserts
 
-        public void Insterting(object entity, AuditContext context)
+        private Task InstertingAsync(object entity, AuditContext<TDbContext> context,
+            CancellationToken cancellationToken)
         {
             if (context.Configuration.Ignore)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var wrapper = PopulateEntryWrapper(entity, context, AuditState.Added);
@@ -172,9 +226,12 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                         InitProperty(propertyWrapper.Configuration);
                 }
             }
+
+            return Task.CompletedTask;
         }
 
-        public void Inserted(object entity, AuditContext context)
+        private async Task InsertedAsync(object entity, AuditContext<TDbContext> context,
+            CancellationToken cancellationToken)
         {
             if (context.Configuration.Ignore)
             {
@@ -192,7 +249,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 if (wrapper.AuditEntry.Properties.TryGetValue(propertyWrapper.Configuration.Property.Name,
                     out var auditEntryProperty))
                 {
-                    PopulateNewValue(auditEntryProperty, propertyWrapper, entity, context);
+                    await PopulateNewValueAsync(auditEntryProperty, propertyWrapper, entity, context);
                 }
             }
 
@@ -204,7 +261,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 
         #region updates
 
-        public void Updating(object entity, AuditContext context)
+        private async Task UpdatingAsync(object entity, AuditContext<TDbContext> context,
+            CancellationToken cancellationToken)
         {
             if (context.Configuration.Ignore)
             {
@@ -221,14 +279,15 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                     var auditEntryProperty = InitProperty(propertyWrapper.Configuration);
 
                     //Populate here as may access old relationship
-                    PopulateOldValue(auditEntryProperty, propertyWrapper, entity, context);
+                    await PopulateOldValueAsync(auditEntryProperty, propertyWrapper, entity, context);
 
                     wrapper.AuditEntry.Properties[propertyWrapper.Configuration.Property.Name] = auditEntryProperty;
                 }
             }
         }
 
-        public void Updated(object entity, AuditContext context)
+        private async Task UpdatedAsync(object entity, AuditContext<TDbContext> context,
+            CancellationToken cancellationToken)
         {
             if (context.Configuration.Ignore)
             {
@@ -246,7 +305,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 if (wrapper.AuditEntry.Properties.TryGetValue(propertyWrapper.Configuration.Property.Name,
                     out var auditEntryProperty))
                 {
-                    PopulateNewValue(auditEntryProperty, propertyWrapper, entity, context);
+                    await PopulateNewValueAsync(auditEntryProperty, propertyWrapper, entity, context);
                 }
             }
 
@@ -257,7 +316,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 
         #region deleting
 
-        public void Deleting(object entity, AuditContext context)
+        private async Task DeletingAsync(object entity, AuditContext<TDbContext> context,
+            CancellationToken cancellationToken)
         {
             if (context.Configuration.Ignore)
             {
@@ -274,7 +334,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                     var auditEntryProperty = InitProperty(propertyWrapper.Configuration);
 
                     //Populate here as may access old relationship
-                    PopulateOldValue(auditEntryProperty, propertyWrapper, entity, context);
+                    await PopulateOldValueAsync(auditEntryProperty, propertyWrapper, entity, context);
 
                     wrapper.AuditEntry.Properties[propertyWrapper.Configuration.Property.Name] = auditEntryProperty;
                 }

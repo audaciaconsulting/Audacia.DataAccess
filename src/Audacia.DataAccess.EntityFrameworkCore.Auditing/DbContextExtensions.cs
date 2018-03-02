@@ -9,12 +9,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
     public static class DbContextExtensions
     {
-        private static readonly ConditionalWeakTable<DbContext, AuditRegistrar>
-            AuditConfigurationRegistrarConditionalWeakTable =
-                new ConditionalWeakTable<DbContext, AuditRegistrar>();
-
         public static TDbContext EnableAuditing<TDbContext>(this TDbContext dbContext,
-            AuditRegistrar registrar)
+            AuditRegistrar<TDbContext> registrar)
             where TDbContext : DbContext
         {
             if (!dbContext.TriggersEnabled())
@@ -22,34 +18,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 throw new ApplicationException("You must enable triggers to use auditing.");
             }
 
-            AuditConfigurationRegistrarConditionalWeakTable.Add(dbContext, registrar);
-
-            return dbContext;
-        }
-
-        public static bool AuditingEnabled(this DbContext dbContext)
-        {
-            return GetAuditConfigurationRegistrar(dbContext) != null;
-        }
-
-        private static AuditRegistrar GetAuditConfigurationRegistrar(DbContext dbContext)
-        {
-            if (!AuditConfigurationRegistrarConditionalWeakTable.TryGetValue(dbContext, out var registrar))
-            {
-                throw new KeyNotFoundException(
-                    $"You must call {nameof(EnableAuditing)} on the context before you can use audit.");
-            }
-
-            return registrar;
-        }
-
-        public static TDbContext Audit<TDbContext>(this TDbContext dbContext,
-            IAuditConfiguration<TDbContext> configuration)
-            where TDbContext : DbContext
-        {
-            var registrar = GetAuditConfigurationRegistrar(dbContext);
-            registrar.AddConfiguration(configuration);
-
+            registrar.Enable();
+            
             return dbContext;
         }
     }

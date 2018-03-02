@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    public class TriggerContext
+    public class TriggerContext<TDbContext>
+        where TDbContext : DbContext
     {
         public EntityEntry EntityEntry { get; set; }
-        public DbContext DbContext { get; set; }
+        public TDbContext DbContext { get; set; }
+        public EntityState InitialEntityState { get; set; }
     }
 }

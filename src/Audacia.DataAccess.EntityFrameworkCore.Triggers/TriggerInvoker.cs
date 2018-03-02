@@ -1,22 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    internal class TriggerInvoker
+    internal class TriggerInvoker<TDbContext>
+        where TDbContext : DbContext
     {
-        private readonly TriggerDispatcher _dispatcher;
+        private readonly TriggerDispatcher<TDbContext> _dispatcher;
         private readonly ICollection<EntityEntry> _entityEntries;
+        private readonly IDictionary<object, EntityState> _initalEntityStates;
 
-        internal TriggerInvoker(DbContext dbContext, TriggerRegistrar registrar)
+        internal TriggerInvoker(TDbContext dbContext, TriggerRegistrar<TDbContext> registrar)
         {
-            _dispatcher = new TriggerDispatcher(dbContext, registrar);
+            _dispatcher = new TriggerDispatcher<TDbContext>(dbContext, registrar);
             _entityEntries = dbContext.ChangeTracker.Entries().ToList();
+            _initalEntityStates = new Dictionary<object, EntityState>();
         }
         
-        public void Before()
+        public async Task BeforeAsync(CancellationToken cancellationToken)
         {
             bool TryConvertEntityStateToBeforeTriggerType(EntityState entityState, out TriggerType triggerType)
             {
@@ -38,16 +43,19 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
                 }
             }
 
+            await _dispatcher.DispatchBeforeAsync(cancellationToken);
             foreach (var entityEntry in _entityEntries)
             {
+                _initalEntityStates[entityEntry.Entity] = entityEntry.State;
+
                 if(TryConvertEntityStateToBeforeTriggerType(entityEntry.State, out var triggerType))
                 {
-                    _dispatcher.Dispatch(triggerType, entityEntry);
+                    await _dispatcher.DispatchAsync(triggerType, entityEntry, entityEntry.State, cancellationToken);
                 }
             }
         }
         
-        public void After()
+        public async Task AfterAsync(CancellationToken cancellationToken)
         {
             bool TryConvertEntityStateToAfterTriggerType(EntityState entityState, out TriggerType triggerType)
             {
@@ -71,11 +79,14 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 
             foreach (var entityEntry in _entityEntries)
             {
-                if (TryConvertEntityStateToAfterTriggerType(entityEntry.State, out var triggerType))
+                var initalEntityState = _initalEntityStates[entityEntry.Entity];
+
+                if (TryConvertEntityStateToAfterTriggerType(initalEntityState, out var triggerType))
                 {
-                    _dispatcher.Dispatch(triggerType, entityEntry);
+                    await _dispatcher.DispatchAsync(triggerType, entityEntry, initalEntityState, cancellationToken);
                 }
             }
+            await _dispatcher.DispatchAfterAsync(cancellationToken);
         }
     }
 }

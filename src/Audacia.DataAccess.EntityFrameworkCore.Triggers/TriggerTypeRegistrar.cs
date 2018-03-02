@@ -1,49 +1,52 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    public class Trigger<TEntity>
-        where TEntity : class
+    public class TriggerTypeRegistrar<TDbContext, T>
+        where T : class
+        where TDbContext : DbContext
     {
-        private readonly TriggerRegistrar _triggerRegistrar;
+        private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
 
-        internal Trigger(TriggerRegistrar triggerRegistrar)
+        internal TriggerTypeRegistrar(TriggerRegistrar<TDbContext> triggerRegistrar)
         {
             _triggerRegistrar = triggerRegistrar;
         }
         
-        public event Action<TEntity, TriggerContext> Inserting
+        public event Func<T, TriggerContext<TDbContext>, CancellationToken, Task> InsertingAsync
         {
             add => _triggerRegistrar.Register(TriggerType.Inserting, value);
             remove => _triggerRegistrar.Revoke(TriggerType.Inserting, value);
         }
 
-        public event Action<TEntity, TriggerContext> Inserted
+        public event Func<T, TriggerContext<TDbContext>, CancellationToken, Task> InsertedAsync
         {
             add => _triggerRegistrar.Register(TriggerType.Inserted, value);
             remove => _triggerRegistrar.Revoke(TriggerType.Inserted, value);
         }
 
-        public event Action<TEntity, TriggerContext> Updating
+        public event Func<T, TriggerContext<TDbContext>, CancellationToken, Task> UpdatingAsync
         {
             add => _triggerRegistrar.Register(TriggerType.Updating, value);
             remove => _triggerRegistrar.Revoke(TriggerType.Updating, value);
         }
 
-        public event Action<TEntity, TriggerContext> Updated
+        public event Func<T, TriggerContext<TDbContext>, CancellationToken, Task> UpdatedAsync
         {
             add => _triggerRegistrar.Register(TriggerType.Updated, value);
             remove => _triggerRegistrar.Revoke(TriggerType.Updated, value);
         }
 
-        public event Action<TEntity, TriggerContext> Deleting
+        public event Func<T, TriggerContext<TDbContext>, CancellationToken, Task> DeletingAsync
         {
             add => _triggerRegistrar.Register(TriggerType.Deleting, value);
             remove => _triggerRegistrar.Revoke(TriggerType.Deleting, value);
         }
 
-        public event Action<TEntity, TriggerContext> Deleted
+        public event Func<T, TriggerContext<TDbContext>, CancellationToken, Task> DeletedAsync
         {
             add => _triggerRegistrar.Register(TriggerType.Deleted, value);
             remove => _triggerRegistrar.Revoke(TriggerType.Deleted, value);
