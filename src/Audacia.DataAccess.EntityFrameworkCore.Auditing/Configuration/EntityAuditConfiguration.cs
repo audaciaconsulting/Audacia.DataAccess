@@ -10,7 +10,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
     public class EntityAuditConfiguration : IEntityAuditConfiguration
     {
         internal EntityAuditConfiguration(IEntityType entityType,
-            ICollection<EntityAuditConfigurationBuilder> configurations,
+            ICollection<TypeAuditConfigurationBuilder> configurations,
             AuditStrategy globalStrategy)
         {
             EntityType = entityType;

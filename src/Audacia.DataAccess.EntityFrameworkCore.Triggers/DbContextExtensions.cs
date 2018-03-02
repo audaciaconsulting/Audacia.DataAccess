@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,13 +37,15 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 
             return registrar as TriggerRegistrar<TDbContext>;
         }
-        
+
         public static Task<int> SaveChangesWithTriggersAsync<TDbContext>(this TDbContext dbContext,
+            Func<bool, CancellationToken, Task<int>> baseSaveChangesAsync,
             CancellationToken cancellationToken = default)
             where TDbContext : DbContext =>
-            dbContext.SaveChangesWithTriggersAsync(true, cancellationToken);
+            dbContext.SaveChangesWithTriggersAsync(baseSaveChangesAsync, true, cancellationToken);
 
         public static async Task<int> SaveChangesWithTriggersAsync<TDbContext>(this TDbContext dbContext,
+            Func<bool, CancellationToken, Task<int>> baseSaveChangesAsync,
             bool acceptAllChangesOnSuccess,
             CancellationToken cancellationToken = default)
             where TDbContext : DbContext
@@ -50,7 +53,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             var invoker = new TriggerInvoker<TDbContext>(dbContext, GetTriggerRegistrar(dbContext));
 
             await invoker.BeforeAsync(cancellationToken);
-            var result = await dbContext.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            var result = await baseSaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
             await invoker.AfterAsync(cancellationToken);
 
             return result;

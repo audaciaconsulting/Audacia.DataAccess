@@ -1,30 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using Audacia.Core.Extensions;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    public abstract class EntityAuditConfigurationBuilder
-    {
-        internal bool? InternalIgnore;
-        internal Func<object, string> InternalDescriptionFactory;
-        internal AuditStrategy? InternalAuditStrategy;
-        internal string InternalFriendlyName;
-
-        internal readonly IDictionary<string, PropertyAuditConfigurationBuilder> Properties =
-            new Dictionary<string, PropertyAuditConfigurationBuilder>();
-
-        protected EntityAuditConfigurationBuilder(Type typeOfEntity)
-        {
-            TypeOfEntity = typeOfEntity;
-        }
-
-        public Type TypeOfEntity { get; }
-    }
-
-    public class EntityAuditConfigurationBuilder<TEntity> : EntityAuditConfigurationBuilder
-        where TEntity : class, new()
+    public class EntityAuditConfigurationBuilder<TEntity> : TypeAuditConfigurationBuilder
+        where TEntity : class
     {
         public EntityAuditConfigurationBuilder()
             : base(typeof(TEntity))

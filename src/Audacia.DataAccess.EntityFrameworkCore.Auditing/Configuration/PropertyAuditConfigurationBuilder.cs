@@ -19,30 +19,30 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         }
     }
 
-    public class PropertyAuditConfigurationBuilder<TEntity, TProperty> : PropertyAuditConfigurationBuilder
-        where TEntity : class, new()
+    public class PropertyAuditConfigurationBuilder<T, TProperty> : PropertyAuditConfigurationBuilder
+        where T : class
     {
         public PropertyAuditConfigurationBuilder(PropertyInfo propertyInfo)
             : base(propertyInfo)
         {
         }
 
-        public PropertyAuditConfigurationBuilder<TEntity, TProperty> FriendlyName(string friendlyName)
+        public PropertyAuditConfigurationBuilder<T, TProperty> FriendlyName(string friendlyName)
         {
             InternalFriendlyName = friendlyName;
 
             return this;
         }
 
-        public PropertyAuditConfigurationBuilder<TEntity, TProperty> FriendlyValue(
-            Func<TEntity, string> valueFactory)
+        public PropertyAuditConfigurationBuilder<T, TProperty> FriendlyValue(
+            Func<T, string> valueFactory)
         {
-            InternalFriendlyValueFactory = o => valueFactory(o as TEntity);
+            InternalFriendlyValueFactory = o => valueFactory(o as T);
 
             return this;
         }
 
-        public PropertyAuditConfigurationBuilder<TEntity, TProperty> FriendlyValue<TValueLookup>(
+        public PropertyAuditConfigurationBuilder<T, TProperty> FriendlyValue<TValueLookup>(
             Func<TValueLookup, string> valueFactory)
             where TValueLookup : class
         {
@@ -52,7 +52,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return this;
         }
 
-        public PropertyAuditConfigurationBuilder<TEntity, TProperty> Ignore(bool ignore = true)
+        public PropertyAuditConfigurationBuilder<T, TProperty> Ignore(bool ignore = true)
         {
             InternalIgnore = ignore;
 

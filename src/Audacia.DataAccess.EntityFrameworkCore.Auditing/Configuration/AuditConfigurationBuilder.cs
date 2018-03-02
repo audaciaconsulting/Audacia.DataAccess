@@ -10,8 +10,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
     {
         private bool _doNotAuditIfNoChangesInTrackedProperties;
         private AuditStrategy _strategy = AuditStrategy.Partial;
-        private readonly IDictionary<Type, EntityAuditConfigurationBuilder> _entites =
-            new Dictionary<Type, EntityAuditConfigurationBuilder>();
+        private readonly IDictionary<Type, TypeAuditConfigurationBuilder> _types =
+            new Dictionary<Type, TypeAuditConfigurationBuilder>();
         
         public AuditConfigurationBuilder<TDbContext> DoNotAuditIfNoChangesInTrackedProperties(bool doNotAudit = true)
         {
@@ -27,25 +27,50 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return this;
         }
 
-        public EntityAuditConfigurationBuilder<TEntity> For<TEntity>()
+        public EntityAuditConfigurationBuilder<TEntity> Entity<TEntity>()
             where TEntity : class, new()
         {
             var entityType = typeof(TEntity);
 
-            if (!_entites.TryGetValue(entityType, out var entityBuilder))
+            if (!_types.TryGetValue(entityType, out var entityBuilder))
             {
                 entityBuilder = new EntityAuditConfigurationBuilder<TEntity>();
-                _entites.Add(entityType, entityBuilder);
+                _types.Add(entityType, entityBuilder);
             }
 
             return entityBuilder as EntityAuditConfigurationBuilder<TEntity>;
         }
 
-        public AuditConfigurationBuilder<TDbContext> For<TEntity>(
+        public AuditConfigurationBuilder<TDbContext> Entity<TEntity>(
             Action<EntityAuditConfigurationBuilder<TEntity>> entityBuilderAction)
             where TEntity : class, new()
         {
-            var entityBuilder = For<TEntity>();
+            var entityBuilder = Entity<TEntity>();
+
+            entityBuilderAction(entityBuilder);
+
+            return this;
+        }
+
+        public TypeAuditConfigurationBuilder<T> Type<T>()
+            where T : class, new()
+        {
+            var entityType = typeof(T);
+
+            if (!_types.TryGetValue(entityType, out var entityBuilder))
+            {
+                entityBuilder = new TypeAuditConfigurationBuilder<T>();
+                _types.Add(entityType, entityBuilder);
+            }
+
+            return entityBuilder as TypeAuditConfigurationBuilder<T>;
+        }
+
+        public AuditConfigurationBuilder<TDbContext> Type<T>(
+            Action<TypeAuditConfigurationBuilder<T>> entityBuilderAction)
+            where T : class, new()
+        {
+            var entityBuilder = Type<T>();
 
             entityBuilderAction(entityBuilder);
 
@@ -59,7 +84,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             {
                 //Loop through DB entities and find matching audit configurations
                 var entities = from entityType in context.Model.GetEntityTypes()
-                    let matchingConfigurations = (from pair in _entites
+                    let matchingConfigurations = (from pair in _types
                         where pair.Key.IsAssignableFrom(entityType.ClrType)
                         orderby GetTypeSortOrder(pair.Value, entityType.ClrType)
                         select pair.Value).ToList()
@@ -75,7 +100,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             }
         }
 
-        private static int GetTypeSortOrder(EntityAuditConfigurationBuilder configuration, Type type)
+        private static int GetTypeSortOrder(TypeAuditConfigurationBuilder configuration, Type type)
         {
             //Type itself always wins
             if (configuration.TypeOfEntity == type)
