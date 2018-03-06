@@ -28,7 +28,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         }
 
         public EntityAuditConfigurationBuilder<TEntity> Entity<TEntity>()
-            where TEntity : class, new()
+            where TEntity : class
         {
             var entityType = typeof(TEntity);
 
@@ -43,7 +43,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 
         public AuditConfigurationBuilder<TDbContext> Entity<TEntity>(
             Action<EntityAuditConfigurationBuilder<TEntity>> entityBuilderAction)
-            where TEntity : class, new()
+            where TEntity : class
         {
             var entityBuilder = Entity<TEntity>();
 
@@ -53,26 +53,26 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         }
 
         public TypeAuditConfigurationBuilder<T> Type<T>()
-            where T : class, new()
+            where T : class
         {
-            var entityType = typeof(T);
+            var type = typeof(T);
 
-            if (!_types.TryGetValue(entityType, out var entityBuilder))
+            if (!_types.TryGetValue(type, out var typeBuilder))
             {
-                entityBuilder = new TypeAuditConfigurationBuilder<T>();
-                _types.Add(entityType, entityBuilder);
+                typeBuilder = new TypeAuditConfigurationBuilder<T>();
+                _types.Add(type, typeBuilder);
             }
 
-            return entityBuilder as TypeAuditConfigurationBuilder<T>;
+            return typeBuilder as TypeAuditConfigurationBuilder<T>;
         }
 
         public AuditConfigurationBuilder<TDbContext> Type<T>(
-            Action<TypeAuditConfigurationBuilder<T>> entityBuilderAction)
-            where T : class, new()
+            Action<TypeAuditConfigurationBuilder<T>> typeBuilderAction)
+            where T : class
         {
-            var entityBuilder = Type<T>();
+            var typeBuilder = Type<T>();
 
-            entityBuilderAction(entityBuilder);
+            typeBuilderAction(typeBuilder);
 
             return this;
         }

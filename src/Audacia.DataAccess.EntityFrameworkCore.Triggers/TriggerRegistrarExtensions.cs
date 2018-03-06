@@ -9,7 +9,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
     {
         public static void AddSoftDeleteTrigger<TUserId, TDbContext>(this TriggerRegistrar<TDbContext> registrar,
             Func<TUserId> userIdFactory)
-            where TDbContext : DbContext
+            where TDbContext : DbContext where TUserId : struct
         {
             registrar.Type<ISoftDeletable<TUserId>>().DeletingAsync += (deletable, context, _) =>
             {
@@ -36,7 +36,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 
         public static void AddModifyTrigger<TUserId, TDbContext>(this TriggerRegistrar<TDbContext> registrar,
             Func<TUserId> userIdFactory) 
-            where TDbContext : DbContext
+            where TDbContext : DbContext where TUserId : struct
         {
             registrar.Type<IModifiable<TUserId>>().UpdatingAsync += (modifiable, context, _) =>
             {

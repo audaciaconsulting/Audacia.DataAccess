@@ -31,14 +31,24 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
                 @delegate?.Invoke(entityEntry.Entity, triggerContext, cancellationToken)));
         }
 
-        public Task DispatchBeforeAsync(CancellationToken cancellationToken)
+        public async Task DispatchBeforeAsync(CancellationToken cancellationToken)
         {
-            return _triggerRegistrar.ResolveBefore()?.Invoke(_dbContext, cancellationToken);
+            var func = _triggerRegistrar.ResolveBefore();
+
+            if (func != null)
+            {
+                await func.Invoke(_dbContext, cancellationToken);
+            }
         }
 
-        public Task DispatchAfterAsync(CancellationToken cancellationToken)
+        public async Task DispatchAfterAsync(CancellationToken cancellationToken)
         {
-            return _triggerRegistrar.ResolveAfter()?.Invoke(_dbContext, cancellationToken);
+            var func = _triggerRegistrar.ResolveAfter();
+
+            if (func != null)
+            {
+                await func.Invoke(_dbContext, cancellationToken);
+            }
         }
     }
 }

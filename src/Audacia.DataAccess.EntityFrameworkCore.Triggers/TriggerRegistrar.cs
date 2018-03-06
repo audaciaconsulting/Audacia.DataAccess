@@ -86,7 +86,15 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             Task GenericisedAction(object obj, TriggerContext<TDbContext> context,
                 CancellationToken cancellationToken) => action(obj as T, context, cancellationToken);
 
-            _triggers[key] += GenericisedAction;
+            if (!_triggers.ContainsKey(key))
+            {
+                _triggers[key] = GenericisedAction;
+            }
+            else
+            {
+                _triggers[key] += GenericisedAction;
+            }
+
             _delegateCache[action] = GenericisedAction;
         }
 
