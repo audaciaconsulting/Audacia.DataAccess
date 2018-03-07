@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Audacia.Commands" Version="0.1.18047.17193" />
-    <PackageReference Include="Audacia.Core" Version="0.1.18058.17755" />
+    <PackageReference Include="Audacia.Commands" Version="0.1.18064.17987" />
+    <PackageReference Include="Audacia.Core" Version="0.1.18066.18157" />
   </ItemGroup>
 
   <ItemGroup>

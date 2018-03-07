@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Audacia.Core" Version="0.1.18058.17755" />
+    <PackageReference Include="Audacia.Core" Version="0.1.18066.18157" />
   </ItemGroup>
 
 </Project>

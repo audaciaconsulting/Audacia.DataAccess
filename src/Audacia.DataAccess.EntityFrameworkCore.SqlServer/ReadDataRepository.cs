@@ -22,32 +22,38 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
     {
         private readonly TContext _context;
         private readonly StoredProcedureBuilder _storedProcedureBuilder;
+        private bool _trackChanges;
 
         public ReadDataRepository(TContext context, StoredProcedureBuilder storedProcedureBuilder)
         {
             _context = context;
             _storedProcedureBuilder = storedProcedureBuilder;
         }
-                
+
+        public DisposableSwitch BeginTrackChanges()
+        {
+            return new DisposableSwitch(() => _trackChanges = true, () => _trackChanges = false);
+        }
+
         public async Task<bool> AllAsync<T>(IQuerySpecification<T> specification,
             CancellationToken cancellationToken = new CancellationToken()) where T : class
-        { 
+        {
             if (specification.Filter == null)
             {
                 // no filter has been provided
                 return false;
             }
 
-            var query = ApplyIncludes(specification);
-            
+            var query = ApplyIncludes(specification).AsNoTracking();
+
             return await query.AllAsync(specification.Filter.Expression, cancellationToken);
         }
-        
+
         public async Task<bool> AnyAsync<T>(IQuerySpecification<T> specification,
             CancellationToken cancellationToken = new CancellationToken()) where T : class
         {
-            var query = ApplyIncludesAndFilter(specification);
-            
+            var query = ApplyIncludesAndFilter(specification).AsNoTracking();
+
             return await query.AnyAsync(cancellationToken);
         }
 
@@ -59,6 +65,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             if (specification.Order != null)
             {
                 query = PerformOrdering(specification.Order, query);
+            }
+
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
             }
 
             return await query.FirstOrDefaultAsync(cancellationToken);
@@ -74,6 +85,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
                 query = PerformOrdering(specification.Order, query);
             }
 
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
             return await query.ToArrayAsync(cancellationToken);
         }
 
@@ -87,6 +103,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             }
 
             var query = ApplyIncludesAndFilter(specification);
+
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
 
             var projectedQuery = query.Select(specification.Projection.Expression);
 
@@ -105,6 +126,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
 
             var query = ApplyIncludesAndFilter(specification);
 
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
             var projectedQuery = query.Select(specification.Projection.Expression);
 
             return await projectedQuery.ToArrayAsync(cancellationToken);
@@ -120,6 +146,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             }
 
             var query = ApplyIncludesAndFilter(specification);
+
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
 
             var projectedQuery = query.Select(specification.Projection.Expression);
 
@@ -143,6 +174,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
 
             var query = ApplyIncludesAndFilter(specification);
 
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
             var projectedQuery = query.Select(specification.Projection.Expression);
 
             if (specification.Order != null)
@@ -152,7 +188,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
 
             return await projectedQuery.ToArrayAsync(cancellationToken);
         }
-        
+
         public Task<IPage<T>> GetPageAsync<T>(IPageableQuerySpecification<T> specification,
             CancellationToken cancellationToken = new CancellationToken()) where T : class
         {
@@ -163,7 +199,12 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             }
 
             var query = ApplyIncludesAndFilter(specification);
-            
+
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
             query = PerformOrdering(specification.Order, query);
 
             return Task.FromResult<IPage<T>>(new Page<T>(query, specification.PagingRequest));
@@ -177,7 +218,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
                 throw new ArgumentNullException(nameof(specification.Projection),
                     "Cannot project with no projection specification");
             }
-            
+
             if (specification.Order == null)
             {
                 throw new ArgumentNullException(nameof(specification.Order),
@@ -186,13 +227,18 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
 
             var query = ApplyIncludesAndFilter(specification);
 
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
             var projectedQuery = query.Select(specification.Projection.Expression);
 
             if (specification.Order != null)
             {
                 projectedQuery = PerformOrdering(specification.Order, projectedQuery);
             }
-            
+
             return Task.FromResult<IPage<TResult>>(new Page<TResult>(projectedQuery, specification.PagingRequest));
         }
 
@@ -203,10 +249,16 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
         {
             var query = ApplyIncludesAndFilter(specification);
 
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
             return Task.FromResult<IPage<T>>(new Page<T>(query, specification.SortablePagingRequest));
         }
 
-        public Task<IPage<TResult>> GetPageAsync<T, TResult>(ISortablePageableQuerySpecification<T, TResult> specification,
+        public Task<IPage<TResult>> GetPageAsync<T, TResult>(
+            ISortablePageableQuerySpecification<T, TResult> specification,
             CancellationToken cancellationToken = default(CancellationToken)) where T : class
         {
             if (specification.Projection == null)
@@ -217,9 +269,15 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
 
             var query = ApplyIncludesAndFilter(specification);
 
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
             var projectedQuery = query.Select(specification.Projection.Expression);
 
-            return Task.FromResult<IPage<TResult>>(new Page<TResult>(projectedQuery, specification.SortablePagingRequest));
+            return Task.FromResult<IPage<TResult>>(new Page<TResult>(projectedQuery,
+                specification.SortablePagingRequest));
         }
 
         public async Task<IEnumerable<T>> GetAllAsync<T>(IDataStoreImplementedQuerySpecification<T> specification,
@@ -227,9 +285,15 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
         {
             var commandText = _storedProcedureBuilder.GetQueryText(specification);
 
-            return await _context.Set<T>()
-                .FromSql(commandText)
-                .ToArrayAsync(cancellationToken);
+            var query = _context.Set<T>()
+                .FromSql(commandText);
+
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.ToArrayAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<TResult>> GetAllAsync<T, TResult>(
@@ -238,11 +302,17 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
         {
             var commandText = _storedProcedureBuilder.GetQueryText(specification);
 
-            return await _context.Set<T>()
-                .FromSql(commandText)
-                .Select(specification.Projection.Expression)
-                .ToArrayAsync(cancellationToken);
+            var query = _context.Set<T>()
+                .FromSql(commandText);
+
+            if (!_trackChanges)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.Select(specification.Projection.Expression).ToArrayAsync(cancellationToken);
         }
+
         protected IQueryable<T> ApplyIncludes<T>(IQuerySpecification<T> specification) where T : class
         {
             var query = _context.Set<T>().AsQueryable();
@@ -251,7 +321,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             {
                 query = ApplyIncludes(specification.Include, query);
             }
-            
+
             return query;
         }
 
@@ -272,11 +342,12 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             return query;
         }
 
-        private static IQueryable<T> ApplyIncludes<T>(IIncludeSpecification<T> includeSpecification, IQueryable<T> query)
+        private static IQueryable<T> ApplyIncludes<T>(IIncludeSpecification<T> includeSpecification,
+            IQueryable<T> query)
             where T : class
         {
             foreach (var path in includeSpecification.IncludeStepPaths)
-            {                
+            {
                 var parts = new List<string>();
 
                 foreach (var step in path)
@@ -293,7 +364,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             return query;
         }
 
-        protected IOrderedQueryable<T> PerformOrdering<T>(IOrderSpecification<T> orderSpecification, IQueryable<T> query)
+        protected IOrderedQueryable<T> PerformOrdering<T>(IOrderSpecification<T> orderSpecification,
+            IQueryable<T> query)
         {
             var steps = new Queue<OrderStep>(orderSpecification.OrderSteps);
 
@@ -321,7 +393,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             return PerformOrderStep(query, orderStep, orderMethod);
         }
 
-        private static IOrderedQueryable<T> PerformOrderStep<T>(IQueryable<T> query, OrderStep orderStep, string orderMethod)
+        private static IOrderedQueryable<T> PerformOrderStep<T>(IQueryable<T> query, OrderStep orderStep,
+            string orderMethod)
         {
             var method =
                 typeof(Queryable).GetMethods().First(m => m.Name == orderMethod && m.GetParameters().Length == 2);
