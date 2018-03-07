@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Audacia.Core.Extensions;
+using Audacia.DataAccess;
 using Audacia.Core;
 using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Specifications.DataStoreImplementations;
@@ -25,6 +27,28 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
         {
             _context = context;
             _storedProcedureBuilder = storedProcedureBuilder;
+        }
+                
+        public async Task<bool> AllAsync<T>(IQuerySpecification<T> specification,
+            CancellationToken cancellationToken = new CancellationToken()) where T : class
+        { 
+            if (specification.Filter == null)
+            {
+                // no filter has been provided
+                return false;
+            }
+
+            var query = ApplyIncludes(specification);
+            
+            return await query.AllAsync(specification.Filter.Expression, cancellationToken);
+        }
+        
+        public async Task<bool> AnyAsync<T>(IQuerySpecification<T> specification,
+            CancellationToken cancellationToken = new CancellationToken()) where T : class
+        {
+            var query = ApplyIncludesAndFilter(specification);
+            
+            return await query.AnyAsync(cancellationToken);
         }
 
         public async Task<T> GetAsync<T>(IOrderableQuerySpecification<T> specification,
@@ -132,7 +156,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
         public Task<IPage<T>> GetPageAsync<T>(IPageableQuerySpecification<T> specification,
             CancellationToken cancellationToken = new CancellationToken()) where T : class
         {
-            if (specification.Order != null)
+            if (specification.Order == null)
             {
                 throw new ArgumentNullException(nameof(specification.Order),
                     "Cannot page query with no order specification");
@@ -154,7 +178,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
                     "Cannot project with no projection specification");
             }
             
-            if (specification.Order != null)
+            if (specification.Order == null)
             {
                 throw new ArgumentNullException(nameof(specification.Order),
                     "Cannot page query with no order specification");
@@ -219,6 +243,17 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
                 .Select(specification.Projection.Expression)
                 .ToArrayAsync(cancellationToken);
         }
+        protected IQueryable<T> ApplyIncludes<T>(IQuerySpecification<T> specification) where T : class
+        {
+            var query = _context.Set<T>().AsQueryable();
+
+            if (specification.Include != null)
+            {
+                query = ApplyIncludes(specification.Include, query);
+            }
+            
+            return query;
+        }
 
         protected IQueryable<T> ApplyIncludesAndFilter<T>(IQuerySpecification<T> specification) where T : class
         {
@@ -237,49 +272,25 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             return query;
         }
 
-        private IQueryable<T> ApplyIncludes<T>(IIncludeSpecification<T> includeSpecification, IQueryable<T> query)
+        private static IQueryable<T> ApplyIncludes<T>(IIncludeSpecification<T> includeSpecification, IQueryable<T> query)
+            where T : class
         {
             foreach (var path in includeSpecification.IncludeStepPaths)
-            {
-                var steps = new Queue<IncludeStep>(path);
+            {                
+                var parts = new List<string>();
 
-                var step = steps.Dequeue();
-
-                var unTypedQuery = PerformFirstIncludeStep(step, query);
-                
-                while (steps.Any())
+                foreach (var step in path)
                 {
-                    var previousStepPropertyType = step.Type;
+                    parts.Add(ExpressionExtensions.GetPropertyInfo(step.Expression).Name);
 
-                    step = steps.Dequeue();
+                    var strPath = string.Join(".", parts);
 
-                    unTypedQuery = PerformAdditionalIncludeSteps<T>(step, unTypedQuery, previousStepPropertyType);
+                    query = query.Include(strPath);
                 }
-
-                query = unTypedQuery as IQueryable<T>;
             }
 
+
             return query;
-        }
-
-        private object PerformFirstIncludeStep<T>(IncludeStep step, IQueryable<T> query)
-        {
-            var method = typeof(EntityFrameworkQueryableExtensions).GetMethods().First(m =>
-                m.Name == nameof(EntityFrameworkQueryableExtensions.Include) && m.GetGenericArguments().Length == 2);
-
-            var genericMethod = method.MakeGenericMethod(typeof(T), step.Type);
-
-            return genericMethod.Invoke(null, new object[] { query, step.Expression });
-        }
-
-        private object PerformAdditionalIncludeSteps<T>(IncludeStep step, object unTypedQuery, Type previousStepPropertyType)
-        {
-            var method = typeof(EntityFrameworkQueryableExtensions).GetMethods().First(m =>
-                m.Name == nameof(EntityFrameworkQueryableExtensions.ThenInclude) && m.GetGenericArguments().Length == 3);
-
-            var genericMethod = method.MakeGenericMethod(typeof(T), previousStepPropertyType, step.Type);
-
-            return genericMethod.Invoke(null, new[] { unTypedQuery, step.Expression });
         }
 
         protected IOrderedQueryable<T> PerformOrdering<T>(IOrderSpecification<T> orderSpecification, IQueryable<T> query)

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audacia.Core;
+using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Specifications.DataStoreImplementations;
 using Audacia.DataAccess.Specifications.Ordering;
 using Audacia.DataAccess.Specifications.Paging;
@@ -16,6 +17,26 @@ namespace Audacia.DataAccess
     /// </summary>
     public interface IReadableDataRepository
     {
+        /// <summary>
+        /// Asynchronously determines whether all the elements of type <see cref="T"/> satisfy the rules in the given <paramref name="specification"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="specification"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<bool> AllAsync<T>(IQuerySpecification<T> specification,
+            CancellationToken cancellationToken = new CancellationToken()) where T : class;
+
+        /// <summary>
+        /// Asynchronously determines whether any elements of type <see cref="T"/> satisfy the rules in the given <paramref name="specification"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="specification"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<bool> AnyAsync<T>(IQuerySpecification<T> specification,
+            CancellationToken cancellationToken = new CancellationToken()) where T : class;
+        
         /// <summary>
         /// Gets the first instance of the model of type <see cref="T"/> that matches the rules in the given <paramref name="specification"/>.
         /// </summary>
