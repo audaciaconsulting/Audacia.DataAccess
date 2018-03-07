@@ -120,7 +120,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 PropertyWrappers = propertyWrappers.ToList()
             };
 
-            _entityEntryWrappers[entityEntry] = wrapper;
+            _entityEntryWrappers[entity] = wrapper;
 
             return wrapper;
         }

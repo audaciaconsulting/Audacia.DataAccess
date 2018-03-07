@@ -21,7 +21,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             return dbContext;
         }
 
-        public static bool TriggersEnabled(this DbContext dbContext)
+        public static bool TriggersEnabled<TDbContext>(this TDbContext dbContext)
+            where TDbContext : DbContext
         {
             return GetTriggerRegistrar(dbContext) != null;
         }

@@ -28,8 +28,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                                    ?.InternalFriendlyName ?? entityType.ClrType.Name;
 
             DescriptionFactory = configurations
-                .FirstOrDefault(configuration => configuration.InternalDescriptionFactory != null)
-                ?.InternalDescriptionFactory;
+                                     .FirstOrDefault(configuration => configuration.InternalDescriptionFactory != null)
+                                     ?.InternalDescriptionFactory ?? (_ => FriendlyName);
 
             var propertyConfigurationLookup = configurations.SelectMany(configuration => configuration.Properties)
                 .GroupBy(propertyConfiguration => propertyConfiguration.Key,
@@ -39,7 +39,9 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             //Loop through DB entities and find matching audit configurations
             var properties = from property in entityType.GetProperties()
                 where !property.IsPrimaryKey()
-                let matchingConfigurations = propertyConfigurationLookup[property.Name]
+                let matchingConfigurations = propertyConfigurationLookup.ContainsKey(property.Name)
+                    ? propertyConfigurationLookup[property.Name]
+                    : new List<PropertyAuditConfigurationBuilder>()
                 select new PropertyAuditConfiguration(property, matchingConfigurations);
 
             Properties = properties.ToDictionary(propertyConfiguration => propertyConfiguration.Property.Name,

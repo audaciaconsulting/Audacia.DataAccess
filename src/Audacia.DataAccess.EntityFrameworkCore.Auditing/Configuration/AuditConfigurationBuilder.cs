@@ -2,24 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
     public class AuditConfigurationBuilder<TDbContext>
-        where TDbContext : DbContext, new()
+        where TDbContext : DbContext
     {
         private bool _doNotAuditIfNoChangesInTrackedProperties;
         private AuditStrategy _strategy = AuditStrategy.Partial;
+
         private readonly IDictionary<Type, TypeAuditConfigurationBuilder> _types =
             new Dictionary<Type, TypeAuditConfigurationBuilder>();
-        
+
         public AuditConfigurationBuilder<TDbContext> DoNotAuditIfNoChangesInTrackedProperties(bool doNotAudit = true)
         {
             _doNotAuditIfNoChangesInTrackedProperties = doNotAudit;
 
             return this;
         }
-        
+
         public AuditConfigurationBuilder<TDbContext> Strategy(AuditStrategy strategy)
         {
             _strategy = strategy;
@@ -77,27 +79,24 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return this;
         }
 
-        public IAuditConfiguration<TDbContext> Build()
+        public IAuditConfiguration<TDbContext> Build(IModel model)
         {
             //Create context just to access model and fully populate configuration
-            using (var context = new TDbContext())
-            {
-                //Loop through DB entities and find matching audit configurations
-                var entities = from entityType in context.Model.GetEntityTypes()
-                    let matchingConfigurations = (from pair in _types
-                        where pair.Key.IsAssignableFrom(entityType.ClrType)
-                        orderby GetTypeSortOrder(pair.Value, entityType.ClrType)
-                        select pair.Value).ToList()
-                    select new EntityAuditConfiguration(entityType, matchingConfigurations, _strategy);
+            //Loop through DB entities and find matching audit configurations
+            var entities = from entityType in model.GetEntityTypes()
+                let matchingConfigurations = (from pair in _types
+                    where pair.Key.IsAssignableFrom(entityType.ClrType)
+                    orderby GetTypeSortOrder(pair.Value, entityType.ClrType)
+                    select pair.Value).ToList()
+                select new EntityAuditConfiguration(entityType, matchingConfigurations, _strategy);
 
-                return new AuditConfiguration<TDbContext>
-                {
-                    DoNotAuditIfNoChangesInTrackedProperties = _doNotAuditIfNoChangesInTrackedProperties,
-                    Entities =
-                        entities.ToDictionary(item => item.EntityType.ClrType, item => item as IEntityAuditConfiguration),
-                    Strategy = _strategy
-                };
-            }
+            return new AuditConfiguration<TDbContext>
+            {
+                DoNotAuditIfNoChangesInTrackedProperties = _doNotAuditIfNoChangesInTrackedProperties,
+                Entities =
+                    entities.ToDictionary(item => item.EntityType.ClrType, item => item as IEntityAuditConfiguration),
+                Strategy = _strategy
+            };
         }
 
         private static int GetTypeSortOrder(TypeAuditConfigurationBuilder configuration, Type type)
