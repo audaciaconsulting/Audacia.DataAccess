@@ -40,7 +40,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                 _types.Add(entityType, entityBuilder);
             }
 
-            return entityBuilder as EntityAuditConfigurationBuilder<TEntity>;
+            return (EntityAuditConfigurationBuilder<TEntity>)entityBuilder;
         }
 
         public AuditConfigurationBuilder<TDbContext> Entity<TEntity>(
@@ -65,7 +65,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                 _types.Add(type, typeBuilder);
             }
 
-            return typeBuilder as TypeAuditConfigurationBuilder<T>;
+            return (TypeAuditConfigurationBuilder<T>)typeBuilder;
         }
 
         public AuditConfigurationBuilder<TDbContext> Type<T>(
@@ -94,7 +94,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             {
                 DoNotAuditIfNoChangesInTrackedProperties = _doNotAuditIfNoChangesInTrackedProperties,
                 Entities =
-                    entities.ToDictionary(item => item.EntityType.ClrType, item => item as IEntityAuditConfiguration),
+                    entities.ToDictionary(item => item.EntityType.ClrType, item => (IEntityAuditConfiguration)item),
                 Strategy = _strategy
             };
         }

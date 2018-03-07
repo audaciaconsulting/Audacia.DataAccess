@@ -97,8 +97,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 ShortName = type.Name,
                 FriendlyName = context.Configuration.FriendlyName,
                 Strategy = context.Configuration.Strategy,
-                State = state,
-                Properties = new Dictionary<string, AuditEntryProperty>()
+                State = state
             };
 
             var propertyWrappers = from property in context.TriggerContext.EntityEntry.Properties

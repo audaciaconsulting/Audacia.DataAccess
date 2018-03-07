@@ -45,7 +45,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                 select new PropertyAuditConfiguration(property, matchingConfigurations);
 
             Properties = properties.ToDictionary(propertyConfiguration => propertyConfiguration.Property.Name,
-                propertyConfiguration => propertyConfiguration as IPropertyAuditConfiguration);
+                propertyConfiguration => (IPropertyAuditConfiguration)propertyConfiguration);
         }
 
         public IEntityType EntityType { get; }

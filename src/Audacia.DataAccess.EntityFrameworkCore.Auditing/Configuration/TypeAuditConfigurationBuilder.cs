@@ -64,7 +64,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                 Properties.Add(propertyInfo.Name, propertyBuilder);
             }
 
-            return propertyBuilder as PropertyAuditConfigurationBuilder<T, TProperty>;
+            return (PropertyAuditConfigurationBuilder<T, TProperty>)propertyBuilder;
         }
 
         public TypeAuditConfigurationBuilder<T> Property<TProperty>(Expression<Func<T, TProperty>>
