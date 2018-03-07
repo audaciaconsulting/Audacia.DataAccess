@@ -2,7 +2,7 @@
 using System.Linq;
 using Audacia.DataAccess.Specifications.DataStoreImplementations;
 
-namespace Audacia.Core.DataAcess.EntityFrameworkCore.SqlServer
+namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
 {
     public class StoredProcedureBuilder
     {
