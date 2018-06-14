@@ -62,7 +62,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 _triggerRegistrar.Register(trigger.Key, trigger.Value);
             }
 
-            _triggerRegistrar.After += async (_, cancellationToken) =>
+            _triggerRegistrar.After += async (dbContext, cancellationToken) =>
             {
                 var auditEntries = _entityEntryWrappers.Values.Select(wrapper => wrapper.AuditEntry).ToList();
 
@@ -73,6 +73,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 
                 foreach (var item in _sinks)
                 {
+                    if (item is TransactionalAuditSink<TDbContext> transactionalSink)
+                    {
+                        transactionalSink.SetContext(dbContext);
+                    }
+
                     await item.HandleAsync(auditEntries, cancellationToken);
                 }
             };

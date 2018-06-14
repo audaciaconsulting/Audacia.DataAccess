@@ -13,7 +13,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
             AuditRegistrar<TDbContext> registrar)
             where TDbContext : DbContext
         {
-            if (!dbContext.TriggersEnabled<TDbContext>())
+            if (!dbContext.TriggersEnabled())
             {
                 throw new ApplicationException("You must enable triggers to use auditing.");
             }

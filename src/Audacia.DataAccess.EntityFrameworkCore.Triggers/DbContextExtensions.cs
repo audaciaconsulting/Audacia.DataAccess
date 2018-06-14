@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
@@ -51,11 +53,59 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             CancellationToken cancellationToken = default)
             where TDbContext : DbContext
         {
-            var invoker = new TriggerInvoker<TDbContext>(dbContext, GetTriggerRegistrar(dbContext));
+            var registrar = GetTriggerRegistrar(dbContext);
 
-            await invoker.BeforeAsync(cancellationToken);
-            var result = await baseSaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-            await invoker.AfterAsync(cancellationToken);
+            var invoker = new TriggerInvoker<TDbContext>(dbContext, registrar);
+
+            IDbContextTransaction transaction = null;
+            int result;
+
+            try
+            {
+                if (registrar.Transactional)
+                {
+                    transaction = dbContext.Database.BeginTransaction();
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await invoker.BeforeAsync(cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                result = await baseSaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+
+                //Only if transactional, as otherwise it's too late to undo as changes already commited to the db
+                if (transaction != null)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
+                await invoker.AfterAsync(cancellationToken);
+
+                if (transaction != null)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    await baseSaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+
+                    //Last chance before committed
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    transaction.Commit();
+                    transaction.Dispose();
+                }
+            }
+            catch
+            {
+                if (transaction != null)
+                {
+                    transaction.Rollback();
+                    transaction.Dispose();
+                }
+
+                throw;
+            }
 
             return result;
         }

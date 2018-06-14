@@ -68,7 +68,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             // ReSharper disable once DelegateSubtraction
             remove => _after -= value;
         }
-
+        
         public TriggerTypeRegistrar<TDbContext, T> Type<T>() where T : class
         {
             return new TriggerTypeRegistrar<TDbContext, T>(this);
@@ -117,6 +117,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
                 }
             }
         }
+
+        public bool Transactional { get; set; }
 
         internal IEnumerable<Func<object, TriggerContext<TDbContext>, CancellationToken, Task>> Resolve(Type entityType, TriggerType triggerType)
         {
