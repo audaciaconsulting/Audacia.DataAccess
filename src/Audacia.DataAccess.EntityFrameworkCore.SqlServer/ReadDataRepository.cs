@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Audacia.Core.Extensions;
-using Audacia.DataAccess;
 using Audacia.Core;
 using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Specifications.DataStoreImplementations;

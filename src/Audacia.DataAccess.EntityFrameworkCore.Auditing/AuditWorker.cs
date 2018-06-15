@@ -31,18 +31,18 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 
         private readonly IAuditConfiguration<TDbContext> _configuration;
         private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
-        private readonly IEnumerable<IAuditSink> _sinks;
+        private readonly IEnumerable<IAuditSinkFactory<TDbContext>> _sinkFactories;
         private IDictionary<TriggerType, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>> _triggers;
 
         private readonly IDictionary<object, AuditEntryWrapper> _entityEntryWrappers =
             new Dictionary<object, AuditEntryWrapper>();
 
         public AuditWorker(IAuditConfiguration<TDbContext> configuration, TriggerRegistrar<TDbContext> triggerRegistrar,
-            IEnumerable<IAuditSink> sinks)
+            IEnumerable<IAuditSinkFactory<TDbContext>> sinkFactories)
         {
             _configuration = configuration;
             _triggerRegistrar = triggerRegistrar;
-            _sinks = sinks;
+            _sinkFactories = sinkFactories;
         }
 
         public void Init()
@@ -62,7 +62,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 _triggerRegistrar.Register(trigger.Key, trigger.Value);
             }
 
-            _triggerRegistrar.After += async (_, cancellationToken) =>
+            _triggerRegistrar.AfterAsync += async (context, cancellationToken) =>
             {
                 var auditEntries = _entityEntryWrappers.Values.Select(wrapper => wrapper.AuditEntry).ToList();
 
@@ -71,9 +71,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                     auditEntries = auditEntries.Where(auditEntry => auditEntry.Properties.Any()).ToList();
                 }
 
-                foreach (var item in _sinks)
+                foreach (var sinkFactory in _sinkFactories)
                 {
-                    await item.HandleAsync(auditEntries, cancellationToken);
+                    var sink = sinkFactory.Create(context);
+
+                    await sink.HandleAsync(auditEntries, cancellationToken);
                 }
             };
         }
