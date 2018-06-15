@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
@@ -52,21 +54,21 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         private readonly IDictionary<TriggerTypeHash, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>> _triggers =
             new Dictionary<TriggerTypeHash, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>>();
 
-        private Func<TDbContext, CancellationToken, Task> _before;
-        private Func<TDbContext, CancellationToken, Task> _after;
+        private Func<TDbContext, CancellationToken, Task> _beforeAsync;
+        private Func<TDbContext, CancellationToken, Task> _afterAsync;
 
-        public event Func<TDbContext, CancellationToken, Task> Before
+        public event Func<TDbContext, CancellationToken, Task> BeforeAsync
         {
-            add => _before += value;
+            add => _beforeAsync += value;
             // ReSharper disable once DelegateSubtraction
-            remove => _before -= value;
+            remove => _beforeAsync -= value;
         }
 
-        public event Func<TDbContext, CancellationToken, Task> After
+        public event Func<TDbContext, CancellationToken, Task> AfterAsync
         {
-            add => _after += value;
+            add => _afterAsync += value;
             // ReSharper disable once DelegateSubtraction
-            remove => _after -= value;
+            remove => _afterAsync -= value;
         }
         
         public TriggerTypeRegistrar<TDbContext, T> Type<T>() where T : class
@@ -117,9 +119,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
                 }
             }
         }
-
-        public bool Transactional { get; set; }
-
+        
         internal IEnumerable<Func<object, TriggerContext<TDbContext>, CancellationToken, Task>> Resolve(Type entityType, TriggerType triggerType)
         {
             //NOTE: We want to match base types and interfaces too
@@ -130,9 +130,9 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
                 select entry.Value;
         }
 
-        internal Func<TDbContext, CancellationToken, Task> ResolveBefore() => _before;
+        internal Func<TDbContext, CancellationToken, Task> ResolveBefore() => _beforeAsync;
 
-        internal Func<TDbContext, CancellationToken, Task> ResolveAfter() => _after;
+        internal Func<TDbContext, CancellationToken, Task> ResolveAfter() => _afterAsync;
 
         private static int GetSortOrder(TriggerTypeHash key, Type type)
         {

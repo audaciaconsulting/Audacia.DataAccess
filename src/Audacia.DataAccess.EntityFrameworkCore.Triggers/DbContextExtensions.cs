@@ -57,16 +57,12 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 
             var invoker = new TriggerInvoker<TDbContext>(dbContext, registrar);
 
-            IDbContextTransaction transaction = null;
             int result;
 
-            try
-            {
-                if (registrar.Transactional)
-                {
-                    transaction = dbContext.Database.BeginTransaction();
-                }
+            cancellationToken.ThrowIfCancellationRequested();
 
+            using (var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken))
+            {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 await invoker.BeforeAsync(cancellationToken);
@@ -75,36 +71,14 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 
                 result = await baseSaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
 
-                //Only if transactional, as otherwise it's too late to undo as changes already commited to the db
-                if (transaction != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                }
+                cancellationToken.ThrowIfCancellationRequested();
 
                 await invoker.AfterAsync(cancellationToken);
 
-                if (transaction != null)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
+                //Last chance
+                cancellationToken.ThrowIfCancellationRequested();
 
-                    await baseSaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-
-                    //Last chance before committed
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    transaction.Commit();
-                    transaction.Dispose();
-                }
-            }
-            catch
-            {
-                if (transaction != null)
-                {
-                    transaction.Rollback();
-                    transaction.Dispose();
-                }
-
-                throw;
+                transaction.Commit();
             }
 
             return result;
