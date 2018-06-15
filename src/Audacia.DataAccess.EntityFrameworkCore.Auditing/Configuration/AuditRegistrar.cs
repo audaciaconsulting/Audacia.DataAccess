@@ -11,7 +11,7 @@ namespace
     {
         private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
 
-        private readonly ICollection<IAuditSink> _sinks = new List<IAuditSink>();
+        private readonly ICollection<IAuditSinkFactory<TDbContext>> _sinkFactories = new List<IAuditSinkFactory<TDbContext>>();
 
         private readonly ICollection<IAuditConfiguration<TDbContext>> _configurations =
             new List<IAuditConfiguration<TDbContext>>();
@@ -21,9 +21,16 @@ namespace
             _triggerRegistrar = triggerRegistrar;
         }
 
-        public AuditRegistrar<TDbContext> AddSink(IAuditSink sink)
+        public AuditRegistrar<TDbContext> AddSinkFactory(IAuditSinkFactory<TDbContext> factory)
         {
-            _sinks.Add(sink);
+            _sinkFactories.Add(factory);
+
+            return this;
+        }
+
+        public AuditRegistrar<TDbContext> AddSinkFactory(Func<TDbContext, IAuditSink> factory)
+        {
+            _sinkFactories.Add(new DynamicAuditSinkFactory<TDbContext>(factory));
 
             return this;
         }
@@ -37,7 +44,7 @@ namespace
 
         public void Enable()
         {
-            var auditor = new Auditor<TDbContext>(_configurations, _sinks, _triggerRegistrar);
+            var auditor = new Auditor<TDbContext>(_configurations, _sinkFactories, _triggerRegistrar);
 
             auditor.Init();
         }

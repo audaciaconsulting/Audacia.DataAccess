@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
