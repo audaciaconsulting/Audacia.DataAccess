@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
 using Audacia.DataAccess.EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
