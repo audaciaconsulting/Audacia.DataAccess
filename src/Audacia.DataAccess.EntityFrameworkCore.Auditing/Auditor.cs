@@ -11,11 +11,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
     {
         private readonly IEnumerable<AuditWorker<TDbContext>> _workers;
 
-        public Auditor(IEnumerable<IAuditConfiguration<TDbContext>> configurations, IEnumerable<IAuditSink> sinks,
+        public Auditor(IEnumerable<IAuditConfiguration<TDbContext>> configurations, IEnumerable<IAuditSinkFactory<TDbContext>> sinkFactories,
             TriggerRegistrar<TDbContext> triggerRegistrar)
         {
             _workers = configurations.Select(configuration =>
-                new AuditWorker<TDbContext>(configuration, triggerRegistrar, sinks));
+                new AuditWorker<TDbContext>(configuration, triggerRegistrar, sinkFactories));
         }
 
         public void Init()

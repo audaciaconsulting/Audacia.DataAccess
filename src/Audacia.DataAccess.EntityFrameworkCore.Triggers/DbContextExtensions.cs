@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
@@ -51,11 +53,33 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             CancellationToken cancellationToken = default)
             where TDbContext : DbContext
         {
-            var invoker = new TriggerInvoker<TDbContext>(dbContext, GetTriggerRegistrar(dbContext));
+            var registrar = GetTriggerRegistrar(dbContext);
 
-            await invoker.BeforeAsync(cancellationToken);
-            var result = await baseSaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-            await invoker.AfterAsync(cancellationToken);
+            var invoker = new TriggerInvoker<TDbContext>(dbContext, registrar);
+
+            int result;
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await invoker.BeforeAsync(cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                result = await baseSaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await invoker.AfterAsync(cancellationToken);
+
+                //Last chance
+                cancellationToken.ThrowIfCancellationRequested();
+
+                transaction.Commit();
+            }
 
             return result;
         }

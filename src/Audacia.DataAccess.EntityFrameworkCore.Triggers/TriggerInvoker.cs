@@ -44,8 +44,13 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             }
 
             await _dispatcher.DispatchBeforeAsync(cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             foreach (var entityEntry in _entityEntries)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 _initalEntityStates[entityEntry.Entity] = entityEntry.State;
 
                 if(TryConvertEntityStateToBeforeTriggerType(entityEntry.State, out var triggerType))
@@ -79,6 +84,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 
             foreach (var entityEntry in _entityEntries)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var initalEntityState = _initalEntityStates[entityEntry.Entity];
 
                 if (TryConvertEntityStateToAfterTriggerType(initalEntityState, out var triggerType))
@@ -86,6 +93,9 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
                     await _dispatcher.DispatchAsync(triggerType, entityEntry, initalEntityState, cancellationToken);
                 }
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             await _dispatcher.DispatchAfterAsync(cancellationToken);
         }
     }
