@@ -2,9 +2,10 @@
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
-    public interface IAuditSinkFactory<in TDbContext>
-        where TDbContext : DbContext
+    public interface IAuditSinkFactory<TUserIdentifier, in TDbContext>
+        where TDbContext : DbContext 
+        where TUserIdentifier : struct
     {
-        IAuditSink Create(TDbContext context);
+        IAuditSink<TUserIdentifier> Create(TDbContext context);
     }
 }

@@ -11,12 +11,13 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
-    internal class AuditWorker<TDbContext>
+    internal class AuditWorker<TUserIdentifier, TDbContext>
         where TDbContext : DbContext
+        where TUserIdentifier : struct
     {
         private class AuditEntryWrapper
         {
-            public AuditEntry AuditEntry { get; set; }
+            public AuditEntry<TUserIdentifier> AuditEntry { get; set; }
             public ICollection<PropertyEntryWrapper> PropertyWrappers { get; set; }
         }
 
@@ -29,20 +30,22 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
             public bool IsModified { get; set; }
         }
 
+        private readonly Func<TUserIdentifier?> _userIdentifierFactory;
         private readonly IAuditConfiguration<TDbContext> _configuration;
         private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
-        private readonly IEnumerable<IAuditSinkFactory<TDbContext>> _sinkFactories;
+        private readonly IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> _sinkFactories;
         private IDictionary<TriggerType, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>> _triggers;
 
         private readonly IDictionary<object, AuditEntryWrapper> _entityEntryWrappers =
             new Dictionary<object, AuditEntryWrapper>();
 
         public AuditWorker(IAuditConfiguration<TDbContext> configuration, TriggerRegistrar<TDbContext> triggerRegistrar,
-            IEnumerable<IAuditSinkFactory<TDbContext>> sinkFactories)
+            IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> sinkFactories, Func<TUserIdentifier?> userIdentifierFactory)
         {
             _configuration = configuration;
             _triggerRegistrar = triggerRegistrar;
             _sinkFactories = sinkFactories;
+            _userIdentifierFactory = userIdentifierFactory;
         }
 
         public void Init()
@@ -93,13 +96,14 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
         {
             var type = entity.GetType();
 
-            var entityEntry = new AuditEntry
+            var entityEntry = new AuditEntry<TUserIdentifier>
             {
                 FullName = type.FullName,
                 ShortName = type.Name,
                 FriendlyName = context.Configuration.FriendlyName,
                 Strategy = context.Configuration.Strategy,
-                State = state
+                State = state,
+                UserIdentifier = _userIdentifierFactory()
             };
 
             var propertyWrappers = from property in context.TriggerContext.EntityEntry.Properties
@@ -192,7 +196,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 context.TriggerContext.DbContext);
         }
 
-        private static void PopulatePrimaryKeys(AuditEntry auditEntry, AuditContext<TDbContext> context)
+        private static void PopulatePrimaryKeys(AuditEntry<TUserIdentifier> auditEntry, AuditContext<TDbContext> context)
         {
             //Populate primary key values as these may have been DB generated so not present before
             var primaryKeyValues = from property in context.TriggerContext.EntityEntry.Properties

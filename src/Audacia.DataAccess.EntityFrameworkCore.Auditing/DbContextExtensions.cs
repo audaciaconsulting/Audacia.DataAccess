@@ -7,9 +7,10 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
     public static class DbContextExtensions
     {
-        public static TDbContext EnableAuditing<TDbContext>(this TDbContext dbContext,
-            AuditRegistrar<TDbContext> registrar)
+        public static TDbContext EnableAuditing<TUserIdentifier, TDbContext>(this TDbContext dbContext,
+            AuditRegistrar<TUserIdentifier, TDbContext> registrar)
             where TDbContext : DbContext
+            where TUserIdentifier : struct
         {
             if (!dbContext.TriggersEnabled())
             {
