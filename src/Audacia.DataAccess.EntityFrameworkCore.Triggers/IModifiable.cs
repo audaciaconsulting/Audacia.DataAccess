@@ -2,10 +2,10 @@
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    public interface IModifiable<TUserId>
-        where TUserId : struct
+    public interface IModifiable<TUserIdentifier>
+        where TUserIdentifier : struct
     {
         DateTimeOffset? Modified { get; set; }
-        TUserId? ModifiedBy { get; set; }
+        TUserIdentifier? ModifiedBy { get; set; }
     }
 }
