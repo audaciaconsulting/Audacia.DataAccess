@@ -2,9 +2,9 @@
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    public interface ICreatable<TUserId>
+    public interface ICreatable<TUserIdentifier>
     {
         DateTimeOffset Created { get; set; }
-        TUserId CreatedBy { get; set; }
+        TUserIdentifier CreatedBy { get; set; }
     }
 }

@@ -3,16 +3,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
-    public class DynamicAuditSinkFactory<TDbContext> : IAuditSinkFactory<TDbContext>
-        where TDbContext : DbContext
+    public class DynamicAuditSinkFactory<TUserIdentifier, TDbContext> : IAuditSinkFactory<TUserIdentifier, TDbContext>
+        where TDbContext : DbContext 
+        where TUserIdentifier : struct
     {
-        private readonly Func<TDbContext, IAuditSink> _factory;
+        private readonly Func<TDbContext, IAuditSink<TUserIdentifier>> _factory;
 
-        public DynamicAuditSinkFactory(Func<TDbContext, IAuditSink> factory)
+        public DynamicAuditSinkFactory(Func<TDbContext, IAuditSink<TUserIdentifier>> factory)
         {
             _factory = factory;
         }
 
-        public IAuditSink Create(TDbContext context) => _factory.Invoke(context);
+        public IAuditSink<TUserIdentifier> Create(TDbContext context) => _factory.Invoke(context);
     }
 }

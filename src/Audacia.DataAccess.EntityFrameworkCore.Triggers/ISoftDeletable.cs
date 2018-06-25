@@ -2,10 +2,10 @@
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
 {
-    public interface ISoftDeletable<TUserId>
-        where TUserId : struct
+    public interface ISoftDeletable<TUserIdentifier>
+        where TUserIdentifier : struct
     {
         DateTimeOffset? Deleted { get; set; }
-        TUserId? DeletedBy { get; set; }
+        TUserIdentifier? DeletedBy { get; set; }
     }
 }
