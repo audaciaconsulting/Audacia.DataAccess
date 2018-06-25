@@ -13,7 +13,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
         public string Description { get; set; }
         public AuditStrategy Strategy { get; set; }
         public AuditState State { get; set; }
-        public TUserIdentifier UserIdentifier { get; set; }
+        public TUserIdentifier? UserIdentifier { get; set; }
 
         public IDictionary<string, AuditEntryProperty> Properties { get; } =
             new Dictionary<string, AuditEntryProperty>();

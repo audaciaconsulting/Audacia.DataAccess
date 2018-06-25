@@ -8,7 +8,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
     public static class TriggerRegistrarExtensions
     {
         public static void AddSoftDeleteTrigger<TUserIdentifier, TDbContext>(this TriggerRegistrar<TDbContext> registrar,
-            Func<TUserIdentifier> userIdentifierFactory)
+            Func<TUserIdentifier?> userIdentifierFactory)
             where TDbContext : DbContext
             where TUserIdentifier : struct
         {
@@ -37,7 +37,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         }
 
         public static void AddModifyTrigger<TUserIdentifier, TDbContext>(this TriggerRegistrar<TDbContext> registrar,
-            Func<TUserIdentifier> userIdentifierFactory) 
+            Func<TUserIdentifier?> userIdentifierFactory) 
             where TDbContext : DbContext
             where TUserIdentifier : struct
         {

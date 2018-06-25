@@ -30,7 +30,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
             public bool IsModified { get; set; }
         }
 
-        private readonly Func<TUserIdentifier> _userIdentifierFactory;
+        private readonly Func<TUserIdentifier?> _userIdentifierFactory;
         private readonly IAuditConfiguration<TDbContext> _configuration;
         private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
         private readonly IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> _sinkFactories;
@@ -40,7 +40,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
             new Dictionary<object, AuditEntryWrapper>();
 
         public AuditWorker(IAuditConfiguration<TDbContext> configuration, TriggerRegistrar<TDbContext> triggerRegistrar,
-            IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> sinkFactories, Func<TUserIdentifier> userIdentifierFactory)
+            IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> sinkFactories, Func<TUserIdentifier?> userIdentifierFactory)
         {
             _configuration = configuration;
             _triggerRegistrar = triggerRegistrar;

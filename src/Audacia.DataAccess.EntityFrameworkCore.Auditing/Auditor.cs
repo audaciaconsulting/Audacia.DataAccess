@@ -15,7 +15,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 
         public Auditor(IEnumerable<IAuditConfiguration<TDbContext>> configurations,
             IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> sinkFactories,
-            TriggerRegistrar<TDbContext> triggerRegistrar, Func<TUserIdentifier> userIdentifierFactory)
+            TriggerRegistrar<TDbContext> triggerRegistrar, Func<TUserIdentifier?> userIdentifierFactory)
         {
             _workers = configurations.Select(configuration =>
                 new AuditWorker<TUserIdentifier, TDbContext>(configuration, triggerRegistrar, sinkFactories, userIdentifierFactory));
