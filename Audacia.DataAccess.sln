@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Audacia.DataAccess.EntityFr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Audacia.DataAccess.EntityFrameworkCore.Triggers", "src\Audacia.DataAccess.EntityFrameworkCore.Triggers\Audacia.DataAccess.EntityFrameworkCore.Triggers.csproj", "{8EFDE2AE-11EE-4909-9C1A-D68E97BDC02F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audacia.DataAccess.Model", "Audacia.DataAccess.Model\Audacia.DataAccess.Model.csproj", "{DB12A458-C2B9-409C-8935-7352987C4DD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audacia.DataAccess.Model", "src\Audacia.DataAccess.Model\Audacia.DataAccess.Model.csproj", "{DB12A458-C2B9-409C-8935-7352987C4DD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
