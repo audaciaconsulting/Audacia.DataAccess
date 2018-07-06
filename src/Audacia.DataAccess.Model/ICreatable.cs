@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
+namespace Audacia.DataAccess.Model
 {
     public interface ICreatable<TUserIdentifier>
         where TUserIdentifier : struct

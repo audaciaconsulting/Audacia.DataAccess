@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
+namespace Audacia.DataAccess.Model
 {
     public interface ISoftDeletable<TUserIdentifier>
         where TUserIdentifier : struct

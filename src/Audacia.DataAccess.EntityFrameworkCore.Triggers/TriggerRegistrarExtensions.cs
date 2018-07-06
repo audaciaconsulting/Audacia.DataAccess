@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Audacia.Core;
+using Audacia.DataAccess.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
