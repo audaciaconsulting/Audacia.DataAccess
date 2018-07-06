@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Audacia.Core.Extensions;
 using Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
 using Audacia.DataAccess.EntityFrameworkCore.Triggers;
+using Audacia.DataAccess.Model.Auditing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
