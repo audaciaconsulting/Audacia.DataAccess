@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Audacia.DataAccess.EntityFrameworkCore.Triggers\Audacia.DataAccess.EntityFrameworkCore.Triggers.csproj" />
+    <ProjectReference Include="..\Audacia.DataAccess.Model\Audacia.DataAccess.Model.csproj" />
   </ItemGroup>
 
 </Project>

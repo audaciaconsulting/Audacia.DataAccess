@@ -1,4 +1,4 @@
-﻿namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
+﻿namespace Audacia.DataAccess.Model.Auditing
 {
     public enum AuditState
     {

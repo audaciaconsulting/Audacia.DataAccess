@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
+using Audacia.DataAccess.Model.Auditing;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
