@@ -23,7 +23,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         }
 
         public static void AddCreateTrigger<TUserIdentifier, TDbContext>(this TriggerRegistrar<TDbContext> registrar,
-            Func<TUserIdentifier> userIdentifierFactory) 
+            Func<TUserIdentifier?> userIdentifierFactory) 
             where TDbContext : DbContext
             where TUserIdentifier : struct
         {
