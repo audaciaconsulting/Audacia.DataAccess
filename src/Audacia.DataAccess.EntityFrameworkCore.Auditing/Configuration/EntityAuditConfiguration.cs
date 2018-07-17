@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    public class EntityAuditConfiguration : IEntityAuditConfiguration
+    internal class EntityAuditConfiguration : IEntityAuditConfiguration
     {
         internal EntityAuditConfiguration(IEntityType entityType,
             ICollection<TypeAuditConfigurationBuilder> configurations,

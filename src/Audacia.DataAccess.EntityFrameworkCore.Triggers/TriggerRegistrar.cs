@@ -61,7 +61,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
             // ReSharper disable once DelegateSubtraction
             remove => _beforeAsync -= value;
         }
-
+        
         public event Func<TDbContext, CancellationToken, Task> AfterAsync
         {
             add => _afterAsync += value;
