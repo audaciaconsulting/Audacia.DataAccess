@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    public class AuditConfiguration<TDbContext> : IAuditConfiguration<TDbContext> where TDbContext : DbContext
+    internal class AuditConfiguration<TUserIdentifier, TDbContext> : IAuditConfiguration<TUserIdentifier, TDbContext>
+        where TDbContext : DbContext
+        where TUserIdentifier : struct
     {
         internal AuditConfiguration()
         {
@@ -14,5 +16,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
         public AuditStrategy Strategy { get; internal set; }
 
         public IDictionary<Type, IEntityAuditConfiguration> Entities { get; internal set; }
+        public Func<TUserIdentifier?> UserIdentifierFactory { get; internal set; }
+        public IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> SinkFactories { get; set; }
     }
 }

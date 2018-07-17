@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    public class PropertyAuditConfiguration : IPropertyAuditConfiguration
+    internal class PropertyAuditConfiguration : IPropertyAuditConfiguration
     {
         public PropertyAuditConfiguration(IProperty property,
             ICollection<PropertyAuditConfigurationBuilder> configurations)

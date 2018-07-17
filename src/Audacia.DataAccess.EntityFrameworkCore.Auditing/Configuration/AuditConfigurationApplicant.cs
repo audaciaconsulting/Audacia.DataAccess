@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Audacia.Core.Extensions;
-using Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
 using Audacia.DataAccess.EntityFrameworkCore.Triggers;
 using Audacia.DataAccess.Model.Auditing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
+namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    internal class AuditWorker<TUserIdentifier, TDbContext>
+    //NOTE: Where the magic happens
+    internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
         where TDbContext : DbContext
         where TUserIdentifier : struct
     {
@@ -31,66 +31,66 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
             public bool IsModified { get; set; }
         }
 
-        private readonly Func<TUserIdentifier?> _userIdentifierFactory;
-        private readonly IAuditConfiguration<TDbContext> _configuration;
-        private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
-        private readonly IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> _sinkFactories;
-        private IDictionary<TriggerType, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>> _triggers;
-
-        private readonly IDictionary<object, AuditEntryWrapper> _entityEntryWrappers =
-            new Dictionary<object, AuditEntryWrapper>();
-
-        public AuditWorker(IAuditConfiguration<TDbContext> configuration, TriggerRegistrar<TDbContext> triggerRegistrar,
-            IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> sinkFactories, Func<TUserIdentifier?> userIdentifierFactory)
+        private class AuditIntanceState
         {
-            _configuration = configuration;
-            _triggerRegistrar = triggerRegistrar;
-            _sinkFactories = sinkFactories;
-            _userIdentifierFactory = userIdentifierFactory;
+            public IDictionary<object, AuditEntryWrapper> EntityEntryWrappers { get; } =
+                new Dictionary<object, AuditEntryWrapper>();
         }
 
-        public void Init()
+        private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
+        private readonly IAuditConfiguration<TUserIdentifier, TDbContext> _configuration;
+        private readonly IDictionary<TDbContext, AuditIntanceState> _auditStateDictionary =
+            new Dictionary<TDbContext, AuditIntanceState>();
+
+        public AuditConfigurationApplicant(TriggerRegistrar<TDbContext> triggerRegistrar, IAuditConfiguration<TUserIdentifier, TDbContext> configuration)
         {
-            //Register trigger
-            _triggers = new Dictionary<TriggerType, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>>
+            _triggerRegistrar = triggerRegistrar;
+            _configuration = configuration;
+        }
+
+        internal void Apply()
+        {
+            _triggerRegistrar.BeforeAsync += (context, token) =>
             {
-                {TriggerType.Inserting, TransformToTrigger(InstertingAsync)},
-                {TriggerType.Inserted, TransformToTrigger(InsertedAsync)},
-                {TriggerType.Updating, TransformToTrigger(UpdatingAsync)},
-                {TriggerType.Updated, TransformToTrigger(UpdatedAsync)},
-                {TriggerType.Deleting, TransformToTrigger(DeletingAsync)}
+                _auditStateDictionary[context] = new AuditIntanceState();
+
+                return Task.CompletedTask;
             };
 
-            foreach (var trigger in _triggers)
-            {
-                _triggerRegistrar.Register(trigger.Key, trigger.Value);
-            }
+            _triggerRegistrar.Register(TriggerType.Inserting, TransformToTrigger(InstertingAsync));
+            _triggerRegistrar.Register(TriggerType.Inserted, TransformToTrigger(InsertedAsync));
+            _triggerRegistrar.Register(TriggerType.Updating, TransformToTrigger(UpdatingAsync));
+            _triggerRegistrar.Register(TriggerType.Updated, TransformToTrigger(UpdatedAsync));
+            _triggerRegistrar.Register(TriggerType.Deleting, TransformToTrigger(DeletingAsync));
 
             _triggerRegistrar.AfterAsync += async (context, cancellationToken) =>
             {
-                var auditEntries = _entityEntryWrappers.Values.Select(wrapper => wrapper.AuditEntry).ToList();
+                var auditEntries = _auditStateDictionary[context].EntityEntryWrappers.Values.Select(wrapper => wrapper.AuditEntry).ToList();
 
                 if (_configuration.DoNotAuditIfNoChangesInTrackedProperties)
                 {
                     auditEntries = auditEntries.Where(auditEntry => auditEntry.Properties.Any()).ToList();
                 }
 
-                foreach (var sinkFactory in _sinkFactories)
+                foreach (var sinkFactory in _configuration.SinkFactories)
                 {
                     var sink = sinkFactory.Create(context);
 
                     await sink.HandleAsync(auditEntries, cancellationToken);
                 }
+
+                //Remove so does not cluttle up memory as this class will effectivly act as a singleton due to closures and TriggerRegistrar being a singleton
+                _auditStateDictionary.Remove(context);
             };
         }
 
         #region helpers
-
         private Func<object, TriggerContext<TDbContext>, CancellationToken, Task> TransformToTrigger(
             Func<object, AuditContext<TDbContext>, CancellationToken, Task> auditAction)
             => (obj, triggerContext, cancellationToken) => auditAction(obj,
                 new AuditContext<TDbContext>(_configuration.Entities[obj.GetType()], triggerContext),
                 cancellationToken);
+
 
         private AuditEntryWrapper PopulateEntryWrapper(object entity, AuditContext<TDbContext> context,
             AuditState state)
@@ -104,21 +104,21 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 FriendlyName = context.Configuration.FriendlyName,
                 Strategy = context.Configuration.Strategy,
                 State = state,
-                UserIdentifier = _userIdentifierFactory()
+                UserIdentifier = _configuration.UserIdentifierFactory()
             };
 
             var propertyWrappers = from property in context.TriggerContext.EntityEntry.Properties
-                where !property.Metadata.IsPrimaryKey()
-                let configuration = context.Configuration.Properties[property.Metadata.Name]
-                where !configuration.Ignore
-                select new PropertyEntryWrapper
-                {
-                    OldValue = property.OriginalValue,
-                    NewValue = property.CurrentValue,
-                    IsModified = property.IsModified,
-                    Configuration = configuration,
-                    PropertyEntry = property
-                };
+                                   where !property.Metadata.IsPrimaryKey()
+                                   let configuration = context.Configuration.Properties[property.Metadata.Name]
+                                   where !configuration.Ignore
+                                   select new PropertyEntryWrapper
+                                   {
+                                       OldValue = property.OriginalValue,
+                                       NewValue = property.CurrentValue,
+                                       IsModified = property.IsModified,
+                                       Configuration = configuration,
+                                       PropertyEntry = property
+                                   };
 
             var wrapper = new AuditEntryWrapper
             {
@@ -126,7 +126,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 PropertyWrappers = propertyWrappers.ToList()
             };
 
-            _entityEntryWrappers[entity] = wrapper;
+            _auditStateDictionary[context.TriggerContext.DbContext].EntityEntryWrappers[entity] = wrapper;
 
             return wrapper;
         }
@@ -201,8 +201,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
         {
             //Populate primary key values as these may have been DB generated so not present before
             var primaryKeyValues = from property in context.TriggerContext.EntityEntry.Properties
-                where property.Metadata.IsPrimaryKey()
-                select property.CurrentValue;
+                                   where property.Metadata.IsPrimaryKey()
+                                   select property.CurrentValue;
 
             auditEntry.PrimaryKeyValues = primaryKeyValues.ToArray();
         }
@@ -242,7 +242,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 return;
             }
 
-            var wrapper = _entityEntryWrappers[entity];
+            var wrapper = _auditStateDictionary[context.TriggerContext.DbContext].EntityEntryWrappers[entity];
 
             //Populate description after insert so can access related entities if need be
             wrapper.AuditEntry.Description = context.Configuration.DescriptionFactory(entity);
@@ -298,7 +298,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
                 return;
             }
 
-            var wrapper = _entityEntryWrappers[entity];
+            var wrapper = _auditStateDictionary[context.TriggerContext.DbContext].EntityEntryWrappers[entity];
 
             //Populate description after update so can access new related entities if need be
             wrapper.AuditEntry.Description = context.Configuration.DescriptionFactory(entity);
