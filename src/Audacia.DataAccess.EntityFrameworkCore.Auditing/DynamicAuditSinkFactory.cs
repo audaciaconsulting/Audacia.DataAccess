@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing
 {
-    public class DynamicAuditSinkFactory<TUserIdentifier, TDbContext> : IAuditSinkFactory<TUserIdentifier, TDbContext>
+    internal class DynamicAuditSinkFactory<TUserIdentifier, TDbContext> : IAuditSinkFactory<TUserIdentifier, TDbContext>
         where TDbContext : DbContext 
         where TUserIdentifier : struct
     {

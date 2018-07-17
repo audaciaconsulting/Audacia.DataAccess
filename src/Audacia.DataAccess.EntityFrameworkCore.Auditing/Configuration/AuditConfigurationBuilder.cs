@@ -6,23 +6,48 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 {
-    public class AuditConfigurationBuilder<TDbContext>
+    public class AuditConfigurationBuilder<TUserIdentifier, TDbContext>
         where TDbContext : DbContext
+        where TUserIdentifier : struct
     {
         private bool _doNotAuditIfNoChangesInTrackedProperties;
         private AuditStrategy _strategy = AuditStrategy.Partial;
-
+        private Func<TUserIdentifier?> _userIdentifierFactory = () => null;
+        private readonly ICollection<IAuditSinkFactory<TUserIdentifier, TDbContext>> _sinkFactories =
+            new List<IAuditSinkFactory<TUserIdentifier, TDbContext>>();
         private readonly IDictionary<Type, TypeAuditConfigurationBuilder> _types =
             new Dictionary<Type, TypeAuditConfigurationBuilder>();
 
-        public AuditConfigurationBuilder<TDbContext> DoNotAuditIfNoChangesInTrackedProperties(bool doNotAudit = true)
+        public AuditConfigurationBuilder<TUserIdentifier, TDbContext> UserIdentifierFactory(
+            Func<TUserIdentifier?> factory)
+        {
+            _userIdentifierFactory = factory;
+
+            return this;
+        }
+
+        public AuditConfigurationBuilder<TUserIdentifier, TDbContext> AddSinkFactory(IAuditSinkFactory<TUserIdentifier, TDbContext> factory)
+        {
+            _sinkFactories.Add(factory);
+
+            return this;
+        }
+
+        public AuditConfigurationBuilder<TUserIdentifier, TDbContext> AddSinkFactory(Func<TDbContext, IAuditSink<TUserIdentifier>> factory)
+        {
+            _sinkFactories.Add(new DynamicAuditSinkFactory<TUserIdentifier, TDbContext>(factory));
+
+            return this;
+        }
+
+        public AuditConfigurationBuilder<TUserIdentifier, TDbContext> DoNotAuditIfNoChangesInTrackedProperties(bool doNotAudit = true)
         {
             _doNotAuditIfNoChangesInTrackedProperties = doNotAudit;
 
             return this;
         }
 
-        public AuditConfigurationBuilder<TDbContext> Strategy(AuditStrategy strategy)
+        public AuditConfigurationBuilder<TUserIdentifier, TDbContext> Strategy(AuditStrategy strategy)
         {
             _strategy = strategy;
 
@@ -43,7 +68,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return (EntityAuditConfigurationBuilder<TEntity>)entityBuilder;
         }
 
-        public AuditConfigurationBuilder<TDbContext> Entity<TEntity>(
+        public AuditConfigurationBuilder<TUserIdentifier, TDbContext> Entity<TEntity>(
             Action<EntityAuditConfigurationBuilder<TEntity>> entityBuilderAction)
             where TEntity : class
         {
@@ -68,7 +93,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return (TypeAuditConfigurationBuilder<T>)typeBuilder;
         }
 
-        public AuditConfigurationBuilder<TDbContext> Type<T>(
+        public AuditConfigurationBuilder<TUserIdentifier, TDbContext> Type<T>(
             Action<TypeAuditConfigurationBuilder<T>> typeBuilderAction)
             where T : class
         {
@@ -79,7 +104,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
             return this;
         }
 
-        public IAuditConfiguration<TDbContext> Build(IModel model)
+        public IAuditConfiguration<TUserIdentifier, TDbContext> Build(IModel model)
         {
             //Create context just to access model and fully populate configuration
             //Loop through DB entities and find matching audit configurations
@@ -90,12 +115,14 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                     select pair.Value).ToList()
                 select new EntityAuditConfiguration(entityType, matchingConfigurations, _strategy);
 
-            return new AuditConfiguration<TDbContext>
+            return new AuditConfiguration<TUserIdentifier, TDbContext>
             {
                 DoNotAuditIfNoChangesInTrackedProperties = _doNotAuditIfNoChangesInTrackedProperties,
                 Entities =
                     entities.ToDictionary(item => item.EntityType.ClrType, item => (IEntityAuditConfiguration)item),
-                Strategy = _strategy
+                Strategy = _strategy,
+                UserIdentifierFactory = _userIdentifierFactory,
+                SinkFactories = _sinkFactories
             };
         }
 
