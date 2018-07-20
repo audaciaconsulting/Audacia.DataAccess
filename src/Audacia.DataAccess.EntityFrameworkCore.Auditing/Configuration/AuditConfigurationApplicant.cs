@@ -343,6 +343,8 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
                     wrapper.AuditEntry.Properties[propertyWrapper.Configuration.Property.Name] = auditEntryProperty;
                 }
             }
+            
+            PopulatePrimaryKeys(wrapper.AuditEntry, context);
         }
 
         #endregion
