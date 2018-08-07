@@ -169,5 +169,12 @@ namespace Audacia.DataAccess
         Task<IEnumerable<TResult>> GetAllAsync<T, TResult>(
             IDataStoreImplementedQuerySpecification<T, TResult> specification,
             CancellationToken cancellationToken = default(CancellationToken)) where T : class;
+
+        /// <summary>
+        /// Gets a DisposableSwitch which implements IDisposable, used to define the scope for which executed queries
+        /// will track changes on the entities which are returned
+        /// </summary>
+        /// <returns></returns>
+        DisposableSwitch BeginTrackChanges();
     }
 }
