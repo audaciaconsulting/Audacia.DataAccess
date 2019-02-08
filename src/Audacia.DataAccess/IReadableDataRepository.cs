@@ -36,7 +36,19 @@ namespace Audacia.DataAccess
         /// <returns></returns>
         Task<bool> AnyAsync<T>(IQuerySpecification<T> specification,
             CancellationToken cancellationToken = new CancellationToken()) where T : class;
-        
+
+        /// <summary>
+        /// Asynchronously gets the count of elements of type <see cref="T"/> satisfy the rules in the given <paramref name="specification"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="specification"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<int> GetCountAsync<T>(
+            IQuerySpecification<T> specification,
+            CancellationToken cancellationToken = new CancellationToken()
+        ) where T : class;
+
         /// <summary>
         /// Gets the first instance of the model of type <see cref="T"/> that matches the rules in the given <paramref name="specification"/>.
         /// </summary>
@@ -80,7 +92,7 @@ namespace Audacia.DataAccess
         /// <returns></returns>
         Task<IEnumerable<TResult>> GetAllAsync<T, TResult>(IProjectableQuerySpecification<T, TResult> specification,
             CancellationToken cancellationToken = default(CancellationToken)) where T : class;
-        
+
         /// <summary>
         /// Gets the first instance of the model of type <see cref="T"/>, projected to an object of type <see cref="TResult"/>,
         /// that matches the rules in the given <paramref name="specification"/>.
