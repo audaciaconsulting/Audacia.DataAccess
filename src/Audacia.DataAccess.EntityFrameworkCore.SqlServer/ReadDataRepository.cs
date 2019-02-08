@@ -56,6 +56,16 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             return await query.AnyAsync(cancellationToken);
         }
 
+        public async Task<int> GetCountAsync<T>(
+            IQuerySpecification<T> specification,
+            CancellationToken cancellationToken = new CancellationToken()
+        ) where T : class
+        {
+            var query = ApplyIncludesAndFilter(specification);
+
+            return await query.CountAsync(cancellationToken);
+        }
+
         public async Task<T> GetAsync<T>(IOrderableQuerySpecification<T> specification,
             CancellationToken cancellationToken = new CancellationToken()) where T : class
         {
