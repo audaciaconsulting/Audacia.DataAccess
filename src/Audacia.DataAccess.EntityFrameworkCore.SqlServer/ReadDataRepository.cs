@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
 {
-    public class ReadDataRepository<TContext> : IReadableDataRepository
+    public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
         where TContext : DbContext
     {
         private readonly TContext _context;
@@ -411,6 +411,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             var genericMethod = method.MakeGenericMethod(typeof(T), orderStep.Type);
 
             return genericMethod.Invoke(null, new object[] {query, orderStep.Expression}) as IOrderedQueryable<T>;
+        }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
         }
     }
 }
