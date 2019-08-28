@@ -65,22 +65,28 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 
             _triggerRegistrar.AfterAsync += async (context, cancellationToken) =>
             {
-                var auditEntries = _auditStateDictionary[context].EntityEntryWrappers.Values.Select(wrapper => wrapper.AuditEntry).ToList();
-
-                if (_configuration.DoNotAuditIfNoChangesInTrackedProperties)
+                try
                 {
-                    auditEntries = auditEntries.Where(auditEntry => auditEntry.Properties.Any()).ToList();
-                }
+                    var auditEntries = _auditStateDictionary[context].EntityEntryWrappers.Values
+                        .Select(wrapper => wrapper.AuditEntry).ToList();
 
-                foreach (var sinkFactory in _configuration.SinkFactories)
+                    if (_configuration.DoNotAuditIfNoChangesInTrackedProperties)
+                    {
+                        auditEntries = auditEntries.Where(auditEntry => auditEntry.Properties.Any()).ToList();
+                    }
+
+                    foreach (var sinkFactory in _configuration.SinkFactories)
+                    {
+                        var sink = sinkFactory.Create(context);
+
+                        await sink.HandleAsync(auditEntries, cancellationToken);
+                    }
+                }
+                finally
                 {
-                    var sink = sinkFactory.Create(context);
-
-                    await sink.HandleAsync(auditEntries, cancellationToken);
+                    //Remove so does not cluttle up memory as this class will effectivly act as a singleton due to closures and TriggerRegistrar being a singleton
+                    _auditStateDictionary.Remove(context);   
                 }
-
-                //Remove so does not cluttle up memory as this class will effectivly act as a singleton due to closures and TriggerRegistrar being a singleton
-                _auditStateDictionary.Remove(context);
             };
         }
 
