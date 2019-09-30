@@ -9,7 +9,6 @@ namespace Audacia.DataAccess.Specifications.Including
     // ReSharper disable once UnusedTypeParameter
     public interface IIncludeSpecification<T>
     {
-
         /// <summary>
         /// Gets the <see cref="IncludeStep"/> objects that contain the include rules.
         /// </summary>

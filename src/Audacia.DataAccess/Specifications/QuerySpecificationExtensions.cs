@@ -32,20 +32,78 @@ namespace Audacia.DataAccess.Specifications
             return querySpecification.AddFilter(filterSpecification);
         }
 
-        public static IQuerySpecification<T> WithInclude<T>(this IQuerySpecification<T> querySpecification,
+        /// <summary>
+        /// <para>
+        /// Adds the given <paramref name="includeSpecification"/> to the given <paramref name="querySpecification"/>.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="querySpecification"/> already has an <see cref="IIncludeSpecification{T}"/> then the given
+        /// <paramref name="includeSpecification"/> will be added in addition to the existing specification(s).
+        /// </para>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+        /// <param name="includeSpecification">The <see cref="IIncludeSpecification{T}"/> instance to add to the query.</param>
+        /// <returns></returns>
+        public static IOrderableQuerySpecification<T> WithInclude<T>(this IQuerySpecification<T> querySpecification,
             IIncludeSpecification<T> includeSpecification)
+            where T : class
         {
-            querySpecification.Include = includeSpecification;
+            if (querySpecification.Include == null)
+            {
+                querySpecification.Include = includeSpecification;
+            }
+            else
+            {
+                querySpecification.Include = IncludeSpecification<T>.From(
+                    querySpecification.Include, includeSpecification);
+            }
 
-            return querySpecification;
+            if (querySpecification is IOrderableQuerySpecification<T> orderableQuerySpecification)
+            {
+                return orderableQuerySpecification;
+            }
+
+            return new QuerySpecification<T>(querySpecification);
         }
 
-        public static IQuerySpecification<T> WithInclude<T>(this IQuerySpecification<T> querySpecification,
+        /// <summary>
+        /// <para>
+        /// Adds an <see cref="IIncludeSpecification{T}"/> built from the given <paramref name="includeAction"/> to the given <paramref name="querySpecification"/>.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="querySpecification"/> already has an <see cref="IIncludeSpecification{T}"/> then the result
+        /// of the given <paramref name="includeAction"/> will be added in addition to the existing specification(s).
+        /// </para>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+        /// <param name="includeAction">The action to be used to build an <see cref="IIncludeSpecification{T}"/> to add to the query.</param>
+        /// <returns></returns>
+        public static IOrderableQuerySpecification<T> WithInclude<T>(this IQuerySpecification<T> querySpecification,
             Action<IBuildableIncludeSpecification<T>> includeAction)
+            where T : class
         {
-            querySpecification.Include = new DynamicIncludeSpecification<T>(includeAction);
+            var includeSpecification = new DynamicIncludeSpecification<T>(includeAction);
 
-            return querySpecification;
+            return querySpecification.WithInclude(includeSpecification);
+        }
+        
+        /// <summary>
+        /// Returns the given <paramref name="querySpecification"/> as an instance of <see cref="IOrderableQuerySpecification{T}"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="querySpecification">The specification to convert to an <see cref="IOrderableQuerySpecification{T}"/>.</param>
+        /// <returns></returns>
+        public static IOrderableQuerySpecification<T> AsOrderable<T>(this IQuerySpecification<T> querySpecification)
+            where T : class
+        {
+            if (querySpecification is IOrderableQuerySpecification<T> orderableQuerySpecification)
+            {
+                return orderableQuerySpecification;
+            }
+
+            return new QuerySpecification<T>(querySpecification);
         }
 
         public static IOrderableQuerySpecification<T> WithOrder<T>(
