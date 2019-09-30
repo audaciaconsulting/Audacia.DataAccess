@@ -158,6 +158,12 @@ namespace Audacia.DataAccess.Specifications
         {
         }
 
+        public QuerySpecification(IQuerySpecification<T> querySpecification)
+        {
+            Filter = querySpecification.Filter;
+            Include = querySpecification.Include;
+        }
+
         public QuerySpecification(IFilterSpecification<T> filterSpecification)
         {
             Filter = filterSpecification;

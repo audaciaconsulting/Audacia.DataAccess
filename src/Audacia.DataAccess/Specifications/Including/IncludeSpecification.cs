@@ -6,7 +6,7 @@ namespace Audacia.DataAccess.Specifications.Including
 {
     public class IncludeSpecification<T> : IBuildableIncludeSpecification<T>
     {
-        private readonly ICollection<IncludeStepPath> _includeStepPaths = new List<IncludeStepPath>();
+        private readonly List<IncludeStepPath> _includeStepPaths = new List<IncludeStepPath>();
 
         protected IncludeSpecification()
         {
@@ -15,6 +15,17 @@ namespace Audacia.DataAccess.Specifications.Including
         internal static IncludeSpecification<T> CreateInternal()
         {
             return new IncludeSpecification<T>();
+        }
+
+        internal static IncludeSpecification<T> From(params IIncludeSpecification<T>[] includeSpecifications)
+        {
+            var specification = CreateInternal();
+            foreach (var fromSpecification in includeSpecifications)
+            {
+                specification._includeStepPaths.AddRange(fromSpecification.IncludeStepPaths);
+            }
+
+            return specification;
         }
         
         public IEnumerable<IncludeStepPath> IncludeStepPaths => _includeStepPaths;
@@ -30,6 +41,7 @@ namespace Audacia.DataAccess.Specifications.Including
             
             return new ThenInclude<TKey>(path);
         }
+
         public IThenInclude<TKey> With<TKey>(Expression<Func<T, ICollection<TKey>>> keySelector)
         {
             var path = new IncludeStepPath
