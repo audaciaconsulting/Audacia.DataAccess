@@ -12,11 +12,12 @@ namespace Audacia.DataAccess.Tests.Helpers.Database
                 new Customer { CustomerId = 2, EmailAddress = "alice@example.com", FirstName = "Alice", LastName = "Smith" });
 
             dbContext.Products.AddRange(
-                new Product { ProductId = 1, Description = "Mug", Price = 4.99m },
+                new Product { ProductId = 1, Description = "Tea Mug", Price = 4.99m },
                 new Product { ProductId = 2, Description = "Lunchbox", Price = 2.99m },
-                new Product { ProductId = 3, Description = "Pencil", Price = 1.50m },
+                new Product { ProductId = 3, Description = "Paper", Price = 1.50m },
                 new Product { ProductId = 4, Description = "Headphones", Price = 244.99m },
-                new Product { ProductId = 5, Description = "Desk", Price = 74.99m });
+                new Product { ProductId = 5, Description = "Desk", Price = 74.99m },
+                new Product { ProductId = 6, Description = "Pencil", Price = 1.50m });
 
             dbContext.Orders.AddRange(
                 new Order { OrderId = 1, CustomerId = 1, DatePlaced = DateTime.Now },

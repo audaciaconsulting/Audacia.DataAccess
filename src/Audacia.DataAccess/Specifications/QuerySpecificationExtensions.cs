@@ -106,21 +106,54 @@ namespace Audacia.DataAccess.Specifications
             return new QuerySpecification<T>(querySpecification);
         }
 
+        /// <summary>
+        /// <para>
+        /// Adds the given <paramref name="orderSpecification"/> to the given <paramref name="querySpecification"/>.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="querySpecification"/> already has an <see cref="IOrderSpecification{T}"/>
+        /// then the given <paramref name="orderSpecification"/> will be added in addition to the existing specification(s).
+        /// </para>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+        /// <param name="orderSpecification">The <see cref="IOrderSpecification{T}"/> instance to add to the query.</param>
+        /// <returns></returns>
         public static IOrderableQuerySpecification<T> WithOrder<T>(
             this IOrderableQuerySpecification<T> querySpecification, IOrderSpecification<T> orderSpecification)
         {
-            querySpecification.Order = orderSpecification;
+            if (querySpecification.Order == null)
+            {
+                querySpecification.Order = orderSpecification;
+            }
+            else
+            {
+                querySpecification.Order = OrderSpecification<T>.From(querySpecification.Order, orderSpecification);
+            }
 
             return querySpecification;
         }
 
+        /// <summary>
+        /// <para>
+        /// Adds an <see cref="IOrderSpecification{T}"/> built from the given <paramref name="orderAction"/> to the given <paramref name="querySpecification"/>.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="querySpecification"/> already has an <see cref="IOrderSpecification{T}"/> then the result
+        /// of the given <paramref name="orderAction"/> will be added in addition to the existing specification(s).
+        /// </para>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+        /// <param name="orderAction">The action to be used to build an <see cref="IOrderSpecification{T}"/> to add to the query.</param>
+        /// <returns></returns>
         public static IOrderableQuerySpecification<T> WithOrder<T>(
             this IOrderableQuerySpecification<T> querySpecification,
             Action<IBuildableOrderSpecification<T>> orderAction)
         {
-            querySpecification.Order = new DynamicOrderSpecification<T>(orderAction);
+            var orderSpecification = new DynamicOrderSpecification<T>(orderAction);
 
-            return querySpecification;
+            return querySpecification.WithOrder(orderSpecification);
         }
 
         public static IProjectableQuerySpecification<T, TResult> WithProjection<T, TResult>(

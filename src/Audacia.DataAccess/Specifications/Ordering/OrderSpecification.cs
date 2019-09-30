@@ -24,16 +24,19 @@ namespace Audacia.DataAccess.Specifications.Ordering
         }
 
         /// <summary>
-        /// Factory method to create an <see cref="OrderSpecification{T}"/> from an existing <see cref="IOrderSpecification{T}"/>.
+        /// Factory method to create an <see cref="OrderSpecification{T}"/> from existing <see cref="IOrderSpecification{T}"/>s.
         /// Provides safety by returning the created specification as an <see cref="IBuildableOrderedOrderSpecification{T}"/> thus ensuring
         /// that only the appropriate methods can be called on the returned object.
         /// </summary>
-        /// <param name="existingSpecification"></param>
+        /// <param name="existingSpecifications"></param>
         /// <returns></returns>
-        public static IBuildableOrderedOrderSpecification<T> From(IOrderSpecification<T> existingSpecification)
+        public static IBuildableOrderedOrderSpecification<T> From(params IOrderSpecification<T>[] existingSpecifications)
         {
             var newSpec = new OrderSpecification<T>();
-            newSpec._orderSteps.AddRange(existingSpecification.OrderSteps);
+            foreach (var orderSpecification in existingSpecifications)
+            {
+                newSpec._orderSteps.AddRange(orderSpecification.OrderSteps);
+            }
 
             return newSpec;
         }
