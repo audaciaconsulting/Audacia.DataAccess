@@ -1,10 +1,11 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Audacia.DataAccess.EntityFrameworkCore
 {
-    public class WriteDataRepository<TContext> : IWriteableDataRepository
+    public class WriteDataRepository<TContext> : IWriteableDataRepository, IDisposable
         where TContext : DbContext
     {
         private readonly TContext _context;
@@ -46,6 +47,11 @@ namespace Audacia.DataAccess.EntityFrameworkCore
             Delete(model);
 
             return true;
+        }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
         }
     }
 }
