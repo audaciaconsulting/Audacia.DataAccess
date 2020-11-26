@@ -2,8 +2,8 @@
 
   <PropertyGroup>
 	<TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.1.0.0</Version>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Authors>Philip Rashleigh</Authors>
     <Company>Audacia</Company>
     <Copyright>Copyright © Audacia 2018</Copyright>
@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Audacia.Core" Version="0.1.18066.18157" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.10" />
   </ItemGroup>
 
   <ItemGroup>

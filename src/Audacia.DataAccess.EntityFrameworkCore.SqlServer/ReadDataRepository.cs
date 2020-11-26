@@ -295,7 +295,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             var commandText = _storedProcedureBuilder.GetQueryText(specification);
 
             var query = _context.Set<T>()
-                .FromSql(commandText);
+                .FromSqlRaw(commandText);
 
             if (!_trackChanges)
             {
@@ -312,7 +312,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer
             var commandText = _storedProcedureBuilder.GetQueryText(specification);
 
             var query = _context.Set<T>()
-                .FromSql(commandText);
+                .FromSqlRaw(commandText);
 
             if (!_trackChanges)
             {
