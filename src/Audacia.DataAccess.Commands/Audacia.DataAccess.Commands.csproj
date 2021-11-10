@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Audacia.Commands" Version="0.1.18064.17987" />
-    <PackageReference Include="Audacia.Core" Version="0.1.18066.18157" />
+    <PackageReference Include="Audacia.Core" Version="0.2.21314.2" />
   </ItemGroup>
 
   <ItemGroup>

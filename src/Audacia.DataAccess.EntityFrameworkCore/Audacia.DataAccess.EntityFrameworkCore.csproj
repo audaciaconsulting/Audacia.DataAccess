@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Audacia.Core" Version="0.1.18066.18157" />
+    <PackageReference Include="Audacia.Core" Version="0.2.21314.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.10" />
   </ItemGroup>
 
