@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         {
             _dispatcher = new TriggerDispatcher<TDbContext>(dbContext, registrar);
             _entityEntries = dbContext.ChangeTracker.Entries().ToList();
-            _initalEntityStates = new Dictionary<object, EntityState>();
+            _initalEntityStates = new ConcurrentDictionary<object, EntityState>();
         }
         
         public async Task BeforeAsync(CancellationToken cancellationToken)
