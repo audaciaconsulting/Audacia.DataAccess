@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -47,10 +48,10 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         }
 
         private readonly IDictionary<object, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>> _delegateCache =
-            new Dictionary<object, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>>();
+            new ConcurrentDictionary<object, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>>();
 
         private readonly IDictionary<TriggerTypeHash, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>> _triggers =
-            new Dictionary<TriggerTypeHash, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>>();
+            new ConcurrentDictionary<TriggerTypeHash, Func<object, TriggerContext<TDbContext>, CancellationToken, Task>>();
 
         private Func<TDbContext, CancellationToken, Task> _beforeAsync;
         private Func<TDbContext, CancellationToken, Task> _afterAsync;

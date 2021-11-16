@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -33,14 +34,15 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
 
         private class AuditIntanceState
         {
-            public IDictionary<object, AuditEntryWrapper> EntityEntryWrappers { get; } =
-                new Dictionary<object, AuditEntryWrapper>();
+            public ConcurrentDictionary<object, AuditEntryWrapper> EntityEntryWrappers { get; } =
+                new ConcurrentDictionary<object, AuditEntryWrapper>();
         }
 
         private readonly TriggerRegistrar<TDbContext> _triggerRegistrar;
         private readonly IAuditConfiguration<TUserIdentifier, TDbContext> _configuration;
+
         private readonly IDictionary<TDbContext, AuditIntanceState> _auditStateDictionary =
-            new Dictionary<TDbContext, AuditIntanceState>();
+            new ConcurrentDictionary<TDbContext, AuditIntanceState>();
 
         public AuditConfigurationApplicant(TriggerRegistrar<TDbContext> triggerRegistrar, IAuditConfiguration<TUserIdentifier, TDbContext> configuration)
         {
