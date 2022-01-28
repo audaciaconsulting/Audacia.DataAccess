@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.0.0</Version>
-    <Copyright>Copyright © Audacia 2018</Copyright>
+    <TargetFramework>net6.0</TargetFramework>
+    <Version>2.0.0.0</Version>
+    <Copyright>Copyright © Audacia 2022</Copyright>
     <Authors>Philip Rashleigh</Authors>
     <Company>Audacia</Company>
     <Description>Entity Framework Core Sql Server atomic auditing code for Audacia.DataAccess</Description>
@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="Audacia.Core" Version="0.2.21314.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

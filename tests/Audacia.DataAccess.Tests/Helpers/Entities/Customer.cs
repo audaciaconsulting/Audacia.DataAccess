@@ -4,6 +4,13 @@ namespace Audacia.DataAccess.Tests.Helpers.Entities
 {
     public class Customer
     {
+        public Customer()
+        {
+            FirstName = string.Empty;
+            LastName = string.Empty;
+            EmailAddress = string.Empty;
+        }
+
         public int CustomerId { get; set; }
 
         public string FirstName { get; set; }
