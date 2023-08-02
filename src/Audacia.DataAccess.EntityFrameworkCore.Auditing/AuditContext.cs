@@ -14,5 +14,6 @@ public class AuditContext<TDbContext>
     }
 
     public IEntityAuditConfiguration Configuration { get; }
+
     public TriggerContext<TDbContext> TriggerContext { get; }
 }

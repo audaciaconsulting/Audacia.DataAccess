@@ -34,8 +34,12 @@ internal class PropertyAuditConfiguration : IPropertyAuditConfiguration
     }
 
     public IProperty Property { get; }
+
     public bool Ignore { get; }
+
     public string FriendlyName { get; }
+
     public Type FriendlyValueLookupType { get; }
+
     public Func<object, string> FriendlyValueFactory { get; }
 }

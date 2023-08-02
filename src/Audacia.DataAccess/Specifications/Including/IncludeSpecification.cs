@@ -69,6 +69,7 @@ public class IncludeSpecification<T> : IBuildableIncludeSpecification<T>
 
             return new ThenInclude<TKey>(_includeStepPath);
         }
+
         public IThenInclude<TKey> Then<TKey>(Expression<Func<TThen, ICollection<TKey>>> keySelector)
         {
             _includeStepPath.Add(new IncludeStep(keySelector));

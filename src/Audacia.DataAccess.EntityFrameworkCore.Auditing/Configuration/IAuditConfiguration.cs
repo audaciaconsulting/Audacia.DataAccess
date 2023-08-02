@@ -9,8 +9,12 @@ public interface IAuditConfiguration<TUserIdentifier, in TDbContext>
     where TUserIdentifier : struct
 {
     bool DoNotAuditIfNoChangesInTrackedProperties { get; }
+
     AuditStrategy Strategy { get; }
+
     IDictionary<Type, IEntityAuditConfiguration> Entities { get; }
+
     Func<TUserIdentifier?> UserIdentifierFactory { get; }
+
     IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> SinkFactories { get; }
 }

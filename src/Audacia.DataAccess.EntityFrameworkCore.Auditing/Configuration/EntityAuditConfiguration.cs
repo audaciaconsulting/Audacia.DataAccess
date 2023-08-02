@@ -49,9 +49,13 @@ internal class EntityAuditConfiguration : IEntityAuditConfiguration
     }
 
     public IEntityType EntityType { get; }
+
     public bool Ignore { get; }
+
     public AuditStrategy Strategy { get; }
+
     public string FriendlyName { get; }
+
     public Func<object, string> DescriptionFactory { get; }
 
     public IDictionary<string, IPropertyAuditConfiguration> Properties { get; }

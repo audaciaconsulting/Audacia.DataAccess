@@ -20,15 +20,20 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
     private class AuditEntryWrapper
     {
         public AuditEntry<TUserIdentifier> AuditEntry { get; set; }
+
         public ICollection<PropertyEntryWrapper> PropertyWrappers { get; set; }
     }
 
     private class PropertyEntryWrapper
     {
         public IPropertyAuditConfiguration Configuration { get; set; }
+
         public PropertyEntry PropertyEntry { get; set; }
+
         public object OldValue { get; set; }
+
         public object NewValue { get; set; }
+
         public bool IsModified { get; set; }
     }
 

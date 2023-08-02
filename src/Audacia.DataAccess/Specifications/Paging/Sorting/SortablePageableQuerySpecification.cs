@@ -14,7 +14,9 @@ namespace Audacia.DataAccess.Specifications.Paging.Sorting;
 public class SortablePageableQuerySpecification<T> : ISortablePageableQuerySpecification<T> where T : class
 {
     public IFilterSpecification<T> Filter { get; set; }
+
     public IIncludeSpecification<T> Include { get; set; }
+
     public SortablePagingRequest SortablePagingRequest { get; set; }
 
     public SortablePageableQuerySpecification(SortablePagingRequest sortablePagingRequest)
@@ -40,8 +42,11 @@ public class SortablePageableQuerySpecification<T> : ISortablePageableQuerySpeci
 public class SortablePageableQuerySpecification<T, TResult> : ISortablePageableQuerySpecification<T, TResult> where T : class
 {
     public IFilterSpecification<T> Filter { get; set; }
+
     public IIncludeSpecification<T> Include { get; set; }
+
     public IProjectionSpecification<T, TResult> Projection { get; set; }
+
     public SortablePagingRequest SortablePagingRequest { get; set; }
 
     public SortablePageableQuerySpecification(SortablePagingRequest sortablePagingRequest)

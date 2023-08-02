@@ -15,6 +15,7 @@ public class AuditConfigurationBuilder<TUserIdentifier, TDbContext>
     private Func<TUserIdentifier?> _userIdentifierFactory = () => null;
     private readonly ICollection<IAuditSinkFactory<TUserIdentifier, TDbContext>> _sinkFactories =
         new List<IAuditSinkFactory<TUserIdentifier, TDbContext>>();
+
     private readonly IDictionary<Type, TypeAuditConfigurationBuilder> _types =
         new Dictionary<Type, TypeAuditConfigurationBuilder>();
 

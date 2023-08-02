@@ -47,7 +47,9 @@ public static class ProjectableQuerySpecification
 public class ProjectableQuerySpecification<T, TResult> : IProjectableQuerySpecification<T, TResult> where T : class
 {
     public IFilterSpecification<T> Filter { get; set; }
+
     public IIncludeSpecification<T> Include { get; set; }
+
     public IProjectionSpecification<T, TResult> Projection { get; set; }
 
     public ProjectableQuerySpecification(IProjectionSpecification<T, TResult> projectionSpecification)

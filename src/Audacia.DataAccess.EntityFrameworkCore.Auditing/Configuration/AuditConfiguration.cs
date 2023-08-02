@@ -13,9 +13,12 @@ internal class AuditConfiguration<TUserIdentifier, TDbContext> : IAuditConfigura
     }
 
     public bool DoNotAuditIfNoChangesInTrackedProperties { get; internal set; }
+
     public AuditStrategy Strategy { get; internal set; }
 
     public IDictionary<Type, IEntityAuditConfiguration> Entities { get; internal set; }
+
     public Func<TUserIdentifier?> UserIdentifierFactory { get; internal set; }
+
     public IEnumerable<IAuditSinkFactory<TUserIdentifier, TDbContext>> SinkFactories { get; set; }
 }

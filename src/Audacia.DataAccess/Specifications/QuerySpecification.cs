@@ -151,7 +151,9 @@ public class QuerySpecification<T> : IOrderableQuerySpecification<T>
     where T : class
 {
     public IFilterSpecification<T> Filter { get; set; }
+
     public IIncludeSpecification<T> Include { get; set; }
+
     public IOrderSpecification<T> Order { get; set; }
 
     public QuerySpecification()

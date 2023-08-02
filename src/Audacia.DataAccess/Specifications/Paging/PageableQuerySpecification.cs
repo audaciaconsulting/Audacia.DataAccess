@@ -15,8 +15,11 @@ namespace Audacia.DataAccess.Specifications.Paging;
 public class PageableQuerySpecification<T> : IPageableQuerySpecification<T> where T : class
 {
     public IFilterSpecification<T> Filter { get; set; }
+
     public IIncludeSpecification<T> Include { get; set; }
+
     public IOrderSpecification<T> Order { get; set; }
+
     public PagingRequest PagingRequest { get; set; }
 
     public PageableQuerySpecification(IOrderableQuerySpecification<T> buildFrom,
@@ -39,9 +42,13 @@ public class PageableQuerySpecification<T> : IPageableQuerySpecification<T> wher
 public class PageableQuerySpecification<T, TResult> : IPageableQuerySpecification<T, TResult> where T : class
 {
     public IFilterSpecification<T> Filter { get; set; }
+
     public IIncludeSpecification<T> Include { get; set; }
+
     public IProjectionSpecification<T, TResult> Projection { get; set; }
+
     public IOrderSpecification<TResult> Order { get; set; }
+
     public PagingRequest PagingRequest { get; set; }
 
     public PageableQuerySpecification(IOrderableQuerySpecification<T, TResult> buildFrom,

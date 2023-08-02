@@ -14,7 +14,9 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         }
 
         public EntityEntry EntityEntry { get; }
+
         public TDbContext DbContext { get; }
+
         public EntityState InitialEntityState { get; }
     }
 }

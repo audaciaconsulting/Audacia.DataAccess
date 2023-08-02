@@ -39,8 +39,11 @@ public class OrderableQuerySpecification<T> : IOrderableQuerySpecification<T>
 public class OrderableQuerySpecification<T, TResult> : IOrderableQuerySpecification<T, TResult> where T : class
 {
     public IFilterSpecification<T> Filter { get; set; }
+
     public IIncludeSpecification<T> Include { get; set; }
+
     public IProjectionSpecification<T, TResult> Projection { get; set; }
+
     public IOrderSpecification<TResult> Order { get; set; }
 
     public OrderableQuerySpecification(IProjectableQuerySpecification<T, TResult> buildFrom,
