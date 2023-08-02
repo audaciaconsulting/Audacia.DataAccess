@@ -9,6 +9,9 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIcon>package-icon.png</PackageIcon>
     <Description>Entity Framework Core Sql Server trigger code for Audacia.DataAccess</Description>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -20,6 +23,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+
+    <PackageReference Include="Audacia.CodeAnalysis" Version="1.5.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
 
     <PackageReference Include="Audacia.Core" Version="0.2.21314.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />

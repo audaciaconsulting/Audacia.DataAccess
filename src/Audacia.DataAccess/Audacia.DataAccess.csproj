@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup><TargetFramework>net6.0</TargetFramework>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
     <Version>2.0.1.0</Version>
     <Authors>Audacia</Authors>
     <Copyright>Copyright © Audacia $([System.DateTime]::UtcNow.Year)</Copyright>
@@ -8,9 +9,16 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIcon>package-icon.png</PackageIcon>
     <Description>Base Classes and Extensions for the creating, modifying and handling from a data store.</Description>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Audacia.CodeAnalysis" Version="1.5.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Audacia.Core" Version="0.2.21314.2" />
   </ItemGroup>
 
