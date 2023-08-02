@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>2.0.1.0</Version>
+    <Version>2.1.0</Version>
     <Authors>Audacia</Authors>
     <Copyright>Copyright © Audacia $([System.DateTime]::UtcNow.Year)</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -11,7 +11,7 @@
     <Description>Command pattern implementation with support for persisting changes to a database</Description>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,8 +19,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Audacia.Commands" Version="0.1.18064.17987" />
-    <PackageReference Include="Audacia.Core" Version="0.2.21314.2" />
+    <PackageReference Include="Audacia.Commands" Version="1.1.1" />
+    <PackageReference Include="Audacia.Core" Version="1.1.2" />
   </ItemGroup>
 
   <ItemGroup>

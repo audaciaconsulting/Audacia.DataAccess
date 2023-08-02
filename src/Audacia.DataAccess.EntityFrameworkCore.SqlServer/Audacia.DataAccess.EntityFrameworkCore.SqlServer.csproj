@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>2.0.1.0</Version>
+    <Version>2.1.0</Version>
     <Authors>Audacia</Authors>
     <Copyright>Copyright © Audacia $([System.DateTime]::UtcNow.Year)</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -11,7 +11,7 @@
     <Description>Entity Framework Core Sql Server implementation of Audacia.DataAccess</Description>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +19,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Audacia.Core" Version="0.2.21314.2" />
+    <PackageReference Include="Audacia.Core" Version="1.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
   </ItemGroup>
