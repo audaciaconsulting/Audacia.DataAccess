@@ -1,11 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup><TargetFramework>net6.0</TargetFramework>
-    <Version>2.0.0.0</Version>
-    <Authors>Philip Rashleigh</Authors>
-    <Company>Audacia</Company>
-    <Copyright>Copyright © Audacia 2022</Copyright>
-    <PackageIconUrl>https://girnka-dm2305.files.1drv.com/y4mUfw_5APiy6YhvPidloaNkO5IMUh4GTX222ecazimKACSrlsUoptXi3WHjmHmPtDIxhjfcG0AJHcQ4NDxm4tA13PEBjzjoEnKm5hcoNzxS1i6um3cBaB0o9AMT3PXAULs9utk0wG6YP7tmUmQ_UTSaiG9mNEcXM_t1_Eiguvs1XeaIKBjbb_WF8hTUMzmwY_pGG8BuM9CDcu7tpW2oxK7fw</PackageIconUrl>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Version>2.0.1.0</Version>
+    <Authors>Audacia</Authors>
+    <Copyright>Copyright © Audacia $([System.DateTime]::UtcNow.Year)</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageIcon>package-icon.png</PackageIcon>
     <Description>Command pattern implementation with support for persisting changes to a database</Description>
   </PropertyGroup>
 
@@ -18,4 +20,10 @@
     <ProjectReference Include="..\Audacia.DataAccess\Audacia.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\package-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 </Project>
