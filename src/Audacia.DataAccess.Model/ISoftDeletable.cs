@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Audacia.DataAccess.Model
+namespace Audacia.DataAccess.Model;
+
+public interface ISoftDeletable<TUserIdentifier>
+    where TUserIdentifier : struct
 {
-    public interface ISoftDeletable<TUserIdentifier>
-        where TUserIdentifier : struct
-    {
-        DateTimeOffset? Deleted { get; set; }
-        TUserIdentifier? DeletedBy { get; set; }
-    }
+    DateTimeOffset? Deleted { get; set; }
+    TUserIdentifier? DeletedBy { get; set; }
 }

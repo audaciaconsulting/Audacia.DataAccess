@@ -1,6 +1,5 @@
-﻿namespace Audacia.DataAccess.Specifications.Including
+﻿namespace Audacia.DataAccess.Specifications.Including;
+
+public interface IBuildableIncludeSpecification<T> : IIncludeSpecification<T>, IInclude<T>
 {
-    public interface IBuildableIncludeSpecification<T> : IIncludeSpecification<T>, IInclude<T>
-    {
-    }
 }

@@ -2,79 +2,78 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Audacia.DataAccess.Specifications.Including
+namespace Audacia.DataAccess.Specifications.Including;
+
+public class IncludeSpecification<T> : IBuildableIncludeSpecification<T>
 {
-    public class IncludeSpecification<T> : IBuildableIncludeSpecification<T>
+    private readonly List<IncludeStepPath> _includeStepPaths = new List<IncludeStepPath>();
+
+    protected IncludeSpecification()
     {
-        private readonly List<IncludeStepPath> _includeStepPaths = new List<IncludeStepPath>();
+    }
 
-        protected IncludeSpecification()
+    internal static IncludeSpecification<T> CreateInternal()
+    {
+        return new IncludeSpecification<T>();
+    }
+
+    internal static IncludeSpecification<T> From(params IIncludeSpecification<T>[] includeSpecifications)
+    {
+        var specification = CreateInternal();
+        foreach (var fromSpecification in includeSpecifications)
         {
+            specification._includeStepPaths.AddRange(fromSpecification.IncludeStepPaths);
         }
 
-        internal static IncludeSpecification<T> CreateInternal()
-        {
-            return new IncludeSpecification<T>();
-        }
+        return specification;
+    }
+    
+    public IEnumerable<IncludeStepPath> IncludeStepPaths => _includeStepPaths;
 
-        internal static IncludeSpecification<T> From(params IIncludeSpecification<T>[] includeSpecifications)
+    public IThenInclude<TKey> With<TKey>(Expression<Func<T, TKey>> keySelector)
+    {
+        var path = new IncludeStepPath
         {
-            var specification = CreateInternal();
-            foreach (var fromSpecification in includeSpecifications)
-            {
-                specification._includeStepPaths.AddRange(fromSpecification.IncludeStepPaths);
-            }
+            new IncludeStep(keySelector)
+        };
 
-            return specification;
-        }
+        _includeStepPaths.Add(path);
         
-        public IEnumerable<IncludeStepPath> IncludeStepPaths => _includeStepPaths;
+        return new ThenInclude<TKey>(path);
+    }
 
-        public IThenInclude<TKey> With<TKey>(Expression<Func<T, TKey>> keySelector)
+    public IThenInclude<TKey> With<TKey>(Expression<Func<T, ICollection<TKey>>> keySelector)
+    {
+        var path = new IncludeStepPath
         {
-            var path = new IncludeStepPath
-            {
-                new IncludeStep(keySelector)
-            };
+            new IncludeStep(keySelector)
+        };
 
-            _includeStepPaths.Add(path);
-            
-            return new ThenInclude<TKey>(path);
+        _includeStepPaths.Add(path);
+        
+        return new ThenInclude<TKey>(path);
+    }
+
+    private class ThenInclude<TThen> : IThenInclude<TThen>
+    {
+        private readonly IncludeStepPath _includeStepPath;
+
+        internal ThenInclude(IncludeStepPath includeStepPath)
+        {
+            _includeStepPath = includeStepPath;
         }
 
-        public IThenInclude<TKey> With<TKey>(Expression<Func<T, ICollection<TKey>>> keySelector)
+        public IThenInclude<TKey> Then<TKey>(Expression<Func<TThen, TKey>> keySelector)
         {
-            var path = new IncludeStepPath
-            {
-                new IncludeStep(keySelector)
-            };
+            _includeStepPath.Add(new IncludeStep(keySelector));
 
-            _includeStepPaths.Add(path);
-            
-            return new ThenInclude<TKey>(path);
+            return new ThenInclude<TKey>(_includeStepPath);
         }
-
-        private class ThenInclude<TThen> : IThenInclude<TThen>
+        public IThenInclude<TKey> Then<TKey>(Expression<Func<TThen, ICollection<TKey>>> keySelector)
         {
-            private readonly IncludeStepPath _includeStepPath;
+            _includeStepPath.Add(new IncludeStep(keySelector));
 
-            internal ThenInclude(IncludeStepPath includeStepPath)
-            {
-                _includeStepPath = includeStepPath;
-            }
-
-            public IThenInclude<TKey> Then<TKey>(Expression<Func<TThen, TKey>> keySelector)
-            {
-                _includeStepPath.Add(new IncludeStep(keySelector));
-
-                return new ThenInclude<TKey>(_includeStepPath);
-            }
-            public IThenInclude<TKey> Then<TKey>(Expression<Func<TThen, ICollection<TKey>>> keySelector)
-            {
-                _includeStepPath.Add(new IncludeStep(keySelector));
-
-                return new ThenInclude<TKey>(_includeStepPath);
-            }
+            return new ThenInclude<TKey>(_includeStepPath);
         }
     }
 }
