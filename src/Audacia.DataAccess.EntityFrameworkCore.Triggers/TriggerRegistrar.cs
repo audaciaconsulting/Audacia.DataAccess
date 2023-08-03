@@ -14,6 +14,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
         private class TriggerTypeHash : IEquatable<TriggerTypeHash>
         {
             public TriggerType TriggerType { get; set; }
+
             public Type EntityType { get; set; }
 
             public override bool Equals(object obj)

@@ -1,9 +1,8 @@
-﻿namespace Audacia.DataAccess.Model.Auditing
+﻿namespace Audacia.DataAccess.Model.Auditing;
+
+public enum AuditState
 {
-    public enum AuditState
-    {
-        Added,
-        Modified,
-        Deleted
-    }
+    Added,
+    Modified,
+    Deleted
 }

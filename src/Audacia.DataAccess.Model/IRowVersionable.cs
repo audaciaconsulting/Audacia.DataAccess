@@ -1,7 +1,6 @@
-﻿namespace Audacia.DataAccess.Model
+﻿namespace Audacia.DataAccess.Model;
+
+public interface IRowVersionable
 {
-    public interface IRowVersionable
-    {
-        byte[] RowVersion { get; set; }
-    }
+    byte[] RowVersion { get; set; }
 }

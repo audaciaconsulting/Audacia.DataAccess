@@ -1,8 +1,7 @@
-﻿namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration
+﻿namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
+
+public enum AuditStrategy
 {
-    public enum AuditStrategy
-    {
-        Full,
-        Partial
-    }
+    Full,
+    Partial
 }
