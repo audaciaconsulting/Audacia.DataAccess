@@ -129,7 +129,7 @@ public class QueryableExtensionsTests
 
         Func<Task<IPage<Customer>>> act = () => _dbContext.Customers.ToPageAsync(pagingRequest);
 
-        await act.Should().ThrowExactlyAsync<ApplicationException>();
+        await act.Should().ThrowExactlyAsync<ArgumentException>();
     }
 
     private async Task SeedDatabaseAsync(IEnumerable<Customer> query)
