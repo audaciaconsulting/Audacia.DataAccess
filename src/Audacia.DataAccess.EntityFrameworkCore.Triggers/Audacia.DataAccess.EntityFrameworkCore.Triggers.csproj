@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Version>2.1.0</Version>
     <Authors>Audacia</Authors>
     <Copyright>Copyright © Audacia $([System.DateTime]::UtcNow.Year)</Copyright>
@@ -22,7 +22,7 @@
     </PackageReference>
 
     <PackageReference Include="Audacia.Core" Version="1.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>
