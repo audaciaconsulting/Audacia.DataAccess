@@ -10,8 +10,15 @@ namespace Audacia.DataAccess.Specifications.Projection;
 /// <typeparam name="TResult">The type of entity to be converted to.</typeparam>
 public class DynamicProjectionSpecification<T, TResult> : IProjectionSpecification<T, TResult>
 {
+    /// <summary>
+    /// Gets Expression.
+    /// </summary>
     public Expression<Func<T, TResult>> Expression { get; }
 
+    /// <summary>
+    /// Constructor takes in <see cref="Expression{T}"/>.
+    /// </summary>
+    /// <param name="expression">Instance of <see cref="Expression{T}"/>.</param>
     public DynamicProjectionSpecification(Expression<Func<T, TResult>> expression)
     {
         Expression = expression;

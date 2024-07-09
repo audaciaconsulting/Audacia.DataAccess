@@ -1,6 +1,6 @@
-﻿using Audacia.Core.Extensions;
-using System;
+﻿using System;
 using System.Linq.Expressions;
+using Audacia.Core.Extensions;
 
 namespace Audacia.DataAccess.Specifications.Filtering;
 
@@ -10,10 +10,22 @@ namespace Audacia.DataAccess.Specifications.Filtering;
 /// <typeparam name="T">The type of entity to be filtered.</typeparam>
 public class NotFilterSpecification<T> : IFilterSpecification<T>
 {
+    /// <summary>
+    /// Gets the <see cref="Expression{T}"/> that contains the filtering rule(s).
+    /// </summary>
     public Expression<Func<T, bool>> Expression { get; }
 
+    /// <summary>
+    /// Constructor which takes an instance of <see cref="IFilterSpecification{T}"/>.
+    /// </summary>
+    /// <param name="specificationToNegate">Instance of <see cref="IFilterSpecification{T}"/>.</param>
     public NotFilterSpecification(IFilterSpecification<T> specificationToNegate)
     {
-        Expression = specificationToNegate.Expression.Not();
+        if (specificationToNegate != null) 
+        {
+            Expression = specificationToNegate.Expression.Not();
+        }
+
+        Expression = _ => false;
     }
 }

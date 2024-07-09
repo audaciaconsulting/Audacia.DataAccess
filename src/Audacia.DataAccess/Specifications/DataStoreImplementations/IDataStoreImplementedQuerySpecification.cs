@@ -6,7 +6,7 @@ namespace Audacia.DataAccess.Specifications.DataStoreImplementations;
 /// <summary>
 /// Query specification for data store provided queries, such as stored procedures.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">Type of <see cref="IDataStoreImplementedQuerySpecification{T}"/> instance.</typeparam>
 public interface IDataStoreImplementedQuerySpecification<T>
 {
     /// <summary>
@@ -22,15 +22,14 @@ public interface IDataStoreImplementedQuerySpecification<T>
 
 /// <summary>
 /// Query specification for data store provided queries, such as stored procedures.
-/// Provides additional functionality allowing the 
 /// </summary>
-/// <typeparam name="T"></typeparam>
-/// <typeparam name="TResult"></typeparam>
+/// <typeparam name="T">Type of <see cref="IDataStoreImplementedQuerySpecification{T}"/> instance.</typeparam>
+/// <typeparam name="TResult">Output type of <see cref="IDataStoreImplementedQuerySpecification{T}"/> instance.</typeparam>
 public interface IDataStoreImplementedQuerySpecification<T, TResult> : IDataStoreImplementedQuerySpecification<T>
 {
     /// <summary>
     /// Gets the <see cref="IProjectionSpecification{T,TResult}"/> containing the rules
-    /// to convert from an object of type <see cref="T"/> to an object of type <see cref="TResult"/>.
+    /// to convert from an object of type <see cref="IProjectionSpecification{T, TResult}"/> to an object of type <see cref="IProjectionSpecification{T, TResult}"/>.
     /// </summary>
     IProjectionSpecification<T, TResult> Projection { get; }
 }

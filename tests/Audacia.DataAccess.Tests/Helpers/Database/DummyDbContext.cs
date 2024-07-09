@@ -13,11 +13,9 @@ public class DummyDbContext : DbContext
 
     public DbSet<Product> Products { get; set; }
 
-
     public DummyDbContext(DbContextOptions<DummyDbContext> options)
         : base(options)
-    {
-        
+    {        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

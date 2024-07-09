@@ -3,8 +3,9 @@
 namespace Audacia.DataAccess.Specifications.Ordering;
 
 /// <summary>
-/// Exposes a collection of <see cref="OrderStep"/> objects which contain the rules needed to sort a collection of objects of type <see cref="T"/>.
+/// Exposes a collection of <see cref="OrderStep"/> objects which contain the rules needed to sort a collection of objects of type <see cref="IOrderSpecification{T}"/>.
 /// </summary>
+/// <typeparam name="T">Type of <see cref="IOrderSpecification{T}"/>.</typeparam>
 public interface IOrderSpecification<T>
 {
     /// <summary>

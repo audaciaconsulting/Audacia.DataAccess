@@ -11,32 +11,30 @@ using Xunit;
 
 namespace Audacia.DataAccess.Tests.DataAccess.Specifications.Ordering;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP002:Dispose the member as it is assigned with a created IDisposable", Justification = "Fixing this will introduce breaking changes.")]
 public class OrderSpecificationTests : IDisposable
 {
     private readonly DummyDbContext _dbContext;
+
     private readonly IReadableDataRepository _repository;
+
+    private bool _disposed = false;
 
     public OrderSpecificationTests()
     {
-        var dbOptions = new DbContextOptionsBuilder<DummyDbContext>()
+        var databaseOptions = new DbContextOptionsBuilder<DummyDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
         // Seed in separate instance of context otherwise all seeded entities will be loaded
-        using (var context = new DummyDbContext(dbOptions))
+        using (var context = new DummyDbContext(databaseOptions))
         {
             context.Seed();
         }
 
-        _dbContext = new DummyDbContext(dbOptions);
+        _dbContext = new DummyDbContext(databaseOptions);
         _repository = new ReadDataRepository<DummyDbContext>(_dbContext, new StoredProcedureBuilder());
     }
-
-    public void Dispose()
-    {
-        _dbContext.Dispose();
-    }
-
 
     [Fact]
     public async Task Single_Order_Performs_The_Correct_Ordering()
@@ -61,5 +59,24 @@ public class OrderSpecificationTests : IDisposable
 
         results[0].Description.Should().Be("Pencil");
         results[1].Description.Should().Be("Paper");
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _dbContext.Dispose();
+            }
+
+            _disposed = true;
+        }
     }
 }

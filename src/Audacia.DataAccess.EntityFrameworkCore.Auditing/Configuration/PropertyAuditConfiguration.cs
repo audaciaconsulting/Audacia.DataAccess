@@ -6,14 +6,23 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
 
+/// <summary>
+/// PropertyAuditConfiguration class. Setup audit configuration properties.
+/// </summary>
 internal class PropertyAuditConfiguration : IPropertyAuditConfiguration
 {
-    public PropertyAuditConfiguration(IProperty property,
+    /// <summary>
+    /// Sets values of Property, Ignore and FriendlyName.
+    /// </summary>
+    /// <param name="property">Instance of <see cref="IProperty"/>.</param>
+    /// <param name="configurations">Instance of <see cref="ICollection{PropertyAuditConfigurationBuilder}"/>.</param>
+    public PropertyAuditConfiguration(
+        IProperty property,
         ICollection<PropertyAuditConfigurationBuilder> configurations)
     {
         Property = property;
 
-        Ignore = configurations.FirstOrDefault(configuration => configuration.InternalIgnore.HasValue)
+        Ignore = configurations.FirstOrDefault(configuration => configuration.InternalIgnore == true)
                      ?.InternalIgnore ?? false;
 
         FriendlyName = configurations.FirstOrDefault(configuration => configuration.InternalFriendlyName != null)
@@ -33,13 +42,28 @@ internal class PropertyAuditConfiguration : IPropertyAuditConfiguration
         }
     }
 
+    /// <summary>
+    /// Gets value of Property.
+    /// </summary>
     public IProperty Property { get; }
 
+    /// <summary>
+    /// Gets a value indicating whether audit should be ignored.
+    /// </summary>
     public bool Ignore { get; }
 
+    /// <summary>
+    /// Gets value of Property.
+    /// </summary>
     public string FriendlyName { get; }
 
-    public Type FriendlyValueLookupType { get; }
+    /// <summary>
+    /// Gets value of FriendlyValueLookupType.
+    /// </summary>
+    public Type? FriendlyValueLookupType { get; }
 
-    public Func<object, string> FriendlyValueFactory { get; }
+    /// <summary>
+    /// Gets value of FriendlyValueFactory.
+    /// </summary>
+    public Func<object, string>? FriendlyValueFactory { get; }
 }

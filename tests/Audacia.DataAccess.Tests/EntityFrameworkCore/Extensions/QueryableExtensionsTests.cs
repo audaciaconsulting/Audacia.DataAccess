@@ -8,20 +8,23 @@ using Audacia.DataAccess.Tests.Helpers.Database;
 using Audacia.DataAccess.Tests.Helpers.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 using Xunit;
 
 namespace Audacia.DataAccess.Tests.EntityFrameworkCore.Extensions;
 
-public class QueryableExtensionsTests
+public class QueryableExtensionsTests : IDisposable
 {
     private readonly DummyDbContext _dbContext;
 
+    private bool _disposed = false;
+
     public QueryableExtensionsTests()
     {
-        var dbOptions = new DbContextOptionsBuilder<DummyDbContext>()
+        var databaseOptions = new DbContextOptionsBuilder<DummyDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        _dbContext = new DummyDbContext(dbOptions);
+        _dbContext = new DummyDbContext(databaseOptions);
     }
     
     [Fact]
@@ -99,13 +102,13 @@ public class QueryableExtensionsTests
             SortProperty = nameof(Customer.FirstName),
             Descending = true
         };
-        var expectedExcludedRow = new Customer {FirstName = "A"};
+        var expectedExcludedRow = new Customer { FirstName = "A" };
         var query = new List<Customer>
         {
-            new Customer {FirstName = "C"},
-            new Customer {FirstName = "D"},
+            new Customer { FirstName = "C" },
+            new Customer { FirstName = "D" },
             expectedExcludedRow,
-            new Customer {FirstName = "B"},
+            new Customer { FirstName = "B" }
         };
         await SeedDatabaseAsync(query);
 
@@ -138,4 +141,22 @@ public class QueryableExtensionsTests
         await _dbContext.SaveChangesAsync();
     }
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _dbContext.Dispose();
+            }
+
+            _disposed = true;
+        }
+    }
 }

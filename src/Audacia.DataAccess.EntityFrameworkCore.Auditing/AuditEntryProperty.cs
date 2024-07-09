@@ -1,16 +1,37 @@
 ﻿namespace Audacia.DataAccess.EntityFrameworkCore.Auditing;
 
+/// <summary>
+/// AuditEntryProperty class.
+/// </summary>
 public class AuditEntryProperty
 {
-    public string Name { get; set; }
+    /// <summary>
+    /// Gets or sets Name.
+    /// </summary>
+    public string Name { get; set; } = string.Empty;
 
-    public string FriendlyName { get; set; }
+    /// <summary>
+    /// Gets or sets FriendlyName.
+    /// </summary>
+    public string FriendlyName { get; set; } = string.Empty;
 
-    public object OldValue { get; set; }
+    /// <summary>
+    /// Gets or sets OldValue.
+    /// </summary>
+    public object OldValue { get; set; } = new object();
 
-    public object NewValue { get; set; }
+    /// <summary>
+    /// Gets or sets NewValue.
+    /// </summary>
+    public object NewValue { get; set; } = new object();
 
-    public string FriendlyOldValue { get; set; }
+    /// <summary>
+    /// Gets or sets FriendlyOldValue.
+    /// </summary>
+    public string FriendlyOldValue { get; set; } = string.Empty;
 
-    public string FriendlyNewValue { get; set; }
+    /// <summary>
+    /// Gets or sets FriendlyNewValue.
+    /// </summary>
+    public string FriendlyNewValue { get; set; } = string.Empty;
 }

@@ -19,5 +19,5 @@ public class Customer
 
     public string EmailAddress { get; set; }
 
-    public ICollection<Order> Orders { get; set; }
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
 }

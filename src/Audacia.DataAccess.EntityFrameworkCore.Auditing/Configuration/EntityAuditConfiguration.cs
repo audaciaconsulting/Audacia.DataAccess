@@ -2,20 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using Audacia.Core.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
 
+/// <summary>
+/// EntityAuditConfiguration class.
+/// </summary>
 internal class EntityAuditConfiguration : IEntityAuditConfiguration
 {
-    internal EntityAuditConfiguration(IEntityType entityType,
+    /// <summary>
+    /// Sets values of EntityType, Ignore, Strategy, FriendlyName, DescriptionFactory and Properties.
+    /// </summary>
+    /// <param name="entityType">Instance of entityType.</param>
+    /// <param name="configurations">Instance of configurations.</param>
+    /// <param name="globalStrategy">Instance of globalStrategy.</param>
+    internal EntityAuditConfiguration(
+        IEntityType entityType,
         ICollection<TypeAuditConfigurationBuilder> configurations,
         AuditStrategy globalStrategy)
     {
         EntityType = entityType;
 
-        Ignore = configurations.FirstOrDefault(configuration => configuration.InternalIgnore.HasValue)
+        Ignore = configurations.FirstOrDefault(configuration => configuration.InternalIgnore == true)
                      ?.InternalIgnore ??
                  false;
 
@@ -32,7 +41,8 @@ internal class EntityAuditConfiguration : IEntityAuditConfiguration
                                  ?.InternalDescriptionFactory ?? (_ => FriendlyName);
 
         var propertyConfigurationLookup = configurations.SelectMany(configuration => configuration.Properties)
-            .GroupBy(propertyConfiguration => propertyConfiguration.Key,
+            .GroupBy(
+                propertyConfiguration => propertyConfiguration.Key,
                 propertyConfiguration => propertyConfiguration.Value)
             .ToDictionary();
 
@@ -44,19 +54,38 @@ internal class EntityAuditConfiguration : IEntityAuditConfiguration
                 : new List<PropertyAuditConfigurationBuilder>()
             select new PropertyAuditConfiguration(property, matchingConfigurations);
 
-        Properties = properties.ToDictionary(propertyConfiguration => propertyConfiguration.Property.Name,
+        Properties = properties.ToDictionary(
+            propertyConfiguration => propertyConfiguration.Property.Name,
             propertyConfiguration => (IPropertyAuditConfiguration)propertyConfiguration);
     }
 
+    /// <summary>
+    /// Gets EntityType.
+    /// </summary>
     public IEntityType EntityType { get; }
 
+    /// <summary>
+    /// Gets a value indicating whether should ignore.
+    /// </summary>
     public bool Ignore { get; }
 
+    /// <summary>
+    /// Gets Strategy.
+    /// </summary>
     public AuditStrategy Strategy { get; }
 
+    /// <summary>
+    /// Gets FriendlyName.
+    /// </summary>
     public string FriendlyName { get; }
 
+    /// <summary>
+    /// Gets DescriptionFactory.
+    /// </summary>
     public Func<object, string> DescriptionFactory { get; }
 
+    /// <summary>
+    /// Gets Properties.
+    /// </summary>
     public IDictionary<string, IPropertyAuditConfiguration> Properties { get; }
 }

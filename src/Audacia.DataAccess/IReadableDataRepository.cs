@@ -58,7 +58,7 @@ public interface IReadableDataRepository
     /// <param name="specification">Query rules.</param>
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <returns>If at any, at least one element, in a query that match the defined rules.</returns>
-    Task<T> GetAsync<T>(
+    Task<T?> GetAsync<T>(
         IOrderableQuerySpecification<T> specification,
         CancellationToken cancellationToken = default) where T : class;
 
@@ -82,7 +82,7 @@ public interface IReadableDataRepository
     /// <param name="specification">Query rules.</param>
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <returns>The first element in a query that matches the defined rules.</returns>
-    Task<TResult> GetAsync<T, TResult>(
+    Task<TResult?> GetAsync<T, TResult>(
         IProjectableQuerySpecification<T, TResult> specification,
         CancellationToken cancellationToken = default) where T : class;
 
@@ -108,7 +108,7 @@ public interface IReadableDataRepository
     /// <param name="specification">Query rules.</param>
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <returns>The first item in an ordered list of elements from a query that match the defined rules.</returns>
-    Task<TResult> GetAsync<T, TResult>(
+    Task<TResult?> GetAsync<T, TResult>(
         IOrderableQuerySpecification<T, TResult> specification,
         CancellationToken cancellationToken = default) where T : class;
 

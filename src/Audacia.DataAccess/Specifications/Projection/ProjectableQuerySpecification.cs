@@ -14,10 +14,10 @@ public static class ProjectableQuerySpecification
     /// <summary>
     /// Creates a <see cref="ProjectableQuerySpecification{T,TResult}"/> instance with the given <paramref name="projectionSpecification"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="projectionSpecification"></param>
-    /// <returns></returns>
+    /// <typeparam name="T">Type of <see cref="IProjectionSpecification{T,TResult}"/>. </typeparam>
+    /// <typeparam name="TResult">Return type of <see cref="IProjectionSpecification{T,TResult}"/>.</typeparam>
+    /// <param name="projectionSpecification">Instance of <see cref="IProjectionSpecification{T,TResult}"/>.</param>
+    /// <returns><see cref="IProjectionSpecification{T,TResult}"/>.</returns>
     public static ProjectableQuerySpecification<T, TResult> WithProjection<T, TResult>(IProjectionSpecification<T, TResult> projectionSpecification) where T : class
     {
         return new ProjectableQuerySpecification<T, TResult>(projectionSpecification);
@@ -27,10 +27,10 @@ public static class ProjectableQuerySpecification
     /// Creates a <see cref="ProjectableQuerySpecification{T,TResult}"/> instance with an <see cref="IProjectionSpecification{T,TResult}"/>
     /// based on the given <paramref name="projectionExpression"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="projectionExpression"></param>
-    /// <returns></returns>
+    /// <typeparam name="T">Type of <see cref="Expression{T}"/>.</typeparam>
+    /// <typeparam name="TResult">Return type of <see cref="Expression{T}"/>.</typeparam>
+    /// <param name="projectionExpression">An instance of <see cref="Expression{T}"/>.</param>
+    /// <returns><see cref="ProjectableQuerySpecification{T, TResult}"/>.</returns>
     public static ProjectableQuerySpecification<T, TResult> WithProjection<T, TResult>(Expression<Func<T, TResult>> projectionExpression) where T : class
     {
         return new ProjectableQuerySpecification<T, TResult>(new DynamicProjectionSpecification<T, TResult>(projectionExpression));
@@ -39,29 +39,52 @@ public static class ProjectableQuerySpecification
 
 /// <summary>
 /// Default implementation of <see cref="IProjectableQuerySpecification{T,TResult}"/> that
-/// allows a collection of objects of type <see cref="T"/> to be filtered, converted to objects
-/// of type <see cref="TResult"/> and have navigation properties included in results .
+/// allows a collection of objects of type <see cref="IProjectableQuerySpecification{T,TResult}"/> to be filtered, converted to objects
+/// of type <see cref="IProjectableQuerySpecification{T,TResult}"/> and have navigation properties included in results .
 /// </summary>
-/// <typeparam name="T"></typeparam>
-/// <typeparam name="TResult"></typeparam>
+/// <typeparam name="T">Type of  <see cref="IProjectableQuerySpecification{T,TResult}"/>.</typeparam>
+/// <typeparam name="TResult">Return type of  <see cref="IProjectableQuerySpecification{T,TResult}"/>.</typeparam>
 public class ProjectableQuerySpecification<T, TResult> : IProjectableQuerySpecification<T, TResult> where T : class
 {
-    public IFilterSpecification<T> Filter { get; set; }
+    /// <summary>
+    /// Gets or sets Filter.
+    /// </summary>
+    public IFilterSpecification<T>? Filter { get; set; }
 
-    public IIncludeSpecification<T> Include { get; set; }
+    /// <summary>
+    /// Gets or sets Include.
+    /// </summary>
+    public IIncludeSpecification<T>? Include { get; set; }
 
+    /// <summary>
+    /// Gets or sets Projection.
+    /// </summary>
     public IProjectionSpecification<T, TResult> Projection { get; set; }
 
+    /// <summary>
+    /// Constructor takes in projectionSpecification.
+    /// </summary>
+    /// <param name="projectionSpecification">Instance of projectionSpecification.</param>
     public ProjectableQuerySpecification(IProjectionSpecification<T, TResult> projectionSpecification)
     {
         Projection = projectionSpecification;
     }
 
-    public ProjectableQuerySpecification(IQuerySpecification<T> startFrom,
+    /// <summary>
+    /// Constructor takes in <see cref="IQuerySpecification{T}"/> projectionSpecification and <see cref="IProjectionSpecification{T,Result}"/> projectionSpecification.
+    /// </summary>
+    /// <param name="startFrom">Instance of <see cref="IQuerySpecification{T}"/>.</param>
+    /// <param name="projectionSpecification">Instance of <see cref="IProjectionSpecification{T,Result}"/>.</param>
+    public ProjectableQuerySpecification(
+        IQuerySpecification<T> startFrom,
         IProjectionSpecification<T, TResult> projectionSpecification)
     {
-        Filter = startFrom.Filter;
-        Include = startFrom.Include;
+        if (startFrom != null)
+        {
+            Filter = startFrom.Filter;
+            Include = startFrom.Include;
+        }
+
         Projection = projectionSpecification;
     }
 }

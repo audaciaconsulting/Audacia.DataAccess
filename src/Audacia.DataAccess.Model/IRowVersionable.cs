@@ -1,6 +1,14 @@
-﻿namespace Audacia.DataAccess.Model;
+﻿using System.Collections.Generic;
 
+namespace Audacia.DataAccess.Model;
+
+/// <summary>
+/// IRowVersionable interface.
+/// </summary>
 public interface IRowVersionable
 {
-    byte[] RowVersion { get; set; }
+    /// <summary>
+    /// Gets or sets RowVersion.
+    /// </summary>
+    IEnumerable<byte> RowVersion { get; set; }
 }

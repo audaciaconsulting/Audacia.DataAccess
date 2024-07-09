@@ -4,51 +4,80 @@ using Audacia.Core;
 using Audacia.DataAccess.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audacia.DataAccess.EntityFrameworkCore.Triggers
+namespace Audacia.DataAccess.EntityFrameworkCore.Triggers;
+
+/// <summary>
+/// Extesntions for TriggerRegistrar.
+/// </summary>
+public static class TriggerRegistrarExtensions
 {
-    public static class TriggerRegistrarExtensions
+    /// <summary>
+    /// AddSoftDeleteTrigger extenstion.
+    /// </summary>
+    /// <typeparam name="TUserIdentifier">Struct type.</typeparam>
+    /// <typeparam name="TDbContext">Database context type.</typeparam>
+    /// <param name="registrar">Instance of <see cref="TriggerRegistrar{TDbContext}"/>.</param>
+    /// <param name="userIdentifierFactory">Func delegate <see cref="Func{TUserIdentifier}"/>.</param>
+    public static void AddSoftDeleteTrigger<TUserIdentifier, TDbContext>(
+        this TriggerRegistrar<TDbContext> registrar,
+        Func<TUserIdentifier?> userIdentifierFactory)
+        where TUserIdentifier : struct
+        where TDbContext : DbContext
     {
-        public static void AddSoftDeleteTrigger<TUserIdentifier, TDbContext>(this TriggerRegistrar<TDbContext> registrar,
-            Func<TUserIdentifier?> userIdentifierFactory)
-            where TDbContext : DbContext
-            where TUserIdentifier : struct
+        ArgumentNullException.ThrowIfNull(registrar);   
+        registrar.Type<ISoftDeletable<TUserIdentifier>>().DeletingAsync += (deletable, context, _) =>
         {
-            registrar.Type<ISoftDeletable<TUserIdentifier>>().DeletingAsync += (deletable, context, _) =>
-            {
-                context.EntityEntry.State = EntityState.Modified;
-                deletable.Deleted = DateTimeOffsetProvider.Instance.Now;
-                deletable.DeletedBy = userIdentifierFactory();
+            context.EntityEntry.State = EntityState.Modified;
+            deletable.Deleted = DateTimeOffsetProvider.Instance.Now;
+            deletable.DeletedBy = userIdentifierFactory();
 
-                return Task.CompletedTask;
-            };
-        }
+            return Task.CompletedTask;
+        };
+    }
 
-        public static void AddCreateTrigger<TUserIdentifier, TDbContext>(this TriggerRegistrar<TDbContext> registrar,
-            Func<TUserIdentifier?> userIdentifierFactory) 
-            where TDbContext : DbContext
-            where TUserIdentifier : struct
+    /// <summary>
+    /// AddCreateTrigger extension.
+    /// </summary>
+    /// <typeparam name="TUserIdentifier">Struct type.</typeparam>
+    /// <typeparam name="TDbContext">Database context type.</typeparam>
+    /// <param name="registrar">Instance of <see cref="TriggerRegistrar{TDbContext}"/>.</param>
+    /// <param name="userIdentifierFactory">Func delegate <see cref="Func{TUserIdentifier}"/>.</param>
+    public static void AddCreateTrigger<TUserIdentifier, TDbContext>(
+        this TriggerRegistrar<TDbContext> registrar,
+        Func<TUserIdentifier?> userIdentifierFactory)
+        where TUserIdentifier : struct
+        where TDbContext : DbContext
+    {
+        ArgumentNullException.ThrowIfNull(registrar);
+        registrar.Type<ICreatable<TUserIdentifier>>().InsertingAsync += (creatable, _, _) =>
         {
-            registrar.Type<ICreatable<TUserIdentifier>>().InsertingAsync += (creatable, context, _) =>
-            {
-                creatable.Created = DateTimeOffsetProvider.Instance.Now;
-                creatable.CreatedBy = userIdentifierFactory();
-                
-                return Task.CompletedTask;
-            };
-        }
+            creatable.Created = DateTimeOffsetProvider.Instance.Now;
+            creatable.CreatedBy = userIdentifierFactory();
 
-        public static void AddModifyTrigger<TUserIdentifier, TDbContext>(this TriggerRegistrar<TDbContext> registrar,
-            Func<TUserIdentifier?> userIdentifierFactory) 
-            where TDbContext : DbContext
-            where TUserIdentifier : struct
+            return Task.CompletedTask;
+        };
+    }
+
+    /// <summary>
+    /// AddModifyTrigger extension.
+    /// </summary>
+    /// <typeparam name="TUserIdentifier">Struct type.</typeparam>
+    /// <typeparam name="TDbContext">Database context type.</typeparam>
+    /// <param name="registrar">Instance of <see cref="TriggerRegistrar{TDbContext}"/>.</param>
+    /// <param name="userIdentifierFactory">Func delegate <see cref="Func{TUserIdentifier}"/>.</param>
+    public static void AddModifyTrigger<TUserIdentifier, TDbContext>(
+        this TriggerRegistrar<TDbContext> registrar,
+        Func<TUserIdentifier?> userIdentifierFactory)
+        where TUserIdentifier : struct
+        where TDbContext : DbContext        
+    {
+        ArgumentNullException.ThrowIfNull(registrar);
+        registrar.Type<IModifiable<TUserIdentifier>>().UpdatingAsync += (modifiable, _, _) =>
         {
-            registrar.Type<IModifiable<TUserIdentifier>>().UpdatingAsync += (modifiable, context, _) =>
-            {
-                modifiable.Modified = DateTimeOffsetProvider.Instance.Now;
-                modifiable.ModifiedBy = userIdentifierFactory();
-                
-                return Task.CompletedTask;
-            };
-        }
+            modifiable.Modified = DateTimeOffsetProvider.Instance.Now;
+            modifiable.ModifiedBy = userIdentifierFactory();
+
+            return Task.CompletedTask;
+        };
     }
 }
