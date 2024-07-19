@@ -11,7 +11,7 @@
     <Description>Entity Framework Core Sql Server trigger code for Audacia.DataAccess</Description>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +20,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+
+    <PackageReference Include="Audacia.CodeAnalysis.Analyzers.Helpers" Version="1.1.2" />
 
     <PackageReference Include="Audacia.Core" Version="1.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />

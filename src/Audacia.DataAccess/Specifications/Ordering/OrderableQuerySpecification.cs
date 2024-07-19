@@ -8,24 +8,49 @@ namespace Audacia.DataAccess.Specifications.Ordering;
 /// The default implementation of <see cref="IOrderableQuerySpecification{T}"/> that contains the base <see cref="IQuerySpecification{T}"/> properties
 /// together with an <see cref="IOrderSpecification{T}"/>.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">Type of <see cref="IOrderableQuerySpecification{T}"/>.</typeparam>
 public class OrderableQuerySpecification<T> : IOrderableQuerySpecification<T>
 {
-    public IFilterSpecification<T> Filter { get; set; }
+    /// <summary>
+    /// Gets or sets <see cref="IFilterSpecification{T}"/> Filter.
+    /// </summary>
+    public IFilterSpecification<T>? Filter { get; set; }
 
-    public IIncludeSpecification<T> Include { get; set; }
+    /// <summary>
+    /// Gets or sets <see cref="IIncludeSpecification{T}"/> Include.
+    /// </summary>
+    public IIncludeSpecification<T>? Include { get; set; }
 
-    public IOrderSpecification<T> Order { get; set; }
+    /// <summary>
+    /// Gets or sets <see cref="IOrderSpecification{T}"/> Order.
+    /// </summary>
+    public IOrderSpecification<T>? Order { get; set; }
 
+    /// <summary>
+    /// Constructor which takes an instance of <see cref="IOrderSpecification{T}"/>.
+    /// </summary>
+    /// <param name="orderSpecification"><see cref="IOrderSpecification{T}"/>.</param>
     public OrderableQuerySpecification(IOrderSpecification<T> orderSpecification)
     {
-        Order = orderSpecification;
+        if (orderSpecification != null)
+        {
+            Order = orderSpecification;
+        }
     }
 
+    /// <summary>
+    /// Constructor which takes an instance of <see cref="IQuerySpecification{T}"/> and <see cref="IOrderSpecification{T}"/>.
+    /// </summary>
+    /// <param name="buildFrom">Instance of <see cref="IQuerySpecification{T}"/>.</param>
+    /// <param name="orderSpecification">Instance of <see cref="IOrderSpecification{T}"/>.</param>
     public OrderableQuerySpecification(IQuerySpecification<T> buildFrom, IOrderSpecification<T> orderSpecification)
     {
-        Filter = buildFrom.Filter;
-        Include = buildFrom.Include;
+        if (buildFrom != null)
+        {
+            Filter = buildFrom.Filter;
+            Include = buildFrom.Include;
+        }
+
         Order = orderSpecification;
     }
 }
@@ -34,24 +59,46 @@ public class OrderableQuerySpecification<T> : IOrderableQuerySpecification<T>
 /// The default implementation of <see cref="IOrderableQuerySpecification{T,TResult}"/> that contains 
 /// the base <see cref="IProjectableQuerySpecification{T,TResult}"/> properties together with an <see cref="IOrderSpecification{T}"/>.
 /// </summary>
-/// <typeparam name="T"></typeparam>
-/// <typeparam name="TResult"></typeparam>
+/// <typeparam name="T">Type of <see cref="IOrderableQuerySpecification{T}"/>.</typeparam>
+/// <typeparam name="TResult">Return type of <see cref="IOrderableQuerySpecification{TResult}"/>.</typeparam>
 public class OrderableQuerySpecification<T, TResult> : IOrderableQuerySpecification<T, TResult> where T : class
 {
-    public IFilterSpecification<T> Filter { get; set; }
+    /// <summary>
+    /// Gets or sets <see cref="IFilterSpecification{T}"/> Filter.
+    /// </summary>
+    public IFilterSpecification<T>? Filter { get; set; }
 
-    public IIncludeSpecification<T> Include { get; set; }
+    /// <summary>
+    /// Gets or sets <see cref="IIncludeSpecification{T}"/> Include.
+    /// </summary>
+    public IIncludeSpecification<T>? Include { get; set; }
 
-    public IProjectionSpecification<T, TResult> Projection { get; set; }
+    /// <summary>
+    /// Gets or sets <see cref="IProjectionSpecification{T,TResult}"/> Projection.
+    /// </summary>
+    public IProjectionSpecification<T, TResult>? Projection { get; set; }
 
-    public IOrderSpecification<TResult> Order { get; set; }
+    /// <summary>
+    /// Gets or sets <see cref="IOrderSpecification{TResult}"/> Order.
+    /// </summary>
+    public IOrderSpecification<TResult>? Order { get; set; }
 
-    public OrderableQuerySpecification(IProjectableQuerySpecification<T, TResult> buildFrom,
+    /// <summary>
+    /// Constructor which takes  <see cref="IOrderSpecification{TResult}"/>  <see cref="IOrderSpecification{TResult}"/>.
+    /// </summary>
+    /// <param name="buildFrom"> <see cref="IProjectableQuerySpecification{T, TResult}"/>.</param>
+    /// <param name="orderSpecification"> <see cref="IOrderSpecification{TResult}"/>.</param>
+    public OrderableQuerySpecification(
+        IProjectableQuerySpecification<T, TResult> buildFrom,
         IOrderSpecification<TResult> orderSpecification)
     {
-        Filter = buildFrom.Filter;
-        Include = buildFrom.Include;
-        Projection = buildFrom.Projection;
+        if (buildFrom != null)
+        {
+            Filter = buildFrom.Filter;
+            Include = buildFrom.Include;
+            Projection = buildFrom.Projection;
+        }
+
         Order = orderSpecification;
     }
 }

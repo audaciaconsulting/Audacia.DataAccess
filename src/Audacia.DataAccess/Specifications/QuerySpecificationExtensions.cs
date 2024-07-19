@@ -10,12 +10,23 @@ using Audacia.DataAccess.Specifications.Projection;
 
 namespace Audacia.DataAccess.Specifications;
 
+/// <summary>
+/// Extensions for QuerySpecifications.
+/// </summary>
 public static class QuerySpecificationExtensions
 {
-    public static IQuerySpecification<T> AddFilter<T>(this IQuerySpecification<T> querySpecification,
+    /// <summary> Add filters to a QuerySpecification.</summary>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" /> and <see cref="IFilterSpecification{T}" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}" />instance to which to add the specification.</param>
+    /// <param name="filterSpecification">The <see cref="IFilterSpecification{T}" />instance to add to the query.</param>
+    /// <returns>Instance of <see cref="IQuerySpecification{T}" />.</returns>
+    public static IQuerySpecification<T> AddFilter<T>(
+        this IQuerySpecification<T> querySpecification,
         IFilterSpecification<T> filterSpecification)
         where T : class
     {
+        ArgumentNullException.ThrowIfNull(querySpecification);
+
         querySpecification.Filter = querySpecification.Filter == null
             ? filterSpecification
             : querySpecification.Filter.And(filterSpecification);
@@ -23,7 +34,13 @@ public static class QuerySpecificationExtensions
         return querySpecification;
     }
 
-    public static IQuerySpecification<T> AddFilter<T>(this IQuerySpecification<T> querySpecification,
+    /// <summary> Add filter expressions to a QuerySpecification.</summary>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" />" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}" />instance to which to add the specification.</param>
+    /// <param name="filterExpression">The <see cref="Expression{T}" />instance to add to the query.</param>
+    /// <returns>Instance of <see cref="IQuerySpecification{T}" />.</returns>
+    public static IQuerySpecification<T> AddFilter<T>(
+        this IQuerySpecification<T> querySpecification,
         Expression<Func<T, bool>> filterExpression)
         where T : class
     {
@@ -41,14 +58,17 @@ public static class QuerySpecificationExtensions
     /// <paramref name="includeSpecification"/> will be added in addition to the existing specification(s).
     /// </para>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" /> and <see cref="IIncludeSpecification{T}"/>.</typeparam>
     /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
     /// <param name="includeSpecification">The <see cref="IIncludeSpecification{T}"/> instance to add to the query.</param>
-    /// <returns></returns>
-    public static IOrderableQuerySpecification<T> WithInclude<T>(this IQuerySpecification<T> querySpecification,
+    /// <returns>Instance of <see cref="IQuerySpecification{T}" />.</returns>
+    public static IOrderableQuerySpecification<T> WithInclude<T>(
+        this IQuerySpecification<T> querySpecification,
         IIncludeSpecification<T> includeSpecification)
         where T : class
     {
+        ArgumentNullException.ThrowIfNull(querySpecification);
+
         if (querySpecification.Include == null)
         {
             querySpecification.Include = includeSpecification;
@@ -76,11 +96,12 @@ public static class QuerySpecificationExtensions
     /// of the given <paramref name="includeAction"/> will be added in addition to the existing specification(s).
     /// </para>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" /> and <see cref="IBuildableIncludeSpecification{T}"/>.</typeparam>
     /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
-    /// <param name="includeAction">The action to be used to build an <see cref="IIncludeSpecification{T}"/> to add to the query.</param>
-    /// <returns></returns>
-    public static IOrderableQuerySpecification<T> WithInclude<T>(this IQuerySpecification<T> querySpecification,
+    /// <param name="includeAction">The action to be used to build an <see cref="IBuildableIncludeSpecification{T}"/> to add to the query.</param>
+    /// <returns>Instance of <see cref="IQuerySpecification{T}" />.</returns>
+    public static IOrderableQuerySpecification<T> WithInclude<T>(
+        this IQuerySpecification<T> querySpecification,
         Action<IBuildableIncludeSpecification<T>> includeAction)
         where T : class
     {
@@ -88,13 +109,13 @@ public static class QuerySpecificationExtensions
 
         return querySpecification.WithInclude(includeSpecification);
     }
-    
+
     /// <summary>
     /// Returns the given <paramref name="querySpecification"/> as an instance of <see cref="IOrderableQuerySpecification{T}"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" />.</typeparam>
     /// <param name="querySpecification">The specification to convert to an <see cref="IOrderableQuerySpecification{T}"/>.</param>
-    /// <returns></returns>
+    /// <returns>Instance of <see cref="IQuerySpecification{T}" />.</returns>
     public static IOrderableQuerySpecification<T> AsOrderable<T>(this IQuerySpecification<T> querySpecification)
         where T : class
     {
@@ -115,13 +136,16 @@ public static class QuerySpecificationExtensions
     /// then the given <paramref name="orderSpecification"/> will be added in addition to the existing specification(s).
     /// </para>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Type of <see cref="IOrderableQuerySpecification{T}" /> and <see cref="IOrderSpecification{T}" />.</typeparam>
     /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
     /// <param name="orderSpecification">The <see cref="IOrderSpecification{T}"/> instance to add to the query.</param>
-    /// <returns></returns>
+    /// <returns>Instance of <see cref="IQuerySpecification{T}" />.</returns>
     public static IOrderableQuerySpecification<T> WithOrder<T>(
-        this IOrderableQuerySpecification<T> querySpecification, IOrderSpecification<T> orderSpecification)
+        this IOrderableQuerySpecification<T> querySpecification,
+        IOrderSpecification<T> orderSpecification)
     {
+        ArgumentNullException.ThrowIfNull(querySpecification);
+
         if (querySpecification.Order == null)
         {
             querySpecification.Order = orderSpecification;
@@ -143,10 +167,10 @@ public static class QuerySpecificationExtensions
     /// of the given <paramref name="orderAction"/> will be added in addition to the existing specification(s).
     /// </para>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
-    /// <param name="orderAction">The action to be used to build an <see cref="IOrderSpecification{T}"/> to add to the query.</param>
-    /// <returns></returns>
+    /// <typeparam name="T">Type of <see cref="IOrderableQuerySpecification{T}" /> and <see cref="IBuildableOrderSpecification{T}" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IOrderableQuerySpecification{T}"/> instance to which to add the specification.</param>
+    /// <param name="orderAction">The action to be used to build an <see cref="IBuildableOrderSpecification{T}"/> to add to the query.</param>
+    /// <returns>Instance of <see cref="IQuerySpecification{T}" />.</returns>
     public static IOrderableQuerySpecification<T> WithOrder<T>(
         this IOrderableQuerySpecification<T> querySpecification,
         Action<IBuildableOrderSpecification<T>> orderAction)
@@ -156,6 +180,14 @@ public static class QuerySpecificationExtensions
         return querySpecification.WithOrder(orderSpecification);
     }
 
+    /// <summary>
+    /// Returns ProjectableQuerySpecification using <see cref="IQuerySpecification{T}"/> and <see cref="IOrderSpecification{T}"/> .
+    /// </summary>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" /> and <see cref="IProjectionSpecification{T, TResult}" />.</typeparam>
+    /// <typeparam name="TResult">Result type <see cref="IProjectionSpecification{T, TResult}" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+    /// <param name="projectionSpecification">The action to be used to build an <see cref="IProjectionSpecification{T, TResult}"/> to add to the query.</param>
+    /// <returns>Instance of <see cref="IProjectableQuerySpecification{T, TResult}" />.</returns>
     public static IProjectableQuerySpecification<T, TResult> WithProjection<T, TResult>(
         this IQuerySpecification<T> querySpecification,
         IProjectionSpecification<T, TResult> projectionSpecification) where T : class
@@ -163,14 +195,30 @@ public static class QuerySpecificationExtensions
         return new ProjectableQuerySpecification<T, TResult>(querySpecification, projectionSpecification);
     }
 
+    /// <summary>
+    /// Returns IProjectableQuerySpecification using <see cref="IQuerySpecification{T}"/> and <see cref="Expression{T}"/> .
+    /// </summary>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" /> and <see cref="Expression{T}" />.</typeparam>
+    /// <typeparam name="TResult">Result type <see cref="Expression{TResult}" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+    /// <param name="projectionExpression">The action to be used to build an <see cref="Expression{T}"/> to add to the query.</param>
+    /// <returns>Instance of <see cref="IProjectableQuerySpecification{T, TResult}" />.</returns>
     public static IProjectableQuerySpecification<T, TResult> WithProjection<T, TResult>(
         this IQuerySpecification<T> querySpecification, Expression<Func<T, TResult>> projectionExpression)
         where T : class
     {
-        return new ProjectableQuerySpecification<T, TResult>(querySpecification,
+        return new ProjectableQuerySpecification<T, TResult>(
+            querySpecification,
             new DynamicProjectionSpecification<T, TResult>(projectionExpression));
     }
 
+    /// <summary>
+    /// Add <see cref="SortablePagingRequest"/> to the <see cref="IQuerySpecification{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+    /// <param name="sortablePagingRequest">The <see cref="SortablePagingRequest"/> to be used to sort the query specification.</param>
+    /// <returns>Instance of <see cref="ISortablePageableQuerySpecification{T}" />.</returns>
     public static ISortablePageableQuerySpecification<T> WithPaging<T>(
         this IQuerySpecification<T> querySpecification,
         SortablePagingRequest sortablePagingRequest) where T : class
@@ -178,6 +226,13 @@ public static class QuerySpecificationExtensions
         return new SortablePageableQuerySpecification<T>(querySpecification, sortablePagingRequest);
     }
 
+    /// <summary>
+    /// Add <see cref="PagingRequest"/> to the <see cref="IQuerySpecification{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+    /// <param name="pagingRequest">The <see cref="SortablePagingRequest"/> to be used to page the query specification.</param>
+    /// <returns>Instance of <see cref="IPageableQuerySpecification{T}" />.</returns>
     public static IPageableQuerySpecification<T> WithPaging<T>(
         this IOrderableQuerySpecification<T> querySpecification,
         PagingRequest pagingRequest) where T : class
@@ -185,6 +240,14 @@ public static class QuerySpecificationExtensions
         return new PageableQuerySpecification<T>(querySpecification, pagingRequest);
     }
 
+    /// <summary>
+    /// Add <see cref="PagingRequest"/> to the <see cref="IQuerySpecification{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" />.</typeparam>
+    /// <typeparam name="TResult">Result type <see cref="IOrderableQuerySpecification{TResult}" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+    /// <param name="pagingRequest">The <see cref="SortablePagingRequest"/> to be used to page the query specification.</param>
+    /// <returns>Instance of <see cref="IPageableQuerySpecification{T}" />.</returns>
     public static IPageableQuerySpecification<T, TResult> WithPaging<T, TResult>(
         this IOrderableQuerySpecification<T, TResult> querySpecification,
         PagingRequest pagingRequest) where T : class
@@ -192,6 +255,14 @@ public static class QuerySpecificationExtensions
         return new PageableQuerySpecification<T, TResult>(querySpecification, pagingRequest);
     }
 
+    /// <summary>
+    /// Add <see cref="PagingRequest"/> to the <see cref="IQuerySpecification{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" />.</typeparam>
+    /// <typeparam name="TResult">Result type <see cref="IOrderableQuerySpecification{TResult}" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+    /// <param name="orderSpecification">The <see cref="SortablePagingRequest"/> to be used to order the query specification.</param>
+    /// <returns>Instance of <see cref="IOrderableQuerySpecification{T, TResult}" />.</returns>
     public static IOrderableQuerySpecification<T, TResult> WithOrder<T, TResult>(
         this IProjectableQuerySpecification<T, TResult> querySpecification,
         IOrderSpecification<TResult> orderSpecification) where T : class
@@ -199,6 +270,14 @@ public static class QuerySpecificationExtensions
         return new OrderableQuerySpecification<T, TResult>(querySpecification, orderSpecification);
     }
 
+    /// <summary>
+    /// Add <see cref="PagingRequest"/> to the <see cref="IQuerySpecification{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of <see cref="IQuerySpecification{T}" />.</typeparam>
+    /// <typeparam name="TResult">Result type <see cref="IProjectableQuerySpecification{T,TResult}" />.</typeparam>
+    /// <param name="querySpecification">The <see cref="IQuerySpecification{T}"/> instance to which to add the specification.</param>
+    /// <param name="sortablePagingRequest">The <see cref="SortablePagingRequest"/> to be used to order the query specification.</param>
+    /// <returns>Instance of <see cref="SortablePageableQuerySpecification{T, TResult}" />.</returns>
     public static SortablePageableQuerySpecification<T, TResult> WithPaging<T, TResult>(
         this IProjectableQuerySpecification<T, TResult> querySpecification,
         SortablePagingRequest sortablePagingRequest) where T : class

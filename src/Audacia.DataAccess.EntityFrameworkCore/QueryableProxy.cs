@@ -12,6 +12,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore;
 /// The <see cref="IQueryable{TEntity}"/> implementation will be the corresponding <see cref="DbSet{TEntity}"/>.
 /// </summary>
 /// <typeparam name="TEntity">The entity type.</typeparam>
+/// <typeparam name="TContext">The return entity type.</typeparam>
 public class QueryableProxy<TEntity, TContext> : IQueryable<TEntity>
     where TEntity : class
     where TContext : DbContext

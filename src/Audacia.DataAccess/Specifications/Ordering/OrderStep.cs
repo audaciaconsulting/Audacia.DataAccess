@@ -23,9 +23,16 @@ public class OrderStep
     /// </summary>
     public Expression Expression { get; }
 
-    public OrderStep(bool asc, Type type, Expression expression)
+    /// <summary>
+    /// Constructor takes in bool, Type and Expression ans assign them to public properties.
+    /// </summary>
+    /// <param name="isAsc">boolean value for asc parameter.</param>
+    /// <param name="type">Type of <see cref="OrderStep"/>.</param>
+    /// <param name="expression">Instance of <see cref="Expression"/>.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
+    public OrderStep(bool isAsc, Type type, Expression expression)
     {
-        Ascending = asc;
+        Ascending = isAsc;
         Type = type;
         Expression = expression;
     }

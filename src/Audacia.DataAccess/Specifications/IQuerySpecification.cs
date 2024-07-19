@@ -4,20 +4,20 @@ using Audacia.DataAccess.Specifications.Including;
 namespace Audacia.DataAccess.Specifications;
 
 /// <summary>
-/// Exposes the basic specifications to allow a collection of objects of type <see cref="T"/>
+/// Exposes the basic specifications to allow a collection of objects of type
 /// to be filtered and have navigation properties included in result sets.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">Type of the query.</typeparam>
 public interface IQuerySpecification<T>
 {
     /// <summary>
-    /// Gets the <see cref="IFilterSpecification{T}"/> containing filtering rules.
+    /// Gets or sets the <see cref="IFilterSpecification{T}"/> containing filtering rules.
     /// </summary>
-    IFilterSpecification<T> Filter { get; set; }
+    IFilterSpecification<T>? Filter { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="IIncludeSpecification{T}"/> containing rules to
+    /// Gets or sets the <see cref="IIncludeSpecification{T}"/> containing rules to
     /// include navigation properties in result sets.
     /// </summary>
-    IIncludeSpecification<T> Include { get; set; }
+    IIncludeSpecification<T>? Include { get; set; }
 }

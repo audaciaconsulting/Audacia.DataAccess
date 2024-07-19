@@ -12,6 +12,10 @@ public class IncludeStep
     /// </summary>
     public Expression Expression { get; }
 
+    /// <summary>
+    /// Constructor which sets the value of <see cref="Expression"/>.
+    /// </summary>
+    /// <param name="expression">Instance of <see cref="Expression"/>.</param>
     public IncludeStep(Expression expression)
     {
         Expression = expression;

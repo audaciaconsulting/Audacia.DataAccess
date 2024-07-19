@@ -2,6 +2,10 @@
 
 namespace Audacia.DataAccess.Specifications.DataStoreImplementations;
 
-public class QueryParameterAttribute : Attribute
+/// <summary>
+/// This class extends <see cref="Attribute"/>.
+/// </summary>
+[AttributeUsage(AttributeTargets.All)]
+public sealed class QueryParameterAttribute : Attribute
 {
 }
