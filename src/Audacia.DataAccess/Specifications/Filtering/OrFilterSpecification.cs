@@ -23,15 +23,8 @@ public class OrFilterSpecification<T> : IFilterSpecification<T>
     /// <param name="right">Right part of the Expression <see cref="IFilterSpecification{T}"/>.</param>
     public OrFilterSpecification(IFilterSpecification<T> left, IFilterSpecification<T> right)
     {
-        if (left is null)
-        {
-            throw new ArgumentNullException(nameof(left));
-        }
-
-        if (right is null)
-        {
-            throw new ArgumentNullException(nameof(right));
-        }
+        ArgumentNullException.ThrowIfNull(left, nameof(left));
+        ArgumentNullException.ThrowIfNull(right, nameof(right));
 
         Expression = left.Expression.Or(right.Expression);
     }
