@@ -1,4 +1,5 @@
-﻿using Audacia.DataAccess.Specifications.Filtering;
+﻿using System;
+using Audacia.DataAccess.Specifications.Filtering;
 using Audacia.DataAccess.Specifications.Including;
 using Audacia.DataAccess.Specifications.Projection;
 
@@ -32,10 +33,12 @@ public class OrderableQuerySpecification<T> : IOrderableQuerySpecification<T>
     /// <param name="orderSpecification"><see cref="IOrderSpecification{T}"/>.</param>
     public OrderableQuerySpecification(IOrderSpecification<T> orderSpecification)
     {
-        if (orderSpecification != null)
+        if (orderSpecification is null)
         {
-            Order = orderSpecification;
+            throw new ArgumentNullException(nameof(orderSpecification));
         }
+
+        Order = orderSpecification;
     }
 
     /// <summary>
@@ -45,11 +48,18 @@ public class OrderableQuerySpecification<T> : IOrderableQuerySpecification<T>
     /// <param name="orderSpecification">Instance of <see cref="IOrderSpecification{T}"/>.</param>
     public OrderableQuerySpecification(IQuerySpecification<T> buildFrom, IOrderSpecification<T> orderSpecification)
     {
-        if (buildFrom != null)
+        if (orderSpecification is null)
         {
-            Filter = buildFrom.Filter;
-            Include = buildFrom.Include;
+            throw new ArgumentNullException(nameof(orderSpecification));
         }
+
+        if (buildFrom is null)
+        {
+            throw new ArgumentNullException(nameof(buildFrom));
+        }
+
+        Filter = buildFrom.Filter;
+        Include = buildFrom.Include;
 
         Order = orderSpecification;
     }

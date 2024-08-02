@@ -79,11 +79,13 @@ public class ProjectableQuerySpecification<T, TResult> : IProjectableQuerySpecif
         IQuerySpecification<T> startFrom,
         IProjectionSpecification<T, TResult> projectionSpecification)
     {
-        if (startFrom != null)
+        if (startFrom is null)
         {
-            Filter = startFrom.Filter;
-            Include = startFrom.Include;
+            throw new ArgumentNullException(nameof(startFrom));
         }
+
+        Filter = startFrom.Filter;
+        Include = startFrom.Include;
 
         Projection = projectionSpecification;
     }

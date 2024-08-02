@@ -17,12 +17,12 @@ public class DynamicIncludeSpecification<T> : IIncludeSpecification<T>
     /// <param name="includeAction">Instance of <see cref="IBuildableIncludeSpecification{T}"/>. </param>
     public DynamicIncludeSpecification(Action<IBuildableIncludeSpecification<T>> includeAction)
     {
-        _wrappedSpecification = IncludeSpecification<T>.CreateInternal();
-
-        if (includeAction != null)
+        if (includeAction is null)
         {
-            includeAction(_wrappedSpecification);
+            throw new ArgumentNullException(nameof(includeAction));
         }
+
+        _wrappedSpecification = IncludeSpecification<T>.CreateInternal();
     }
 
     /// <summary>

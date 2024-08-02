@@ -1,4 +1,5 @@
-﻿using Audacia.Core;
+﻿using System;
+using Audacia.Core;
 using Audacia.DataAccess.Specifications.Filtering;
 using Audacia.DataAccess.Specifications.Including;
 using Audacia.DataAccess.Specifications.Projection;
@@ -44,11 +45,13 @@ public class SortablePageableQuerySpecification<T> : ISortablePageableQuerySpeci
     /// <param name="sortablePagingRequest">Instance of <see cref="SortablePagingRequest"/>.</param>
     public SortablePageableQuerySpecification(IQuerySpecification<T> buildFrom, SortablePagingRequest sortablePagingRequest)
     {
-        if (buildFrom != null)
+        if (buildFrom is null)
         {
-            Filter = buildFrom.Filter;
-            Include = buildFrom.Include;
+            throw new ArgumentNullException(nameof(buildFrom));
         }
+
+        Filter = buildFrom.Filter;
+        Include = buildFrom.Include;
 
         SortablePagingRequest = sortablePagingRequest;
     }
@@ -99,12 +102,14 @@ public class SortablePageableQuerySpecification<T, TResult> : ISortablePageableQ
     /// <param name="sortablePagingRequest">Instance of <see cref="SortablePagingRequest"/>.</param>
     public SortablePageableQuerySpecification(IProjectableQuerySpecification<T, TResult> buildFrom, SortablePagingRequest sortablePagingRequest)
     {
-        if (buildFrom != null)
+        if (buildFrom is null)
         {
-            Filter = buildFrom.Filter;
-            Include = buildFrom.Include;
-            Projection = buildFrom.Projection;
+            throw new ArgumentNullException(nameof(buildFrom));
         }
+
+        Filter = buildFrom.Filter;
+        Include = buildFrom.Include;
+        Projection = buildFrom.Projection;
 
         SortablePagingRequest = sortablePagingRequest;
     }

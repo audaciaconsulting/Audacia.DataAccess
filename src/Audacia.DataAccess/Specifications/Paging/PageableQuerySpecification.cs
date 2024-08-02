@@ -1,4 +1,5 @@
-﻿using Audacia.Core;
+﻿using System;
+using Audacia.Core;
 using Audacia.DataAccess.Specifications.Filtering;
 using Audacia.DataAccess.Specifications.Including;
 using Audacia.DataAccess.Specifications.Ordering;
@@ -43,12 +44,19 @@ public class PageableQuerySpecification<T> : IPageableQuerySpecification<T> wher
         IOrderableQuerySpecification<T> buildFrom,
         PagingRequest sortablePagingRequest)
     {
-        if (buildFrom != null)
+        if (sortablePagingRequest is null)
         {
-            Filter = buildFrom.Filter;
-            Include = buildFrom.Include;
-            Order = buildFrom.Order;
+            throw new ArgumentNullException(nameof(sortablePagingRequest));
         }
+
+        if (buildFrom is null)
+        {
+            throw new ArgumentNullException(nameof(buildFrom));
+        }
+
+        Filter = buildFrom.Filter;
+        Include = buildFrom.Include;
+        Order = buildFrom.Order;
 
         PagingRequest = sortablePagingRequest;
     }

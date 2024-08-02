@@ -17,12 +17,12 @@ public class DynamicOrderSpecification<T> : IOrderSpecification<T>
     /// <param name="orderAction">Instance of <see cref="IBuildableOrderSpecification{T}"/>.</param>
     public DynamicOrderSpecification(Action<IBuildableOrderSpecification<T>> orderAction)
     {
-        _wrappedSpecification = OrderSpecification<T>.CreateInternal();
-
-        if (orderAction != null)
+        if (orderAction is null)
         {
-            orderAction(_wrappedSpecification);
+            throw new ArgumentNullException(nameof(orderAction));
         }
+
+        _wrappedSpecification = OrderSpecification<T>.CreateInternal();
     }
 
     /// <summary>

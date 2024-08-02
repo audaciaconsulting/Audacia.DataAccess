@@ -23,12 +23,17 @@ public class OrFilterSpecification<T> : IFilterSpecification<T>
     /// <param name="right">Right part of the Expression <see cref="IFilterSpecification{T}"/>.</param>
     public OrFilterSpecification(IFilterSpecification<T> left, IFilterSpecification<T> right)
     {
-        if (left != null && right != null)
+        if (left is null)
         {
-            Expression = left.Expression.Or(right.Expression);
+            throw new ArgumentNullException(nameof(left));
         }
 
-        Expression = _ => false;
+        if (right is null)
+        {
+            throw new ArgumentNullException(nameof(right));
+        }
+
+        Expression = left.Expression.Or(right.Expression);
     }
 
     /// <summary>
@@ -38,12 +43,17 @@ public class OrFilterSpecification<T> : IFilterSpecification<T>
     /// <param name="right">Right part of the Expression <see cref="Expression{T}"/>.</param>
     public OrFilterSpecification(IFilterSpecification<T> left, Expression<Func<T, bool>> right)
     {
-        if (left != null) 
+        if (left is null)
         {
-            Expression = left.Expression.Or(right);
+            throw new ArgumentNullException(nameof(left));
         }
-        
-        Expression = _ => false;
+
+        if (right is null)
+        {
+            throw new ArgumentNullException(nameof(right));
+        }
+
+        Expression = left.Expression.Or(right);
     }
 
     /// <summary>
@@ -56,6 +66,16 @@ public class OrFilterSpecification<T> : IFilterSpecification<T>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
     public OrFilterSpecification(Expression<Func<T, bool>> left, Expression<Func<T, bool>> right, params Expression<Func<T, bool>>[] additionalExpressions)
     {
+        if (left is null)
+        {
+            throw new ArgumentNullException(nameof(left));
+        }
+
+        if (right is null)
+        {
+            throw new ArgumentNullException(nameof(right));
+        }
+
         Expression = left.Or(right);
         foreach (var expression in additionalExpressions ?? [])
         {
