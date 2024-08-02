@@ -23,6 +23,7 @@ public class DynamicOrderSpecification<T> : IOrderSpecification<T>
         }
 
         _wrappedSpecification = OrderSpecification<T>.CreateInternal();
+        orderAction(_wrappedSpecification);
     }
 
     /// <summary>
