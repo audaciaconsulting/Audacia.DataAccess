@@ -23,12 +23,10 @@ public class OrFilterSpecification<T> : IFilterSpecification<T>
     /// <param name="right">Right part of the Expression <see cref="IFilterSpecification{T}"/>.</param>
     public OrFilterSpecification(IFilterSpecification<T> left, IFilterSpecification<T> right)
     {
-        if (left != null && right != null)
-        {
-            Expression = left.Expression.Or(right.Expression);
-        }
+        ArgumentNullException.ThrowIfNull(left, nameof(left));
+        ArgumentNullException.ThrowIfNull(right, nameof(right));
 
-        Expression = _ => false;
+        Expression = left.Expression.Or(right.Expression);
     }
 
     /// <summary>
@@ -38,12 +36,10 @@ public class OrFilterSpecification<T> : IFilterSpecification<T>
     /// <param name="right">Right part of the Expression <see cref="Expression{T}"/>.</param>
     public OrFilterSpecification(IFilterSpecification<T> left, Expression<Func<T, bool>> right)
     {
-        if (left != null) 
-        {
-            Expression = left.Expression.Or(right);
-        }
-        
-        Expression = _ => false;
+        ArgumentNullException.ThrowIfNull(left, nameof(left));
+        ArgumentNullException.ThrowIfNull(right, nameof(right));
+
+        Expression = left.Expression.Or(right);
     }
 
     /// <summary>
@@ -56,6 +52,9 @@ public class OrFilterSpecification<T> : IFilterSpecification<T>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
     public OrFilterSpecification(Expression<Func<T, bool>> left, Expression<Func<T, bool>> right, params Expression<Func<T, bool>>[] additionalExpressions)
     {
+        ArgumentNullException.ThrowIfNull(left, nameof(left));
+        ArgumentNullException.ThrowIfNull(right, nameof(right));
+
         Expression = left.Or(right);
         foreach (var expression in additionalExpressions ?? [])
         {

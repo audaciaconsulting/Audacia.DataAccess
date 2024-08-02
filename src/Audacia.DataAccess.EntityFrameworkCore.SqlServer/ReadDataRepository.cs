@@ -142,7 +142,7 @@ public sealed class ReadDataRepository<TContext> : IReadableDataRepository, IDis
     {
         var query = ApplyIncludesAndFilter(specification);
 
-        if (specification.Order != null)
+        if (specification.Order?.OrderSteps.Count() > 0)
         {
             query = PerformOrdering(specification.Order, query);
         }

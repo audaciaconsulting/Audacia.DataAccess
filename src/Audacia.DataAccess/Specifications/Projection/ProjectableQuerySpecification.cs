@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using Audacia.Core;
 using Audacia.DataAccess.Specifications.Filtering;
 using Audacia.DataAccess.Specifications.Including;
 
@@ -67,6 +68,8 @@ public class ProjectableQuerySpecification<T, TResult> : IProjectableQuerySpecif
     /// <param name="projectionSpecification">Instance of projectionSpecification.</param>
     public ProjectableQuerySpecification(IProjectionSpecification<T, TResult> projectionSpecification)
     {
+        ArgumentNullException.ThrowIfNull(projectionSpecification, nameof(projectionSpecification));
+
         Projection = projectionSpecification;
     }
 
@@ -79,11 +82,11 @@ public class ProjectableQuerySpecification<T, TResult> : IProjectableQuerySpecif
         IQuerySpecification<T> startFrom,
         IProjectionSpecification<T, TResult> projectionSpecification)
     {
-        if (startFrom != null)
-        {
-            Filter = startFrom.Filter;
-            Include = startFrom.Include;
-        }
+        ArgumentNullException.ThrowIfNull(projectionSpecification, nameof(projectionSpecification));
+        ArgumentNullException.ThrowIfNull(startFrom, nameof(startFrom));
+
+        Filter = startFrom.Filter;
+        Include = startFrom.Include;
 
         Projection = projectionSpecification;
     }
