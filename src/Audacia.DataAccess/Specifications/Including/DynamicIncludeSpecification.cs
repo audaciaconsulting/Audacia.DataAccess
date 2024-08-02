@@ -23,6 +23,7 @@ public class DynamicIncludeSpecification<T> : IIncludeSpecification<T>
         }
 
         _wrappedSpecification = IncludeSpecification<T>.CreateInternal();
+        includeAction(_wrappedSpecification);
     }
 
     /// <summary>
