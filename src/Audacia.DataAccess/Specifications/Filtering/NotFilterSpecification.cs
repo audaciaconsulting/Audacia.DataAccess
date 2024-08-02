@@ -21,10 +21,7 @@ public class NotFilterSpecification<T> : IFilterSpecification<T>
     /// <param name="specificationToNegate">Instance of <see cref="IFilterSpecification{T}"/>.</param>
     public NotFilterSpecification(IFilterSpecification<T> specificationToNegate)
     {
-        if (specificationToNegate is null)
-        {
-            throw new ArgumentNullException(nameof(specificationToNegate));
-        }
+        ArgumentNullException.ThrowIfNull(specificationToNegate, nameof(specificationToNegate));
 
         Expression = specificationToNegate.Expression.Not();
     }

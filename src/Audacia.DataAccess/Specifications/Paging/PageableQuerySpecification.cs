@@ -44,15 +44,8 @@ public class PageableQuerySpecification<T> : IPageableQuerySpecification<T> wher
         IOrderableQuerySpecification<T> buildFrom,
         PagingRequest sortablePagingRequest)
     {
-        if (sortablePagingRequest is null)
-        {
-            throw new ArgumentNullException(nameof(sortablePagingRequest));
-        }
-
-        if (buildFrom is null)
-        {
-            throw new ArgumentNullException(nameof(buildFrom));
-        }
+        ArgumentNullException.ThrowIfNull(buildFrom, nameof(buildFrom));
+        ArgumentNullException.ThrowIfNull(sortablePagingRequest, nameof(sortablePagingRequest));
 
         Filter = buildFrom.Filter;
         Include = buildFrom.Include;
@@ -105,13 +98,13 @@ public class PageableQuerySpecification<T, TResult> : IPageableQuerySpecificatio
         IOrderableQuerySpecification<T, TResult> buildFrom,
         PagingRequest sortablePagingRequest)
     {
-        if (buildFrom != null)
-        {
-            Filter = buildFrom.Filter;
-            Include = buildFrom.Include;
-            Projection = buildFrom.Projection;
-            Order = buildFrom.Order;
-        }
+        ArgumentNullException.ThrowIfNull(sortablePagingRequest, nameof(sortablePagingRequest));
+        ArgumentNullException.ThrowIfNull(buildFrom, nameof(buildFrom));
+
+        Filter = buildFrom.Filter;
+        Include = buildFrom.Include;
+        Projection = buildFrom.Projection;
+        Order = buildFrom.Order;
 
         PagingRequest = sortablePagingRequest;
     }

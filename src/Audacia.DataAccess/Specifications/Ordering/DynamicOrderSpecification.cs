@@ -17,10 +17,7 @@ public class DynamicOrderSpecification<T> : IOrderSpecification<T>
     /// <param name="orderAction">Instance of <see cref="IBuildableOrderSpecification{T}"/>.</param>
     public DynamicOrderSpecification(Action<IBuildableOrderSpecification<T>> orderAction)
     {
-        if (orderAction is null)
-        {
-            throw new ArgumentNullException(nameof(orderAction));
-        }
+        ArgumentNullException.ThrowIfNull(orderAction, nameof(orderAction));
 
         _wrappedSpecification = OrderSpecification<T>.CreateInternal();
         orderAction(_wrappedSpecification);

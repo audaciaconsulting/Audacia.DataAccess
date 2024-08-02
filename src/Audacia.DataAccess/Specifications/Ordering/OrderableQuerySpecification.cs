@@ -33,10 +33,7 @@ public class OrderableQuerySpecification<T> : IOrderableQuerySpecification<T>
     /// <param name="orderSpecification"><see cref="IOrderSpecification{T}"/>.</param>
     public OrderableQuerySpecification(IOrderSpecification<T> orderSpecification)
     {
-        if (orderSpecification is null)
-        {
-            throw new ArgumentNullException(nameof(orderSpecification));
-        }
+        ArgumentNullException.ThrowIfNull(orderSpecification, nameof(orderSpecification));
 
         Order = orderSpecification;
     }
@@ -48,15 +45,8 @@ public class OrderableQuerySpecification<T> : IOrderableQuerySpecification<T>
     /// <param name="orderSpecification">Instance of <see cref="IOrderSpecification{T}"/>.</param>
     public OrderableQuerySpecification(IQuerySpecification<T> buildFrom, IOrderSpecification<T> orderSpecification)
     {
-        if (orderSpecification is null)
-        {
-            throw new ArgumentNullException(nameof(orderSpecification));
-        }
-
-        if (buildFrom is null)
-        {
-            throw new ArgumentNullException(nameof(buildFrom));
-        }
+        ArgumentNullException.ThrowIfNull(buildFrom, nameof(buildFrom));
+        ArgumentNullException.ThrowIfNull(orderSpecification, nameof(orderSpecification));
 
         Filter = buildFrom.Filter;
         Include = buildFrom.Include;
@@ -102,12 +92,12 @@ public class OrderableQuerySpecification<T, TResult> : IOrderableQuerySpecificat
         IProjectableQuerySpecification<T, TResult> buildFrom,
         IOrderSpecification<TResult> orderSpecification)
     {
-        if (buildFrom != null)
-        {
-            Filter = buildFrom.Filter;
-            Include = buildFrom.Include;
-            Projection = buildFrom.Projection;
-        }
+        ArgumentNullException.ThrowIfNull(orderSpecification, nameof(orderSpecification));
+        ArgumentNullException.ThrowIfNull(buildFrom, nameof(buildFrom));
+
+        Filter = buildFrom.Filter;
+        Include = buildFrom.Include;
+        Projection = buildFrom.Projection;
 
         Order = orderSpecification;
     }
