@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.0.3 - 2024-11-21
+### Added
+- No new functionality added
+
+### Changed
+- No functionality changed
+
+### Fixed
+- Updated vulnerable dependencies ([#6](https://github.com/audaciaconsulting/Audacia.DataAccess/pull/6))
+
 ## 3.0.2 - 2024-08-02
 ### Added
 - No new functionality added
