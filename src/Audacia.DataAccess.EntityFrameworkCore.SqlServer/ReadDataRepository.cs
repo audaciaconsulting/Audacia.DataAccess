@@ -17,15 +17,16 @@ using Microsoft.EntityFrameworkCore;
 namespace Audacia.DataAccess.EntityFrameworkCore.SqlServer;
 
 /// <summary>
-/// Implements <see cref="IReadableDataRepository" />. 
+/// Implements <see cref="IReadableDataRepository" />.
 /// </summary>
 /// <typeparam name="TContext">Type of <see cref="ReadDataRepository{TContext}"/>. </typeparam>
-public sealed class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
+public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     where TContext : DbContext
 {
     private readonly TContext _context;
     private readonly StoredProcedureBuilder _storedProcedureBuilder;
     private bool _trackChanges;
+    private bool _disposed;
 
     /// <summary>
     /// Constructor takes in an instance of the Data Context and StoredProcedureBuilder.
@@ -624,12 +625,32 @@ public sealed class ReadDataRepository<TContext> : IReadableDataRepository, IDis
         return genericMethod.Invoke(null, new object[] { query, orderStep.Expression }) as IOrderedQueryable<T>;
     }
 
-    /// <summary>
-    /// Dispose TContext object.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP007:Don't dispose injected", Justification = "Needs this for clearing out context object.")]
+    /// <inheritdoc />
     public void Dispose()
     {
-        _context?.Dispose();
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Dispose <typeparamref name="TContext"/> object.
+    /// </summary>
+    /// <param name="disposing">Whether we're disposing or not.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP007:Don't dispose injected", Justification = "Needs this for clearing out context object.")]
+    protected virtual void Dispose(bool disposing)
+    {
+        // Check to see if Dispose has already been called.
+        if (!_disposed)
+        {
+            // If disposing equals true, dispose all managed
+            // and unmanaged resources.
+            if (disposing)
+            {
+                // Dispose managed resources.
+                _context.Dispose();
+            }
+
+            _disposed = true;
+        }
     }
 }
