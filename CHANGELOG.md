@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.4 - 2024-11-26
+### Fixed
+- Made `ReadDataRepository` unsealed so that external consumers can continue to make child classes. 
+
+
 ## 3.0.3 - 2024-11-21
 ### Added
 - No new functionality added
