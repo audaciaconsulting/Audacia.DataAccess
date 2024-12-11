@@ -15,14 +15,6 @@ public class IncludeSpecificationTests : IDisposable
 {
     private readonly DummyDbContext _dbContext;
 
-    private readonly IReadableDataRepository _repository;
-
-    private bool _disposed = false;
-
-    public IncludeSpecificationTests()
-    {
-        var databaseOptions = new DbContextOptionsBuilder<DummyDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
         // Seed in separate instance of context otherwise all seeded entities will be loaded
