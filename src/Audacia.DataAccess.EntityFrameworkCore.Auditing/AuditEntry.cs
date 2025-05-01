@@ -7,7 +7,7 @@ namespace Audacia.DataAccess.EntityFrameworkCore.Auditing;
 /// <summary>
 /// AuditEntry class.
 /// </summary>
-/// <typeparam name="TUserIdentifier">UserIdentifier struct stype.</typeparam>
+/// <typeparam name="TUserIdentifier">UserIdentifier struct type.</typeparam>
 public class AuditEntry<TUserIdentifier>
     where TUserIdentifier : struct
 {
@@ -39,12 +39,12 @@ public class AuditEntry<TUserIdentifier>
     /// <summary>
     /// Gets or sets Strategy.
     /// </summary>
-    public AuditStrategy? Strategy { get; set; }
+    public AuditStrategy Strategy { get; set; }
 
     /// <summary>
     /// Gets or sets State.
     /// </summary>
-    public AuditState? State { get; set; }
+    public AuditState State { get; set; }
 
     /// <summary>
     /// Gets or sets UserIdentifier.

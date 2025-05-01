@@ -12,17 +12,17 @@ public static class FilterSpecificationExtensions
     /// <summary>
     /// Execute the filter rule(s) against the given <paramref name="model"/>.
     /// </summary>
-    /// <typeparam name="T">Type of <see cref="IsSatisfiedBy"/>. </typeparam>
+    /// <typeparam name="T">Type of <see cref="IsSatisfiedBy{T}"/>. </typeparam>
     /// <param name="filterSpecification">Instance of <see cref="IFilterSpecification{T}"/>.</param>
     /// <param name="model">Instance of model. </param>
-    /// <returns>Instance of <see cref="IsSatisfiedBy"/>.</returns>
+    /// <returns>Instance of <see cref="IsSatisfiedBy{T}"/>.</returns>
     public static bool IsSatisfiedBy<T>(this IFilterSpecification<T> filterSpecification, T model)
     {
         return filterSpecification?.Expression.Execute(model) ?? false;
     }
 
     /// <summary>
-    /// Combines the given <see cref="IFilterSpecification{T}"/> objects into a new <see cref="IFilterSpecification{T}"/> 
+    /// Combines the given <see cref="IFilterSpecification{T}"/> objects into a new <see cref="IFilterSpecification{T}"/>
     /// using the logical AND operator.
     /// </summary>
     /// <typeparam name="T">Type of <see cref="IFilterSpecification{T}"/>. </typeparam>
@@ -35,7 +35,7 @@ public static class FilterSpecificationExtensions
     }
 
     /// <summary>
-    /// Combines the given <see cref="IFilterSpecification{T}"/> and <see cref="Expression{TDelegate}"/> 
+    /// Combines the given <see cref="IFilterSpecification{T}"/> and <see cref="Expression{TDelegate}"/>
     /// into a new <see cref="IFilterSpecification{T}"/> using the logical AND operator.
     /// </summary>
     /// <typeparam name="T">Type of <see cref="IFilterSpecification{T}"/>. </typeparam>
@@ -48,7 +48,7 @@ public static class FilterSpecificationExtensions
     }
 
     /// <summary>
-    /// Combines the given <see cref="IFilterSpecification{T}"/> objects into a new <see cref="IFilterSpecification{T}"/> 
+    /// Combines the given <see cref="IFilterSpecification{T}"/> objects into a new <see cref="IFilterSpecification{T}"/>
     /// using the logical OR operator.
     /// </summary>
     /// <typeparam name="T">Type of <see cref="IFilterSpecification{T}"/>. </typeparam>
@@ -61,7 +61,7 @@ public static class FilterSpecificationExtensions
     }
 
     /// <summary>
-    /// Combines the given <see cref="IFilterSpecification{T}"/> and <see cref="Expression{TDelegate}"/> 
+    /// Combines the given <see cref="IFilterSpecification{T}"/> and <see cref="Expression{TDelegate}"/>
     /// into a new <see cref="IFilterSpecification{T}"/> using the logical OR operator.
     /// </summary>
     /// <typeparam name="T">Type of <see cref="IFilterSpecification{T}"/>. </typeparam>
