@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Authors>Audacia</Authors>
-    <Verison>3.0.5</Verison>
+    <Version>3.0.5</Version>
     <Copyright>Copyright © Audacia $([System.DateTime]::UtcNow.Year)</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
