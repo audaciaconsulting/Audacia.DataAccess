@@ -121,7 +121,8 @@ dotnet_diagnostic.AV1551.severity = warning
 dotnet_diagnostic.AV1553.severity = warning
 
 # Do not use optional parameters in interface methods or their concrete implementations
-dotnet_diagnostic.AV1554.severity = warning
+# Suppressed due to widespread usage of optional cancellation tokens
+dotnet_diagnostic.AV1554.severity = none
 
 # Avoid using named arguments
 dotnet_diagnostic.AV1555.severity = none
@@ -132,7 +133,8 @@ dotnet_diagnostic.AV1561.severity = none
 # Don't use ref or out parameters
 dotnet_diagnostic.AV1562.severity = warning
 
-# Avoid signatures that take a bool parameter (Covered by ACL1017)
+# Avoid signatures that take a bool parameter
+# Suppressed because rule entirely covered by ACL1017
 dotnet_diagnostic.AV1564.severity = none
 
 # Don't use parameters as temporary variables
