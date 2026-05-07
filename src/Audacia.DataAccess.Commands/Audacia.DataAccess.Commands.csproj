@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Authors>Audacia</Authors>
-    <Version>4.0.0</Version>
     <Copyright>Copyright © Audacia $([System.DateTime]::UtcNow.Year)</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -13,6 +12,10 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\TomCooper\source\repos\Audacia\Audacia.DataAccess\README.md" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Audacia.CodeAnalysis" Version="1.12.1">
