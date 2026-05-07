@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
@@ -31,6 +32,6 @@ public interface IPropertyAuditConfiguration
     /// <summary>
     /// Gets value of Property.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "This is may code already using this..")]
+    [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "This is may code already using this..")]
     IProperty Property { get; }
 }

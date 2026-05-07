@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -62,7 +63,7 @@ public sealed class WriteDataRepository<TContext> : IWriteableDataRepository, ID
     /// </summary>
     /// <typeparam name="T">Type of model.</typeparam>
     /// <param name="model">Instance of the model.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("naming-conventions", "AV1711:Name members similarly to members of related .NET Framework classes", Justification = "Introduce breaking changes.")]
+    [SuppressMessage("naming-conventions", "AV1711:Name members similarly to members of related .NET Framework classes", Justification = "Introduce breaking changes.")]
     public void Delete<T>(T model) where T : class
     {
         _context.Remove(model);
@@ -90,7 +91,7 @@ public sealed class WriteDataRepository<TContext> : IWriteableDataRepository, ID
     /// <summary>
     /// Dispose TContext object.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP007:Don't dispose injected", Justification = "Needs this for clearing out context object.")]
+    [SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP007:Don't dispose injected", Justification = "Needs this for clearing out context object.")]
     public void Dispose()
     {
         _context?.Dispose();

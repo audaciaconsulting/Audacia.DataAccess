@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Audacia.DataAccess;
@@ -6,7 +7,7 @@ namespace Audacia.DataAccess;
 /// <summary>
 /// Exposes the methods to add and remove model instances from the underlying data storage.
 /// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1554:Method contains optional parameter in type hierarchy", Justification = "Allows to include an existing cancellation token when invoking methods. Otherwise, a new token is provided.")]
+[SuppressMessage("Maintainability", "AV1554:Method contains optional parameter in type hierarchy", Justification = "Allows to include an existing cancellation token when invoking methods. Otherwise, a new token is provided.")]
 public interface IWriteableDataRepository
 {
     /// <summary>
@@ -38,7 +39,7 @@ public interface IWriteableDataRepository
     /// </summary>
     /// <typeparam name="T">Elemety type of the model.</typeparam>
     /// <param name="model">The entity to delete.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "AV1711:Name members and local functions similarly to members of .NET Framework classes", Justification = "Method name is consistant with EF DbSet method name.")]
+    [SuppressMessage("Naming", "AV1711:Name members and local functions similarly to members of .NET Framework classes", Justification = "Method name is consistant with EF DbSet method name.")]
     void Delete<T>(T model) where T : class;
 
     /// <summary>

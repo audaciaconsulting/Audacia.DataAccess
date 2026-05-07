@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,6 @@ using Audacia.DataAccess.EntityFrameworkCore.Triggers;
 using Audacia.DataAccess.Model.Auditing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
 
@@ -287,7 +287,7 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
         auditEntry.PrimaryKeyValues = primaryKeyValues.ToArray();
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
+    [SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
     private Task InstertingAsync(object entity, AuditContext<TDbContext> context,
         CancellationToken cancellationToken)
     {
@@ -311,7 +311,7 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
         return Task.CompletedTask;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
+    [SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
     private async Task InsertedAsync(object entity, AuditContext<TDbContext> context,
         CancellationToken cancellationToken)
     {
@@ -348,7 +348,7 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
         PopulatePrimaryKeys(wrapper.AuditEntry, context);
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
+    [SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
     private async Task UpdatingAsync(object entity, AuditContext<TDbContext> context,
         CancellationToken cancellationToken)
     {
@@ -374,7 +374,7 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
+    [SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
     private async Task UpdatedAsync(object entity, AuditContext<TDbContext> context,
         CancellationToken cancellationToken)
     {
@@ -410,7 +410,7 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
         PopulatePrimaryKeys(wrapper.AuditEntry, context);
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
+    [SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
     [MaxMethodLength(11)]
     private async Task DeletingAsync(object entity, AuditContext<TDbContext> context,
         CancellationToken cancellationToken)

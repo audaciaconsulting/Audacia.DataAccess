@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Audacia.DataAccess.EntityFrameworkCore.Auditing.Configuration;
@@ -98,7 +99,7 @@ public class PropertyAuditConfigurationBuilder<T, TProperty> : PropertyAuditConf
     /// </summary>
     /// <param name="shouldIgnore">Value of ignore.</param>
     /// <returns><see cref="PropertyAuditConfigurationBuilder{T, TProperty}"/>. </returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
+    [SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
     public PropertyAuditConfigurationBuilder<T, TProperty> Ignore(bool shouldIgnore = true)
     {
         InternalIgnore = shouldIgnore;

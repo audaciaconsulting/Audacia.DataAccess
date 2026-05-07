@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Audacia.DataAccess.EntityFrameworkCore.SqlServer;
 using Audacia.DataAccess.Specifications;
@@ -10,7 +11,7 @@ using Xunit;
 
 namespace Audacia.DataAccess.Tests.DataAccess.Specifications.Including;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP002:Dispose the member as it is assigned with a created IDisposable", Justification = "Fixing this will introduce breaking changes.")]
+[SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP002:Dispose the member as it is assigned with a created IDisposable", Justification = "Fixing this will introduce breaking changes.")]
 public class IncludeSpecificationTests : IDisposable
 {
     private readonly DummyDbContext _dbContext;

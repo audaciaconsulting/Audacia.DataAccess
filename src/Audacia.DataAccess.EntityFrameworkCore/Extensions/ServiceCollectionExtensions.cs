@@ -14,7 +14,6 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/> instance.</param>
     /// <returns><see cref="IServiceCollection"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("member-design", "AV1130:Return interfaces to unchangeable collections", Justification = "This is an extension method.")]
     public static IServiceCollection AddQueryables(this IServiceCollection services)
     {
         return services.AddTransient(typeof(IQueryable<>), typeof(QueryableProxy<,>));

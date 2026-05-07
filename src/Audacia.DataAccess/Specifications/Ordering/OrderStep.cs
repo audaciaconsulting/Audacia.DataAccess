@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace Audacia.DataAccess.Specifications.Ordering;
@@ -29,7 +30,7 @@ public class OrderStep
     /// <param name="isAsc">boolean value for asc parameter.</param>
     /// <param name="type">Type of <see cref="OrderStep"/>.</param>
     /// <param name="expression">Instance of <see cref="Expression"/>.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
+    [SuppressMessage("Maintainability", "ACL1017:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
     public OrderStep(bool isAsc, Type type, Expression expression)
     {
         Ascending = isAsc;
