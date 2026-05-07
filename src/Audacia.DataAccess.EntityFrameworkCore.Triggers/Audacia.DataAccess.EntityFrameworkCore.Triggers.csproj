@@ -1,17 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Authors>Audacia</Authors>
-    <Copyright>Copyright © Audacia $([System.DateTime]::UtcNow.Year)</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageIcon>package-icon.png</PackageIcon>
     <Description>Entity Framework Core Sql Server trigger code for Audacia.DataAccess</Description>
-    <Nullable>enable</Nullable>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <NoWarn>ACL1017;ACL1018</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,19 +15,12 @@
 	  <PrivateAssets>all</PrivateAssets> 
 	</PackageReference>
 
-    <PackageReference Include="Audacia.Core" Version="1.1.2" />
+    <PackageReference Include="Audacia.Core" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Audacia.DataAccess.Model\Audacia.DataAccess.Model.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\package-icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>

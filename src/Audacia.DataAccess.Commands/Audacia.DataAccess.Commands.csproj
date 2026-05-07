@@ -22,8 +22,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Audacia.Commands" Version="1.1.1" />
-    <PackageReference Include="Audacia.Core" Version="1.1.2" />
+    <PackageReference Include="Audacia.Commands" Version="1.1.3" />
+    <PackageReference Include="Audacia.Core" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,16 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Authors>Audacia</Authors>
-    <Copyright>Copyright © Audacia $([System.DateTime]::UtcNow.Year)</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageIcon>package-icon.png</PackageIcon>
     <Description>Entity Framework Core implementation of Audacia.DataAccess</Description>
-    <Nullable>enable</Nullable>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,8 +9,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Audacia.Core" Version="1.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
+    <PackageReference Include="Audacia.Core" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
   </ItemGroup>
 
   <ItemGroup>
