@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="C:\Users\TomCooper\source\repos\Audacia\Audacia.DataAccess\README.md" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Audacia.CodeAnalysis" Version="1.12.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,12 +15,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Audacia.DataAccess\Audacia.DataAccess.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\package-icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
   </ItemGroup>
 </Project>
