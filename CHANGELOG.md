@@ -8,7 +8,7 @@
 - All projects and test project upgraded to .NET 10.
 - All nuget dependencies updated to latest versions.
 - Added shared README reference for each NuGet package to `Directory.Build.Props`.
-- Consolidated individual project versions into `Directory.Build.Props`.
+- Conslidated shared properties into `Directory.Build.Props` and removed from individual projects.
 - Removed redundant version in test project.
 - `Audacia.CodeAnalysis.Analyzers.Helpers` now referenced as private asset.
 
