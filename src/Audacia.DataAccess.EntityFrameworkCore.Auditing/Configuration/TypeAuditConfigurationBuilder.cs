@@ -63,7 +63,7 @@ public class TypeAuditConfigurationBuilder<T> : TypeAuditConfigurationBuilder
     /// </summary>
     /// <param name="shouldIgnore">Value of InternalIgnore.</param>
     /// <returns><see cref="TypeAuditConfigurationBuilder{T}"/>.</returns>
-    [SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
+    [SuppressMessage("Maintainability", "ACL1017:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
     public TypeAuditConfigurationBuilder<T> Ignore(bool shouldIgnore = true)
     {
         InternalIgnore = shouldIgnore;

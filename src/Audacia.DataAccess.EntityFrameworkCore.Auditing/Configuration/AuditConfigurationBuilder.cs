@@ -68,7 +68,7 @@ public class AuditConfigurationBuilder<TUserIdentifier, TDbContext>
     /// </summary>
     /// <param name="doNotAudit">Factory delegate <see cref="Func{TUserIdentifier}" />.</param>
     /// <returns><see cref="AuditConfigurationBuilder{TUserIdentifier, TDbContext}"/>.</returns>
-    [SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
+    [SuppressMessage("Maintainability", "ACL1017:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
     public AuditConfigurationBuilder<TUserIdentifier, TDbContext> DoNotAuditIfNoChangesInTrackedProperties(bool doNotAudit = true)
     {
         _doNotAuditIfNoChangesInTrackedProperties = doNotAudit;

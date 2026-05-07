@@ -25,7 +25,7 @@ public class EntityAuditConfigurationBuilder<TEntity> : TypeAuditConfigurationBu
     /// </summary>
     /// <param name="ignore">Value of ignore.</param>
     /// <returns><see cref="EntityAuditConfigurationBuilder{TEntity}"/>.</returns>
-    [SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
+    [SuppressMessage("Maintainability", "ACL1017:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
     public EntityAuditConfigurationBuilder<TEntity> Ignore(bool ignore = true)
     {
         InternalIgnore = ignore;

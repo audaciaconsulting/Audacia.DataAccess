@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,7 +68,7 @@ public class TriggerRegistrar<TDbContext>
     /// <summary>
     /// BeforeAsync event handler.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1003:Use generic event handler instances", Justification = "Breaking changes to the code.")]
+    [SuppressMessage("Design", "CA1003:Use generic event handler instances", Justification = "Breaking changes to the code.")]
     public event Func<TDbContext, CancellationToken, Task> BeforeAsync
     {
         add => _beforeAsync += value;
@@ -78,7 +79,7 @@ public class TriggerRegistrar<TDbContext>
     /// <summary>
     /// AfterAsync event handler.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1003:Use generic event handler instances", Justification = "Breaking changes to the code.")]
+    [SuppressMessage("Design", "CA1003:Use generic event handler instances", Justification = "Breaking changes to the code.")]
     public event Func<TDbContext, CancellationToken, Task> AfterAsync
     {
         add => _afterAsync += value;

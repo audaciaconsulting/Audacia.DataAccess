@@ -71,15 +71,9 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
     /// <summary>
     /// Contains beforeAsync and afterAsync event handlers.
     /// </summary>
-    [MaxMethodLength(19)]
     internal void Apply()
     {
-        _triggerRegistrar.BeforeAsync += (context, _) =>
-        {
-            _auditStateDictionary[context] = new AuditIntanceState();
-
-            return Task.CompletedTask;
-        };
+        _triggerRegistrar.BeforeAsync += TriggerRegistrarOnBeforeAsync;
 
         _triggerRegistrar.Register(TriggerType.Inserting, TransformToTrigger(InstertingAsync));
         _triggerRegistrar.Register(TriggerType.Inserted, TransformToTrigger(InsertedAsync));
@@ -87,36 +81,55 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
         _triggerRegistrar.Register(TriggerType.Updated, TransformToTrigger(UpdatedAsync));
         _triggerRegistrar.Register(TriggerType.Deleting, TransformToTrigger(DeletingAsync));
 
-        _triggerRegistrar.AfterAsync += async (context, cancellationToken) =>
+        _triggerRegistrar.AfterAsync += TriggerRegistrarOnAfterAsync;
+    }
+
+    private Task TriggerRegistrarOnBeforeAsync(TDbContext context, CancellationToken cancellationToken)
+    {
+        _auditStateDictionary[context] = new AuditIntanceState();
+
+        return Task.CompletedTask;
+    }
+
+    private async Task TriggerRegistrarOnAfterAsync(TDbContext context, CancellationToken cancellationToken)
+    {
+        try
         {
-            try
-            {
-                var auditEntries = _auditStateDictionary[context].EntityEntryWrappers.Values
-                    .Select(wrapper => wrapper.AuditEntry).ToList();
+            var auditEntries = _auditStateDictionary[context].EntityEntryWrappers.Values
+                .Select(wrapper => wrapper.AuditEntry).ToList();
 
-                if (_configuration.DoNotAuditIfNoChangesInTrackedProperties && auditEntries?.Any() == true)
-                {
-                    auditEntries = auditEntries.Where(auditEntry => auditEntry!.Properties.Any()).ToList();
-                }
-
-                if (_configuration.SinkFactories != null) 
-                {
-                    foreach (var sinkFactory in _configuration.SinkFactories)
-                    {
-                        var sink = sinkFactory.Create(context);
-                        if (sink != null && auditEntries != null)
-                        {
-                            await sink.HandleAsync(auditEntries!, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
-                }
-            }
-            finally
+            if (_configuration.DoNotAuditIfNoChangesInTrackedProperties && auditEntries?.Any() == true)
             {
-                //Remove so does not cluttle up memory as this class will effectivly act as a singleton due to closures and TriggerRegistrar being a singleton
-                _auditStateDictionary.Remove(context);   
+                auditEntries = auditEntries.Where(auditEntry => auditEntry!.Properties.Any()).ToList();
             }
-        };
+
+            await FlushAuditEntriesAsync(context, auditEntries, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            //Remove so does not cluttle up memory as this class will effectivly act as a singleton due to closures and TriggerRegistrar being a singleton
+            _auditStateDictionary.Remove(context);
+        }
+    }
+
+    private async Task FlushAuditEntriesAsync(
+        TDbContext context, 
+        List<AuditEntry<TUserIdentifier>?>? auditEntries, 
+        CancellationToken cancellationToken)
+    {
+        if (_configuration.SinkFactories == null)
+        {
+            return;
+        }
+
+        foreach (var sinkFactory in _configuration.SinkFactories)
+        {
+            var sink = sinkFactory.Create(context);
+            if (sink != null && auditEntries != null)
+            {
+                await sink.HandleAsync(auditEntries!, cancellationToken).ConfigureAwait(false);
+            }
+        }
     }
 
     private Func<object, TriggerContext<TDbContext>, CancellationToken, Task> TransformToTrigger(
@@ -186,7 +199,7 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
     /// <param name="propertyConfiguration"><see cref="IPropertyAuditConfiguration"/>.</param>
     /// <param name="context">Database context.</param>
     /// <returns>Task(string).</returns>
-    [MaxMethodLength(13)]
+    [MaxMethodLength(13, Justification = "Method lines grouped for ordered fallback precedence.")]
     private static async Task<string?> ResolveFriendlyValueAsync(
         object entity,
         object value,
@@ -411,7 +424,6 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
     }
 
     [SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
-    [MaxMethodLength(11)]
     private async Task DeletingAsync(object entity, AuditContext<TDbContext> context,
         CancellationToken cancellationToken)
     {
@@ -422,11 +434,16 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
 
         var wrapper = PopulateEntryWrapper(entity, context, AuditState.Deleted);
 
-        if (wrapper.AuditEntry == null) 
+        if (wrapper?.AuditEntry == null)
         {
             return;
         }
 
+        await PopulateWrapperValuesAsync(entity, context, wrapper).ConfigureAwait(false);
+    }
+
+    private static async Task PopulateWrapperValuesAsync(object entity, AuditContext<TDbContext> context, AuditEntryWrapper wrapper)
+    {
         foreach (var propertyWrapper in wrapper.PropertyWrappers ?? [])
         {
             //If we're in full more or there value has been modified
@@ -437,10 +454,10 @@ internal class AuditConfigurationApplicant<TUserIdentifier, TDbContext>
                 //Populate here as may access old relationship
                 await PopulateOldValueAsync(auditEntryProperty, propertyWrapper, entity, context).ConfigureAwait(false);
 
-                wrapper.AuditEntry.Properties[propertyWrapper.Configuration.Property.Name] = auditEntryProperty;
+                wrapper!.AuditEntry!.Properties[propertyWrapper.Configuration.Property.Name] = auditEntryProperty;
             }
         }
-        
-        PopulatePrimaryKeys(wrapper.AuditEntry, context);
+
+        PopulatePrimaryKeys(wrapper!.AuditEntry!, context);
     }
 }

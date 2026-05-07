@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,7 +46,6 @@ public static class DbContextExtensions
         return GetTriggerRegistrar(databaseContext) != null;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CS8603:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
     private static TriggerRegistrar<TDbContext> GetTriggerRegistrar<TDbContext>(TDbContext databaseContext)
         where TDbContext : DbContext
     {
@@ -82,8 +82,8 @@ public static class DbContextExtensions
     /// <param name="shouldAcceptAllChangesOnSuccess">value of acceptAllChangesOnSuccess.</param>
     /// <param name="cancellationToken">Cancellationtoken.</param>
     /// <returns>Task(int).</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
-    [MaxMethodLength(15)]
+    [SuppressMessage("Maintainability", "ACL1017:Parameter in public or internal member is of type bool or bool?", Justification = "acceptAllChangesOnSuccess is a standard parameter used in EF Core SaveChanges.")]
+    [MaxMethodLength(15, Justification = "Transactional cancellation handling grouped improves readability.")]
     public static async Task<int> SaveChangesWithTriggersAsync<TDbContext>(
         this TDbContext databaseContext,
         Func<bool, CancellationToken, Task<int>> baseSaveChangesAsync,
