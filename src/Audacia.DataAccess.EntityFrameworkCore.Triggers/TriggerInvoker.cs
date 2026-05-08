@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Audacia.CodeAnalysis.Analyzers.Helpers.MethodLength;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -37,29 +36,8 @@ internal class TriggerInvoker<TDbContext>
     /// </summary>
     /// <param name="cancellationToken">Cancellationtoken.</param>
     /// <returns>Task.</returns>
-    [MaxMethodLength(16)]
     public async Task BeforeAsync(CancellationToken cancellationToken)
     {
-        bool TryConvertEntityStateToBeforeTriggerType(EntityState entityState, out TriggerType triggerType)
-        {
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (entityState)
-            {
-                case EntityState.Added:
-                    triggerType = TriggerType.Inserting;
-                    return true;
-                case EntityState.Modified:
-                    triggerType = TriggerType.Updating;
-                    return true;
-                case EntityState.Deleted:
-                    triggerType = TriggerType.Deleting;
-                    return true;
-                default:
-                    triggerType = default;
-                    return false;
-            }
-        }
-
         await _dispatcher.DispatchBeforeAsync(cancellationToken).ConfigureAwait(false);
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -82,29 +60,8 @@ internal class TriggerInvoker<TDbContext>
     /// </summary>
     /// <param name="cancellationToken">Cancellationtoken.</param>
     /// <returns>Task.</returns>
-    [MaxMethodLength(16)]
     public async Task AfterAsync(CancellationToken cancellationToken)
     {
-        bool TryConvertEntityStateToAfterTriggerType(EntityState entityState, out TriggerType triggerType)
-        {
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (entityState)
-            {
-                case EntityState.Added:
-                    triggerType = TriggerType.Inserted;
-                    return true;
-                case EntityState.Modified:
-                    triggerType = TriggerType.Updated;
-                    return true;
-                case EntityState.Deleted:
-                    triggerType = TriggerType.Deleted;
-                    return true;
-                default:
-                    triggerType = default;
-                    return false;
-            }
-        }
-
         foreach (var entityEntry in _entityEntries)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -120,5 +77,45 @@ internal class TriggerInvoker<TDbContext>
         cancellationToken.ThrowIfCancellationRequested();
 
         await _dispatcher.DispatchAfterAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private static bool TryConvertEntityStateToBeforeTriggerType(EntityState entityState, out TriggerType triggerType)
+    {
+        // ReSharper disable once SwitchStatementMissingSomeCases
+        switch (entityState)
+        {
+            case EntityState.Added:
+                triggerType = TriggerType.Inserting;
+                return true;
+            case EntityState.Modified:
+                triggerType = TriggerType.Updating;
+                return true;
+            case EntityState.Deleted:
+                triggerType = TriggerType.Deleting;
+                return true;
+            default:
+                triggerType = default;
+                return false;
+        }
+    }
+
+    private static bool TryConvertEntityStateToAfterTriggerType(EntityState entityState, out TriggerType triggerType)
+    {
+        // ReSharper disable once SwitchStatementMissingSomeCases
+        switch (entityState)
+        {
+            case EntityState.Added:
+                triggerType = TriggerType.Inserted;
+                return true;
+            case EntityState.Modified:
+                triggerType = TriggerType.Updated;
+                return true;
+            case EntityState.Deleted:
+                triggerType = TriggerType.Deleted;
+                return true;
+            default:
+                triggerType = default;
+                return false;
+        }
     }
 }

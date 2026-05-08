@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Audacia.DataAccess.Specifications.DataStoreImplementations;
 
@@ -16,7 +17,7 @@ public class StoredProcedureBuilder
     /// <typeparam name="T">Type of <see cref="IDataStoreImplementedQuerySpecification{T}"/>.</typeparam>
     /// <param name="specification">Specification instance.</param>
     /// <returns>QueryTest string.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Changing this will add breaking changes.")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Changing this will add breaking changes.")]
     public string GetQueryText<T>(IDataStoreImplementedQuerySpecification<T> specification)
     {
         ArgumentNullException.ThrowIfNull(specification);

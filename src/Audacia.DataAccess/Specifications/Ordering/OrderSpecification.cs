@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace Audacia.DataAccess.Specifications.Ordering;
@@ -28,7 +29,7 @@ public class OrderSpecification<T> : IBuildableOrderSpecification<T>, IBuildable
     /// Creates a new <see cref="OrderSpecification{T}"/>.
     /// </summary>
     /// <returns><see cref="OrderSpecification{T}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000: Do not declare static members on generic types", Justification = "Code is already in use and will introduce breaking changes.")]
+    [SuppressMessage("Design", "CA1000: Do not declare static members on generic types", Justification = "Code is already in use and will introduce breaking changes.")]
     public static OrderSpecification<T> CreateInternal()
     {
         return new OrderSpecification<T>();
@@ -41,8 +42,8 @@ public class OrderSpecification<T> : IBuildableOrderSpecification<T>, IBuildable
     /// </summary>
     /// <param name="existingSpecifications">Instance of <see cref="IOrderSpecification{T}"/>.</param>
     /// <returns><see cref="IBuildableOrderedOrderSpecification{T}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000: Do not declare static members on generic types", Justification = "Code is already in use and will introduce breaking changes.")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
+    [SuppressMessage("Design", "CA1000: Do not declare static members on generic types", Justification = "Code is already in use and will introduce breaking changes.")]
+    [SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
     public static IBuildableOrderedOrderSpecification<T> From(params IOrderSpecification<T>[] existingSpecifications)
     {
         var newSpec = new OrderSpecification<T>();
@@ -86,7 +87,7 @@ public class OrderSpecification<T> : IBuildableOrderSpecification<T>, IBuildable
     /// <typeparam name="TKey">Return type of <see cref="Expression{TKey}"/>.</typeparam>
     /// <param name="keySelector">Instance of <see cref="Expression{T}"/>.</param>
     /// <returns><see cref="IBuildableOrderedOrderSpecification{T}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1033:Interface methods should be callable by child types", Justification = "Breaking change.")]
+    [SuppressMessage("Design", "CA1033:Interface methods should be callable by child types", Justification = "Breaking change.")]
     IBuildableOrderedOrderSpecification<T> IBuildableOrderedOrderSpecification<T>.ThenAsc<TKey>(Expression<Func<T, TKey>> keySelector)
     {
         _orderSteps.Add(new OrderStep(true, typeof(TKey), keySelector));
@@ -100,7 +101,7 @@ public class OrderSpecification<T> : IBuildableOrderSpecification<T>, IBuildable
     /// <typeparam name="TKey">Return type of <see cref="Expression{TKey}"/>.</typeparam>
     /// <param name="keySelector">Instance of <see cref="Expression{T}"/>.</param>
     /// <returns><see cref="IBuildableOrderedOrderSpecification{T}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1033:Interface methods should be callable by child types", Justification = "Breaking change.")]
+    [SuppressMessage("Design", "CA1033:Interface methods should be callable by child types", Justification = "Breaking change.")]
     IBuildableOrderedOrderSpecification<T> IBuildableOrderedOrderSpecification<T>.ThenDesc<TKey>(Expression<Func<T, TKey>> keySelector)
     {
         _orderSteps.Add(new OrderStep(false, typeof(TKey), keySelector));

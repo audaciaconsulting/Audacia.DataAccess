@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Audacia.DataAccess.Specifications.Projection;
 
@@ -85,7 +86,6 @@ public class DataStoreImplementedQuerySpecification<T, TResult> : DataStoreImple
     /// </summary>
     /// <param name="fromSpecification"><see cref="IDataStoreImplementedQuerySpecification{T}"/> will be used as the query specification.</param>
     /// <param name="projection"><see cref="IProjectionSpecification{T, TResult}"/> will be used as the projection specification.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Spacing Rules", "SA1010:Opening Square Brackets Must Be Spaced Correctly", Justification = "This is the only way to create an empty array.")]
     public DataStoreImplementedQuerySpecification(IDataStoreImplementedQuerySpecification<T> fromSpecification, IProjectionSpecification<T, TResult> projection)
         : base(fromSpecification == null ? string.Empty : fromSpecification.Name, fromSpecification == null ? [] : fromSpecification.Parameters.ToArray())
     {

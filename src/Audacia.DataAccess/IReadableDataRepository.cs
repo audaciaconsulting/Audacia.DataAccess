@@ -15,7 +15,6 @@ namespace Audacia.DataAccess;
 /// Exposes the methods to allow the underlying data storage to be queried.
 /// The query rules are encapsulated in the specification objects passed into each method as a parameter.
 /// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1554:Method contains optional parameter in type hierarchy", Justification = "Allows to include an existing cancellation token when invoking methods. Otherwise, a new token is provided.")]
 public interface IReadableDataRepository
 {
     /// <summary>

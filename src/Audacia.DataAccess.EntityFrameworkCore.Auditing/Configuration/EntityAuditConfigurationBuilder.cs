@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Audacia.Core.Extensions;
 
@@ -24,7 +25,7 @@ public class EntityAuditConfigurationBuilder<TEntity> : TypeAuditConfigurationBu
     /// </summary>
     /// <param name="ignore">Value of ignore.</param>
     /// <returns><see cref="EntityAuditConfigurationBuilder{TEntity}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
+    [SuppressMessage("Maintainability", "ACL1017:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
     public EntityAuditConfigurationBuilder<TEntity> Ignore(bool ignore = true)
     {
         InternalIgnore = ignore;
@@ -74,7 +75,7 @@ public class EntityAuditConfigurationBuilder<TEntity> : TypeAuditConfigurationBu
     /// <typeparam name="TProperty">Type of Property.</typeparam>
     /// <param name="propertySelector">PropertySelector delegate.</param>
     /// <returns><see cref="PropertyAuditConfigurationBuilder{TEntity, TProperty}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
+    [SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
     public PropertyAuditConfigurationBuilder<TEntity, TProperty> Property<TProperty>(
         Expression<Func<TEntity, TProperty>>
             propertySelector)
@@ -99,7 +100,7 @@ public class EntityAuditConfigurationBuilder<TEntity> : TypeAuditConfigurationBu
     /// <param name="propertySelector">PropertySelector expression.</param>
     /// <param name="propertyBuilderAction">PropertyBuilderAction delegate.</param>
     /// <returns><see cref="EntityAuditConfigurationBuilder{TEntity}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
+    [SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
     public EntityAuditConfigurationBuilder<TEntity> Property<TProperty>(
         Expression<Func<TEntity, TProperty>> propertySelector,
         Action<PropertyAuditConfigurationBuilder<TEntity, TProperty>> propertyBuilderAction)

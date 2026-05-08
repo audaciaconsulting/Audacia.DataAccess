@@ -1,16 +1,17 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Audacia.DataAccess.EntityFrameworkCore.SqlServer;
 using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Tests.Helpers.Database;
 using Audacia.DataAccess.Tests.Helpers.Entities;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Shouldly;
 using Xunit;
 
 namespace Audacia.DataAccess.Tests.DataAccess.Specifications.Including;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP002:Dispose the member as it is assigned with a created IDisposable", Justification = "Fixing this will introduce breaking changes.")]
+[SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP002:Dispose the member as it is assigned with a created IDisposable", Justification = "Fixing this will introduce breaking changes.")]
 public class IncludeSpecificationTests : IDisposable
 {
     private readonly DummyDbContext _dbContext;
@@ -40,9 +41,9 @@ public class IncludeSpecificationTests : IDisposable
     {
         var spec = QuerySpecification.WithInclude<Order>(a => a.With(o => o.Customer));
 
-        var result = await _repository.GetAsync(spec);
+        var result = await _repository.GetAsync(spec, TestContext.Current.CancellationToken);
 
-        result?.Customer.Should().NotBeNull();
+        result?.Customer.ShouldNotBeNull();
     }
 
     [Fact]
@@ -51,9 +52,9 @@ public class IncludeSpecificationTests : IDisposable
         var spec = QuerySpecification.WithInclude<OrderItem>(a => 
             a.With(i => i.Order).Then(o => o!.Customer));
 
-        var result = await _repository.GetAsync(spec);
+        var result = await _repository.GetAsync(spec, TestContext.Current.CancellationToken);
 
-        result?.Order?.Customer.Should().NotBeNull();
+        result?.Order?.Customer.ShouldNotBeNull();
     }
 
     [Fact]
@@ -63,10 +64,10 @@ public class IncludeSpecificationTests : IDisposable
             .WithInclude<OrderItem>(a => a.With(i => i.Order))
             .WithInclude(a => a.With(i => i.Product));
 
-        var result = await _repository.GetAsync(spec);
+        var result = await _repository.GetAsync(spec, TestContext.Current.CancellationToken);
 
-        result?.Order.Should().NotBeNull();
-        result?.Product.Should().NotBeNull();
+        result?.Order.ShouldNotBeNull();
+        result?.Product.ShouldNotBeNull();
     }
 
     public void Dispose()

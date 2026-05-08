@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.0.0 - 2026-05-07
+### Added
+- No new functionality added
+
+### Changes
+- All projects and test project upgraded to .NET 10.
+- All nuget dependencies updated to latest versions.
+- Added shared README reference for each NuGet package to `Directory.Build.Props`.
+- Conslidated shared properties into `Directory.Build.Props` and removed from individual projects.
+- Removed redundant version in test project.
+- Replace xunit with xunit.v3 in test project.
+- Replace FluentAssertions with Shouldly in test project.
+- `Audacia.CodeAnalysis.Analyzers.Helpers` now referenced as private asset.
+
 ## 3.0.5 - 2025-05-01
 ### Fixed
 - Made enum properties on `AuditEntry` non-nullable again

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -67,7 +68,7 @@ public class AuditConfigurationBuilder<TUserIdentifier, TDbContext>
     /// </summary>
     /// <param name="doNotAudit">Factory delegate <see cref="Func{TUserIdentifier}" />.</param>
     /// <returns><see cref="AuditConfigurationBuilder{TUserIdentifier, TDbContext}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1564:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
+    [SuppressMessage("Maintainability", "ACL1017:Parameter in public or internal member is of type bool or bool?", Justification = "Using booleans provides an easy to understand parameter.")]
     public AuditConfigurationBuilder<TUserIdentifier, TDbContext> DoNotAuditIfNoChangesInTrackedProperties(bool doNotAudit = true)
     {
         _doNotAuditIfNoChangesInTrackedProperties = doNotAudit;
@@ -92,7 +93,7 @@ public class AuditConfigurationBuilder<TUserIdentifier, TDbContext>
     /// </summary>
     /// <typeparam name="TEntity">Entity type of <see cref="EntityAuditConfigurationBuilder{TEntity}"/>.</typeparam>
     /// <returns><see cref="EntityAuditConfigurationBuilder{TEntity}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
+    [SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
     public EntityAuditConfigurationBuilder<TEntity> Entity<TEntity>()
         where TEntity : class
     {
@@ -131,7 +132,7 @@ public class AuditConfigurationBuilder<TUserIdentifier, TDbContext>
     /// </summary>
     /// <typeparam name="T">Type of TypeAuditConfigurationBuilder.</typeparam>
     /// <returns><see cref="TypeAuditConfigurationBuilder{T}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
+    [SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
     public TypeAuditConfigurationBuilder<T> Type<T>()
         where T : class
     {
@@ -152,7 +153,7 @@ public class AuditConfigurationBuilder<TUserIdentifier, TDbContext>
     /// <typeparam name="T">Type of TypeAuditConfigurationBuilder.</typeparam>
     /// <param name="typeBuilderAction">TypeBuilderAction delegate.</param>
     /// <returns><see cref="AuditConfigurationBuilder{TUserIdentifier, TDbContext}"/>.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
+    [SuppressMessage("Maintainability", "AV1551:Call the more overloaded method from other overloads.", Justification = "Return types are different.")]
     public AuditConfigurationBuilder<TUserIdentifier, TDbContext> Type<T>(
         Action<TypeAuditConfigurationBuilder<T>> typeBuilderAction)
         where T : class

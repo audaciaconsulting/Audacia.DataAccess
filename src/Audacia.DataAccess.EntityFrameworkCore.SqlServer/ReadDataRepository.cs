@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Audacia.Core.Extensions;
 using Audacia.Core;
+using Audacia.Core.Extensions;
 using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Specifications.DataStoreImplementations;
 using Audacia.DataAccess.Specifications.Including;
@@ -167,7 +168,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <exception cref = "ArgumentNullException" >Throws ArgumentNullException when IProjectableQuerySpecification.Projection is null.</exception >
     /// <returns>The first element in a query that matches the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
+    [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
     public async Task<TResult?> GetAsync<T, TResult>(
         IProjectableQuerySpecification<T, TResult> specification,
         CancellationToken cancellationToken = default) where T : class
@@ -200,7 +201,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <exception cref = "ArgumentNullException" >Throws ArgumentNullException when IProjectableQuerySpecification.Projection is null.</exception >
     /// <returns>All the elements in a query that match the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
+    [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
     public async Task<IEnumerable<TResult>> GetAllAsync<T, TResult>(
         IProjectableQuerySpecification<T, TResult> specification,
         CancellationToken cancellationToken = default) where T : class
@@ -234,7 +235,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <exception cref = "ArgumentNullException" >Throws ArgumentNullException when IProjectableQuerySpecification.Projection is null.</exception >
     /// <returns>The first item in an ordered list of elements from a query that match the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
+    [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
     public async Task<TResult?> GetAsync<T, TResult>(
         IOrderableQuerySpecification<T, TResult> specification,
         CancellationToken cancellationToken = default) where T : class
@@ -275,7 +276,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <exception cref = "ArgumentNullException" >Throws ArgumentNullException when IProjectableQuerySpecification.Projection is null.</exception >
     /// <returns>An ordered collection of elements from a query that match the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
+    [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
     public async Task<IEnumerable<TResult>> GetAllAsync<T, TResult>(
         IOrderableQuerySpecification<T, TResult> specification,
         CancellationToken cancellationToken = default) where T : class
@@ -312,7 +313,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <exception cref = "ArgumentNullException" >Throws ArgumentNullException when IProjectableQuerySpecification.Projection is null.</exception >
     /// <returns>A paged collection of elements from a query that match the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
+    [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
     public Task<IPage<T>> GetPageAsync<T>(
         IPageableQuerySpecification<T> specification,
         CancellationToken cancellationToken = default) where T : class
@@ -346,7 +347,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <exception cref = "ArgumentNullException" >Throws ArgumentNullException when IProjectableQuerySpecification.Projection is null.</exception >
     /// <returns>A paged collection of elements from a query that match the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
+    [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
     public Task<IPage<TResult>> GetPageAsync<T, TResult>(
         IPageableQuerySpecification<T, TResult> specification,
         CancellationToken cancellationToken = default) where T : class
@@ -412,7 +413,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <param name="cancellationToken">A token for cancelling asynchronous tasks.</param>
     /// <exception cref = "ArgumentNullException" >Throws ArgumentNullException when IProjectableQuerySpecification.Projection is null.</exception >
     /// <returns>A sorted paged collection of elements from a query that match the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
+    [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "Null check is done on a property of the parameter object.")]
     public Task<IPage<TResult>> GetPageAsync<T, TResult>(
         ISortablePageableQuerySpecification<T, TResult> specification,
         CancellationToken cancellationToken = default) where T : class
@@ -493,7 +494,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <typeparam name="T">Elemety type of the query.</typeparam>
     /// <param name="specification">Instance of <see cref="IQuerySpecification{T}"/>.</param>
     /// <returns>An collection of elements from a query that match the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Member-design", "AV1130:Return interfaces to unchangeable collections", Justification = "Method is designed to return a Linq Query and changing the design will introduce breaking changes.")]
+    [SuppressMessage("Member-design", "AV1130:Return interfaces to unchangeable collections", Justification = "Method is designed to return a Linq Query and changing the design will introduce breaking changes.")]
     public IQueryable<T> ApplyIncludes<T>(IQuerySpecification<T> specification) where T : class
     {
         ArgumentNullException.ThrowIfNull(specification, nameof(specification));
@@ -514,8 +515,8 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <typeparam name="T">Elemety type of the query.</typeparam>
     /// <param name="specification">Instance of <see cref="IQuerySpecification{T}"/>.</param>
     /// <returns>An collection of elements from a query that match the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Member-design", "AV1115:A property, method or local function should do only one thing", Justification = "Changing the method name will introduce breaking changes.")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Member-design", "AV1130:Return interfaces to unchangeable collections", Justification = "Method is designed to return a Linq Query and changing the design will introduce breaking changes.")]
+    [SuppressMessage("Member-design", "AV1115:A property, method or local function should do only one thing", Justification = "Changing the method name will introduce breaking changes.")]
+    [SuppressMessage("Member-design", "AV1130:Return interfaces to unchangeable collections", Justification = "Method is designed to return a Linq Query and changing the design will introduce breaking changes.")]
     public IQueryable<T> ApplyIncludesAndFilter<T>(IQuerySpecification<T> specification) where T : class
     {
         ArgumentNullException.ThrowIfNull(specification, nameof(specification));
@@ -577,7 +578,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// <param name="orderSpecification">Instance of <see cref="IOrderSpecification{T}"/>.</param>
     /// <param name="query">Query which the ordering will be applied to.</param>
     /// <returns>An collection of elements from a query that match the defined rules.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Member-design", "AV1130:Return interfaces to unchangeable collections", Justification = "Method is designed to return a Linq Query and changing the design will introduce breaking changes.")]
+    [SuppressMessage("Member-design", "AV1130:Return interfaces to unchangeable collections", Justification = "Method is designed to return a Linq Query and changing the design will introduce breaking changes.")]
     public IOrderedQueryable<T>? PerformOrdering<T>(
         IOrderSpecification<T> orderSpecification,
         IQueryable<T> query)
@@ -636,7 +637,7 @@ public class ReadDataRepository<TContext> : IReadableDataRepository, IDisposable
     /// Dispose <typeparamref name="TContext"/> object.
     /// </summary>
     /// <param name="disposing">Whether we're disposing or not.</param>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP007:Don't dispose injected", Justification = "Needs this for clearing out context object.")]
+    [SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP007:Don't dispose injected", Justification = "Needs this for clearing out context object.")]
     protected virtual void Dispose(bool disposing)
     {
         // Check to see if Dispose has already been called.

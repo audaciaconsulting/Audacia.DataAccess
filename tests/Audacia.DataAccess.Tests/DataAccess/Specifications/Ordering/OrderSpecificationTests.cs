@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Audacia.DataAccess.EntityFrameworkCore.SqlServer;
 using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Tests.Helpers.Database;
 using Audacia.DataAccess.Tests.Helpers.Entities;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Shouldly;
 using Xunit;
 
 namespace Audacia.DataAccess.Tests.DataAccess.Specifications.Ordering;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP002:Dispose the member as it is assigned with a created IDisposable", Justification = "Fixing this will introduce breaking changes.")]
+[SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP002:Dispose the member as it is assigned with a created IDisposable", Justification = "Fixing this will introduce breaking changes.")]
 public class OrderSpecificationTests : IDisposable
 {
     private readonly DummyDbContext _dbContext;
@@ -42,10 +43,10 @@ public class OrderSpecificationTests : IDisposable
         var spec = QuerySpecification
             .WithOrder<Customer>(s => s.Asc(c => c.FirstName));
 
-        var results = (await _repository.GetAllAsync(spec)).ToList();
+        var results = (await _repository.GetAllAsync(spec, TestContext.Current.CancellationToken)).ToList();
 
-        results.First().FirstName.Should().Be("Alice");
-        results.Last().FirstName.Should().Be("Bob");
+        results.First().FirstName.ShouldBe("Alice");
+        results.Last().FirstName.ShouldBe("Bob");
     }
 
     [Fact]
@@ -55,10 +56,10 @@ public class OrderSpecificationTests : IDisposable
             .WithOrder<Product>(s => s.Asc(c => c.Price))
             .WithOrder(s => s.Desc(c => c.Description));
 
-        var results = (await _repository.GetAllAsync(spec)).ToList();
+        var results = (await _repository.GetAllAsync(spec, TestContext.Current.CancellationToken)).ToList();
 
-        results[0].Description.Should().Be("Pencil");
-        results[1].Description.Should().Be("Paper");
+        results[0].Description.ShouldBe("Pencil");
+        results[1].Description.ShouldBe("Paper");
     }
 
     public void Dispose()
