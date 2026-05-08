@@ -41,7 +41,7 @@ public class IncludeSpecificationTests : IDisposable
     {
         var spec = QuerySpecification.WithInclude<Order>(a => a.With(o => o.Customer));
 
-        var result = await _repository.GetAsync(spec);
+        var result = await _repository.GetAsync(spec, TestContext.Current.CancellationToken);
 
         result?.Customer.ShouldNotBeNull();
     }
@@ -52,7 +52,7 @@ public class IncludeSpecificationTests : IDisposable
         var spec = QuerySpecification.WithInclude<OrderItem>(a => 
             a.With(i => i.Order).Then(o => o!.Customer));
 
-        var result = await _repository.GetAsync(spec);
+        var result = await _repository.GetAsync(spec, TestContext.Current.CancellationToken);
 
         result?.Order?.Customer.ShouldNotBeNull();
     }
@@ -64,7 +64,7 @@ public class IncludeSpecificationTests : IDisposable
             .WithInclude<OrderItem>(a => a.With(i => i.Order))
             .WithInclude(a => a.With(i => i.Product));
 
-        var result = await _repository.GetAsync(spec);
+        var result = await _repository.GetAsync(spec, TestContext.Current.CancellationToken);
 
         result?.Order.ShouldNotBeNull();
         result?.Product.ShouldNotBeNull();

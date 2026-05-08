@@ -43,7 +43,7 @@ public class OrderSpecificationTests : IDisposable
         var spec = QuerySpecification
             .WithOrder<Customer>(s => s.Asc(c => c.FirstName));
 
-        var results = (await _repository.GetAllAsync(spec)).ToList();
+        var results = (await _repository.GetAllAsync(spec, TestContext.Current.CancellationToken)).ToList();
 
         results.First().FirstName.ShouldBe("Alice");
         results.Last().FirstName.ShouldBe("Bob");
@@ -56,7 +56,7 @@ public class OrderSpecificationTests : IDisposable
             .WithOrder<Product>(s => s.Asc(c => c.Price))
             .WithOrder(s => s.Desc(c => c.Description));
 
-        var results = (await _repository.GetAllAsync(spec)).ToList();
+        var results = (await _repository.GetAllAsync(spec, TestContext.Current.CancellationToken)).ToList();
 
         results[0].Description.ShouldBe("Pencil");
         results[1].Description.ShouldBe("Paper");
