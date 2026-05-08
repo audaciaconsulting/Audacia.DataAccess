@@ -6,9 +6,8 @@ using Audacia.Core;
 using Audacia.DataAccess.EntityFrameworkCore.Extensions;
 using Audacia.DataAccess.Tests.Helpers.Database;
 using Audacia.DataAccess.Tests.Helpers.Entities;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Serialization;
+using Shouldly;
 using Xunit;
 
 namespace Audacia.DataAccess.Tests.EntityFrameworkCore.Extensions;
@@ -37,9 +36,9 @@ public class QueryableExtensionsTests : IDisposable
         await SeedDatabaseAsync(query);
         var pagingRequest = new PagingRequest(pageSize);
 
-        var page = await _dbContext.Customers.ToPageAsync(pagingRequest);
+        var page = await _dbContext.Customers.ToPageAsync(pagingRequest, TestContext.Current.CancellationToken);
 
-        page.TotalRecords.Should().Be(dataCount);
+        page.TotalRecords.ShouldBe(dataCount);
     }
     
     [Fact]
@@ -52,9 +51,9 @@ public class QueryableExtensionsTests : IDisposable
         await SeedDatabaseAsync(query);
         var pagingRequest = new PagingRequest(pageSize);
 
-        var page = await _dbContext.Customers.ToPageAsync(pagingRequest);
+        var page = await _dbContext.Customers.ToPageAsync(pagingRequest, TestContext.Current.CancellationToken);
 
-        page.TotalPages.Should().Be(2);
+        page.TotalPages.ShouldBe(2);
     }
 
     [Fact]
@@ -73,9 +72,9 @@ public class QueryableExtensionsTests : IDisposable
         await SeedDatabaseAsync(query);
         var pagingRequest = new PagingRequest(pageSize, pageNumber);
 
-        var page = await _dbContext.Customers.ToPageAsync(pagingRequest);
+        var page = await _dbContext.Customers.ToPageAsync(pagingRequest, TestContext.Current.CancellationToken);
 
-        page.Data.Should().NotContain(expectedExcludedRow);
+        page.Data.ShouldNotContain(expectedExcludedRow);
     }
 
     [Fact]
@@ -87,9 +86,9 @@ public class QueryableExtensionsTests : IDisposable
             .Select(_ => new Customer());
         await SeedDatabaseAsync(query);
 
-        var page = await _dbContext.Customers.ToPageAsync(pagingRequest);
+        var page = await _dbContext.Customers.ToPageAsync(pagingRequest, TestContext.Current.CancellationToken);
 
-        page.Data.Should().HaveCount(dataCount);
+        page.Data.Count().ShouldBe(dataCount);
     }
 
     [Fact]
@@ -111,10 +110,10 @@ public class QueryableExtensionsTests : IDisposable
             new Customer { FirstName = "B" }
         };
         await SeedDatabaseAsync(query);
+        
+        var page = await _dbContext.Customers.ToPageAsync(pagingRequest, TestContext.Current.CancellationToken);
 
-        var page = await _dbContext.Customers.ToPageAsync(pagingRequest);
-
-        page.Data.Should().NotContain(expectedExcludedRow);
+        page.Data.ShouldNotContain(expectedExcludedRow);
     }
 
     [Fact]
@@ -132,7 +131,7 @@ public class QueryableExtensionsTests : IDisposable
 
         Func<Task<IPage<Customer>>> act = () => _dbContext.Customers.ToPageAsync(pagingRequest);
 
-        await act.Should().ThrowExactlyAsync<ArgumentException>();
+        await act.ShouldThrowAsync<ArgumentException>();
     }
 
     private async Task SeedDatabaseAsync(IEnumerable<Customer> query)

@@ -5,8 +5,8 @@ using Audacia.DataAccess.EntityFrameworkCore.SqlServer;
 using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Tests.Helpers.Database;
 using Audacia.DataAccess.Tests.Helpers.Entities;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Shouldly;
 using Xunit;
 
 namespace Audacia.DataAccess.Tests.DataAccess.Specifications.Including;
@@ -43,7 +43,7 @@ public class IncludeSpecificationTests : IDisposable
 
         var result = await _repository.GetAsync(spec);
 
-        result?.Customer.Should().NotBeNull();
+        result?.Customer.ShouldNotBeNull();
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class IncludeSpecificationTests : IDisposable
 
         var result = await _repository.GetAsync(spec);
 
-        result?.Order?.Customer.Should().NotBeNull();
+        result?.Order?.Customer.ShouldNotBeNull();
     }
 
     [Fact]
@@ -66,8 +66,8 @@ public class IncludeSpecificationTests : IDisposable
 
         var result = await _repository.GetAsync(spec);
 
-        result?.Order.Should().NotBeNull();
-        result?.Product.Should().NotBeNull();
+        result?.Order.ShouldNotBeNull();
+        result?.Product.ShouldNotBeNull();
     }
 
     public void Dispose()

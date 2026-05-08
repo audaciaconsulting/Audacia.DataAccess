@@ -6,8 +6,8 @@ using Audacia.DataAccess.EntityFrameworkCore.SqlServer;
 using Audacia.DataAccess.Specifications;
 using Audacia.DataAccess.Tests.Helpers.Database;
 using Audacia.DataAccess.Tests.Helpers.Entities;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Shouldly;
 using Xunit;
 
 namespace Audacia.DataAccess.Tests.DataAccess.Specifications.Ordering;
@@ -45,8 +45,8 @@ public class OrderSpecificationTests : IDisposable
 
         var results = (await _repository.GetAllAsync(spec)).ToList();
 
-        results.First().FirstName.Should().Be("Alice");
-        results.Last().FirstName.Should().Be("Bob");
+        results.First().FirstName.ShouldBe("Alice");
+        results.Last().FirstName.ShouldBe("Bob");
     }
 
     [Fact]
@@ -58,8 +58,8 @@ public class OrderSpecificationTests : IDisposable
 
         var results = (await _repository.GetAllAsync(spec)).ToList();
 
-        results[0].Description.Should().Be("Pencil");
-        results[1].Description.Should().Be("Paper");
+        results[0].Description.ShouldBe("Pencil");
+        results[1].Description.ShouldBe("Paper");
     }
 
     public void Dispose()
