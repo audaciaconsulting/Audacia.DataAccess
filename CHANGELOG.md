@@ -4,15 +4,15 @@
 
 ### Added
 
-- No new functionality added
+- No new functionality added.
 
 ## Changes
 
-- Microsoft.EntityFrameworkCore updated to version 10.0.13
-- Microsoft.EntityFrameworkCore.SqlServer updated to version 10.0.13
-- Microsoft.EntityFrameworkCore.InMemory updated to version 10.0.13
-- Microsoft.EntityFrameworkCore.Relational updated to version 10.0.13
-- Transient package System.Security.Cryptography.Pkcs pinned to version 10.0.13
+- Microsoft.EntityFrameworkCore updated to version 10.0.13.
+- Microsoft.EntityFrameworkCore.SqlServer updated to version 10.0.13.
+- Microsoft.EntityFrameworkCore.InMemory updated to version 10.0.13.
+- Microsoft.EntityFrameworkCore.Relational updated to version 10.0.13.
+- Transient package System.Security.Cryptography.Pkcs pinned to version 10.0.14.
 
 ## 4.0.1 - 2026-10-05
 
