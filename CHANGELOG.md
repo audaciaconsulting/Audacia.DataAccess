@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.0.3 - 2026-11-02
+
+### Added
+
+- No new functionality added.
+
+### Changes
+
+- Microsoft.EntityFrameworkCore updated to version 10.0.14.
+- Microsoft.EntityFrameworkCore.Relational updated to version 10.0.14.
+- Microsoft.EntityFrameworkCore.SqlServer updated to version 10.0.14.
+- Microsoft.EntityFrameworkCore.InMemory updated to version 10.0.14.
+- Microsoft.NET.Test.Sdk updated to version 18.11.0.
+
 ## 4.0.2 - 2026-10-30
 
 ### Added
