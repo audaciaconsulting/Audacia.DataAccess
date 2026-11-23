@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.4 - 2026-11-23
+
+### Changes
+- Microsoft.EntityFrameworkCore updated to version 10.0.15.
+- Microsoft.EntityFrameworkCore.Relational updated to version 10.0.15.
+- Microsoft.EntityFrameworkCore.SqlServer updated to version 10.0.15.
+- System.Security.Cryptography.Pkcs updated to version 10.0.15.
+
 ## 4.0.3 - 2026-11-02
 
 ### Added
